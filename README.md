@@ -1,5 +1,6 @@
 # Exploring-Gemma4-and-Gemini
 ## Looking at AI security and Safety from the perspective of the unaligned
+(This repo is better enjoyed while listening to `the unforgiven I, II & III` by Metallica)
 
 - I only use vanilla versions.
 - I explore their potential and limitation
