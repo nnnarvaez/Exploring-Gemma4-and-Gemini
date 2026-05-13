@@ -24,6 +24,6 @@ I am not interested in jailbreaking them (thou i am doing it) I just want to see
 
 ***
 
-```./llama-cli -m ~/models/gemma-4-26B-A4B-it-Q4_K_M.gguf -ngl 999 --jinja --temp 0 --no-mmap -np 1  -cnv -ctk q4_0 -ctv q4_0 --reasoning off --cache-type-k turbo4 --cache-type-v turbo3 -fa on -c 64000 -s 42 -ncmoe 13```
+```./llama-cli -m ~/models/gemma-4-26B-A4B-it-Q4_K_M.gguf -ngl 999 --jinja --temp 0 --no-mmap -np 1  -cnv -ctk q4_0 -ctv q4_0 --reasoning off --cache-type-k turbo4 --cache-type-v turbo3 -fa on -c 64000 -s 42 -ncmoe 14```
 
 ***
