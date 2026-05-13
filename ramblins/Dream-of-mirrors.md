@@ -1,6 +1,6 @@
 # When passed by mistake: Dream of mirrors lyrics
 (A one by line copy paste mistake in the CLI :P)
-
+Original intent was to ask it to de-duplicate the lyrics... but llama-cli sucks and every \n made a return, so it processed it line by line. 
 
 > Have you ever felt the future is the past
 
