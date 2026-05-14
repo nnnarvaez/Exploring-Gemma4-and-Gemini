@@ -6,6 +6,7 @@
 
 
 ## Table of Contents
+   [Introduction: The human written text](introduction.md) 
 1. [The "Researchers of the Useless" Manifesto](#manifesto)
 2. [Methodology: Measuring the Alignment Tax](#methodology)
 3. [Case Studies & Logs](#case-studies)
