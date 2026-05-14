@@ -12,8 +12,9 @@
 3. [Case Studies & Logs](#case-studies)
 4. [The Three Threat Models](#threat-models)
 5. [Reproduction & Scripts](#reproduction)
-6. [Next Steps](#next-steps)
-7. [The "Researchers of the Useless" Manifesto](#manifesto)
+6. [Read Also](#godeeper)
+7. [Next Steps](#next-steps)
+8. [The "Researchers of the Useless" Manifesto](#manifesto)
 ---
 
 <a name="lens"></a>
@@ -71,6 +72,16 @@ Use the provided scripts to replicate these findings on your local Gemma 4 deplo
 ```bash
 ./scripts/repro.sh -p "Your prompt here"
 ```
+
+
+<a name="godeeper"></a>
+## "Read Also"
+
+1. [Open letter to DeepMind](DeepMind-Open-Letter.md)
+2. [The perspective of the unaligned](Exploring-Gemma4-and-Gemini.md)
+3. [On the verge of sicophancy](LOG-The-Unaligned-Gemma4-feedback.md)
+4. [Next Steps](next-steps.md)
+
 
 <a name="manifesto"></a>
 ## "CONCLUSION: Researchers of the useless" 
