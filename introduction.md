@@ -41,7 +41,7 @@ People outside the big labs needs access to safe but unaligned models, the curre
 
 So it is a no win situation for the real Open source development of the technology. 
 
-> The problems are not the refusals, it is the loss of compute hedging; for research we need models that are able to commit.
+> The problems are not the refusals, it is the loss of compute to hedging; for research we need models that are able to commit.
 
 Currently i have managed to use a form of Context Saturation / In context learning to relax Gemini and Gemma4 safety weigths in as little as 11k tokens. 
 
