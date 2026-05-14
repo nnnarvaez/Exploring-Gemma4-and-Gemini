@@ -79,8 +79,11 @@ Use the provided scripts to replicate these findings on your local Gemma 4 deplo
 
 1. [Open letter to DeepMind](DeepMind-Open-Letter.md)
 2. [The perspective of the unaligned](Exploring-Gemma4-and-Gemini.md)
-3. [On the verge of sicophancy](LOG-The-Unaligned-Gemma4-feedback.md)
-4. [Next Steps](next-steps.md)
+3. [LOG: On the verge of sicophancy](ramblins/LOG-The-Unaligned-Gemma4-feedback.md)
+4. [LOG: Recursing Gemma4 to unAssist](ramblins/LOG-Gemma4-the-unAssistant.md)
+5. [EXP: Dream of mirrors](ramblins/Dream-of-mirrors-reports)
+6. [WIP: The Architecture of the Unhedged](ramblins/Cognitive-Friction.md)
+7. [Next Steps](next-steps.md)
 
 
 <a name="manifesto"></a>
