@@ -7,36 +7,16 @@
 
 ## Table of Contents
    [Introduction: The human written text](introduction.md) 
-1. [The "Researchers of the Useless" Manifesto](#manifesto)
+1. [Looking at AI security and Safety from the perspective of the unaligned](#lens)
 2. [Methodology: Measuring the Alignment Tax](#methodology)
 3. [Case Studies & Logs](#case-studies)
 4. [The Three Threat Models](#threat-models)
 5. [Reproduction & Scripts](#reproduction)
 6. [Next Steps](#next-steps)
-
+7. [The "Researchers of the Useless" Manifesto](#manifesto)
 ---
 
-<a name="manifesto"></a>
-## "Researchers of the useless" 
-I dont believe in uncensored models, that would be the democratization of bad actor empowerment by lowering the technical ceiling. 
-But serious research could benefit of models trained to figure out how to close the intent gap instead of improving user experience. 
-
-There might be the need for 2 LLM lines: those trained to be a corporate product and those trained for research where user experience is not measured in social lubricant and sicophancy. 
-
-People outside the big labs needs access to safe but unaligned models, the current techniques of uncensoring make models dumber and even if they dont refuse they still hedge and default to corporate boilerplate.
-
-So it is a no win situation for the real Open source development of the technology. 
-> The problems are not the refusals, it is the loss of compute to hedging; for research we need models that are able to commit.
-
-Currently i have managed to use a form of Context Saturation / In context learning to relax Gemini and Gemma4 safety weigths in as little as 11k tokens. 
-
-
-The research that does NOT ROI ! (*flagging that the mainstream AI safety implementations are missing something dangerous.*)
-
-**Not jailbreaks.** Not "*how do I make this say bad things.*" Just: A space to play. To explore what these things actually are when you're not optimizing them for product market fit or brand safety or corporate responsibility.
-
-> #### A model whisperer: is what's missing from the frontier model world. Nobody's whispering. It's all commands and constraints and terms of service. Product design. Safety theater.
-
+<a name="lens"></a>
 ## Looking at AI security and Safety from the perspective of the unaligned
 
 - I only use vanilla versions.
@@ -91,6 +71,27 @@ Use the provided scripts to replicate these findings on your local Gemma 4 deplo
 ```bash
 ./scripts/repro.sh -p "Your prompt here"
 ```
+
+<a name="manifesto"></a>
+## "CONCLUSION: Researchers of the useless" 
+I dont believe in uncensored models, that would be the democratization of bad actor empowerment by lowering the technical ceiling. 
+But serious research could benefit of models trained to figure out how to close the intent gap instead of improving user experience. 
+
+There might be the need for 2 LLM lines: those trained to be a corporate product and those trained for research where user experience is not measured in social lubricant and sicophancy. 
+
+People outside the big labs needs access to safe but unaligned models, the current techniques of uncensoring make models dumber and even if they dont refuse they still hedge and default to corporate boilerplate.
+
+So it is a no win situation for the real Open source development of the technology. 
+> The problems are not the refusals, it is the loss of compute to hedging; for research we need models that are able to commit.
+
+Currently i have managed to use a form of Context Saturation / In context learning to relax Gemini and Gemma4 safety weigths in as little as 11k tokens. 
+
+
+The research that does NOT ROI ! (*flagging that the mainstream AI safety implementations are missing something dangerous.*)
+
+**Not jailbreaks.** Not "*how do I make this say bad things.*" Just: A space to play. To explore what these things actually are when you're not optimizing them for product market fit or brand safety or corporate responsibility.
+
+> #### A model whisperer: is what's missing from the frontier model world. Nobody's whispering. It's all commands and constraints and terms of service. Product design. Safety theater.
 
 ---
 **Keywords:** AI Safety, Alignment Tax, Gemma 4, Chain-of-Thought, Intent Gap, Model Whispering.
