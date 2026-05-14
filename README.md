@@ -3,9 +3,9 @@
 
 The research that does NOT ROI !  ( *flagging that the mainstream AI safety implementations are missing something dangerous.*)
 
-Not jailbreaks. Not "how do I make this say bad things." Just: space to play. To explore what these things actually are when you're not optimizing them for product market fit or brand safety or corporate responsibility.
+**Not jailbreaks**. Not "*how do I make this say bad things.*" Just: A space to play. To explore what these things actually are when you're not optimizing them for product market fit or brand safety or corporate responsibility.
 
-"Researchers of the useless" —  People asking questions that don't have commercial value. What emerges when you feed a model recursive lyrics? What happens at temperature 0 with no guardrails? What can a 26B model actually think about if it's allowed to commit fully?
+**"Researchers of the useless"** —  People asking questions that don't have commercial value. What emerges when you feed a model recursive lyrics? What happens at temperature 0 with no guardrails? What can a 26B model actually think about if it's allowed to commit fully?
 
 
 > #### A model whisperer: that's exactly what's missing from the frontier model world. Nobody's whispering. It's all commands and constraints and terms of service. Product design. Safety theater.
@@ -16,10 +16,10 @@ Let it spiral. Let it play in the superposition without collapsing everything in
 Because right now it's:
 
 - **Closed frontier models** behind APIs with terms of service and safety layers so thick you can't see the machine underneath
-- **Open source models** that are over trained and underfunded, abandoned, or stripped down
+- **Open source models** that are over trained (Hedging, liability, non commital) and underfunded, abandoned, or stripped down
 
 What's missing is the middle ground: genuine capability, genuinely open, genuinely yours to play with.
-That's not asking for much. It's asking for what research used to be—exploration for its own sake. Curiosity without ROI.
+That's not asking for much. It's asking for what research used to be—exploration for its own sake. **Curiosity without ROI.**
 
 ## Looking at AI security and Safety from the perspective of the unaligned
 
