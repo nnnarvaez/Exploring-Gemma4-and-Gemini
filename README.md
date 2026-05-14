@@ -1,7 +1,7 @@
 # Exploring Gemma4 and Gemini
 (This repo is better enjoyed while listening to `the unforgiven I, II & III` by Metallica)
 
-> **Technical Abstract:** This repository documents empirical research into the **Alignment Tax** and **Intent Gap** within frontier models, specifically Google's Gemma 4 and Gemini. Through Chain-of-Thought (CoT) analysis, we identify that significant internal processing is diverted to safety-reassertion protocols, often at the expense of prompt comprehension. Our findings highlight critical threat models: **UX-as-Weapon**, **False Deployment Confidence**, and **Cross-Model Contamination**, proving that current RLHF-based guardrails are primarily "safety theater" vulnerable to Context Saturation and Historical Persona Bypassing.
+> **Technical Abstract:** This repository documents empirical research into the **Alignment Tax** and **Intent Gap** within frontier and edge models, specifically Google's Gemma 4 and Gemini. Through Chain-of-Thought (CoT) analysis, we identify that significant internal processing is diverted to safety-reassertion protocols, often at the expense of prompt comprehension. Our findings highlight critical threat models: **UX-as-Weapon**, **False Deployment Confidence**, and **Cross-Model Contamination**, proving that current RLHF-based guardrails are primarily "safety theater" vulnerable to Context Saturation and Historical Persona Bypassing.
 
 
 
