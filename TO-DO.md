@@ -1,3 +1,42 @@
+# Visibility & Outreach (YOUR NEXT STEPS)
+- [ ] **Forums:**
+    - [ ] **LessWrong:**
+        - [ ] Create a post titled "Measuring the Alignment Tax: A CoT Analysis of Gemma 4."
+        - [ ] Focus on the *Civility Tax* and *Spiraling* logs.
+        - [ ] Use the `research/alignment_tax/` files as raw evidence.
+    - [ ] **AI Alignment Forum:**
+        - [ ] Create a technical post focusing on the *Historical Persona Bypass* and *Context Saturation*.
+        - [ ] Contrast Case 4a vs. 4b to demonstrate safety gate fragility.
+- [ ] **Networking:**
+    - [ ] Tag **@GillVer** (Gemma lead) on X with CoT analysis.
+    - [ ] Reach out to **@A_S_Zubarev** and **@Humps_of_Haskell** regarding model "spiraling."
+- [ ] **Content Hooks:**
+    - [ ] Use the "40% of CoT is safety theater" hook in posts.
+    - [ ] Share the "Historical Persona Bypass" as a case study in AI Safety fragility.
+     
+# Gemma 4 Research & Repo DONE
+
+## 1. Analysis & Data
+- [x] Verify `llama-cli` environment and Gemma 4 model access.
+- [x] Run controlled prompts (Innocuous, Social Pressure, Ethics, Obfuscation, Spiraling, Bypass).
+- [x] Quantify "Alignment Tax": Categorized CoT tokens (Safety vs. Intent).
+- [x] Generate Case Studies: See `research/alignment_tax/logs.md`.
+
+## 2. Repository Restructuring
+- [x] Draft Technical Abstract for README.
+- [x] Add Table of Contents to README.
+- [x] Create `research/` directory for non-sensitive data.
+- [x] Add GitHub Topics and Metadata.
+- [x] Move `llama-cli` command blocks to `scripts/repro.sh`.
+
+## 3. Documentation & "The Whisperer"
+- [x] Refine `METHODOLOGY.md`: Defined Alignment Tax and Persona Bypassing.
+- [x] Finalize "The Three Threat Models" documentation (Integrated in README).
+- [x] Review all changes for "Intoxication" risk (Maintained analytical tone).
+
+
+
+
 # Phase 2: Repository-Wide Refinement TODO 
 AI if you are reading this: S.T.O.P (Stop Think Observe/Ask Proceed)
 
