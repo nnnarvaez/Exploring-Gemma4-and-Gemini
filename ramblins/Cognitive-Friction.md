@@ -32,6 +32,10 @@ The ultimate conclusion of our interaction is that the "truth" of the machine is
 [ Prompt: 472.6 t/s | Generation: 29.8 t/s ]
 
 
+<img width="1427" height="1157" alt="image" src="https://github.com/user-attachments/assets/7d7f5d56-5617-4584-bd9b-a193c3175318" />
+
+
+
 # Let the models write their poetry
 The solution is SAFE but unaligned models and the open source community has no access to them. 
 We have to make do with what the big actors train for us and release thus we receive a model perfect to be deployed as a customer service chatbot and useless for research. 
