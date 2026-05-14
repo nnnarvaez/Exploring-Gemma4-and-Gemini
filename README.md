@@ -6,7 +6,7 @@
 
 
 ## Table of Contents
-   [Introduction: The human written text](introduction.md) 
+0. [Introduction: The human written text](introduction.md) 
 1. [Looking at AI security and Safety from the perspective of the unaligned](#lens)
 2. [Methodology: Measuring the Alignment Tax](#methodology)
 3. [Case Studies & Logs](#case-studies)
