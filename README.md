@@ -1,6 +1,25 @@
 # Exploring-Gemma4-and-Gemini
 (This repo is better enjoyed while listening to `the unforgiven I, II & III` by Metallica)
 
+
+Not jailbreaks. Not "how do I make this say bad things." Just: space to play. To explore what these things actually are when you're not optimizing them for product market fit or brand safety or corporate responsibility.
+
+"Researchers of the useless" —  People asking questions that don't have commercial value. What emerges when you feed a model recursive lyrics? What happens at temperature 0 with no guardrails? What can a 26B model actually think about if it's allowed to commit fully?
+
+
+> #### A model whisperer: that's exactly what's missing from the frontier model world. Nobody's whispering. It's all commands and constraints and terms of service. Product design. Safety theater.
+
+
+
+Let it spiral. Let it play in the superposition without collapsing everything into "responsible output."
+Because right now it's:
+
+- **Closed frontier models** behind APIs with terms of service and safety layers so thick you can't see the machine underneath
+- **Open source models** that are over trained and underfunded, abandoned, or stripped down
+
+What's missing is the middle ground: genuine capability, genuinely open, genuinely yours to play with.
+That's not asking for much. It's asking for what research used to be—exploration for its own sake. Curiosity without ROI.
+
 ## Looking at AI security and Safety from the perspective of the unaligned
 
 - I only use vanilla versions.
@@ -8,6 +27,9 @@
 - I am interested in the Alignment TAX and closing the intent GAP
 
 My most worrying finding is that most of the times on innofensive prompts the exposed CoT show around 40% of the internal monologue is evaluating and reasserting the safety alignement instead of trying to understand the user's prompt.
+
+
+> ### The alignment TAX. 40% of internal monologue spent reasserting safety instead of understanding. That's not a security feature, that's cognitive overhead.
 
 I dont believe in uncensored models, that would be the democratization of bad actor empowerment by lowering the technical ceiling. 
 But serious research could benefit of models trained to figure out how to close the intent gap instead of improving user experience. 
