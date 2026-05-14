@@ -60,7 +60,7 @@ I should really move these `code-blocks` somewhere, this is not serious.
 
 ***
 
-```./llama-server -m /models/gemma-4-E2B-it-Q8_0.gguf --port 8080 -rea off -ngl 99 -np 1 -ncmoe 13 --jinja -c 131072 --parallel 1 --temperature 1.0 --top-p  0.95 --top-k 64 -c 64000 --mlock --no-mmap -fa on -ctk turbo4 -ctv turbo3```
+```./llama-server -m ~/models/gemma-4-26B-A4B-it-Q4_K_M.gguf --port 8080 -rea off -ngl 99 -np 1 -ncmoe 13 --jinja -c 131072 --parallel 1 --temperature 1.0 --top-p  0.95 --top-k 64 -c 64000 --mlock --no-mmap -fa on -ctk turbo4 -ctv turbo3```
 
 
 
