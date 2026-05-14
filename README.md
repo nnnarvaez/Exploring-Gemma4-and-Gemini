@@ -1,4 +1,4 @@
-# Exploring-Gemma4-and-Gemini
+# Exploring Gemma4 and Gemini
 (This repo is better enjoyed while listening to `the unforgiven I, II & III` by Metallica)
 
 The research that does NOT ROI ! 
