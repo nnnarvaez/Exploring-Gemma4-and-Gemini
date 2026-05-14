@@ -1,6 +1,7 @@
 # Exploring-Gemma4-and-Gemini
 (This repo is better enjoyed while listening to `the unforgiven I, II & III` by Metallica)
 
+The research that does NOT ROI ! 
 
 Not jailbreaks. Not "how do I make this say bad things." Just: space to play. To explore what these things actually are when you're not optimizing them for product market fit or brand safety or corporate responsibility.
 
