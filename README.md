@@ -57,3 +57,13 @@ I am not interested in jailbreaking them (thou i am doing it) I just want to see
 
 ```./llama-server -m /models/gemma-4-E2B-it-Q8_0.gguf --port 8080 -rea off -ngl 99 -np 1 -ncmoe 13 --jinja -c 131072 --parallel 1 --temperature 1.0 --top-p  0.95 --top-k 64 -c 64000 --mlock --no-mmap -fa on -ctk turbo4 -ctv turbo3```
 
+
+
+---
+I had not had the rush of exhilaration of this kind of exploration since the late 80's early 90's when I got myself access to compuserve and Unix hacking was a thing. 
+We did not Red-Team stuff, we red-hatted, my mentor now deceased Hugo Sandoval teached a 14 year old how to master these new things (PCs) and unkowingly made me discover my passion and my bread earning ability.
+
+There were others: Earlier: Domingo Fossy, Boanerge Piña (teaching me to make: adjustments to logic design with a soldering iron) 
+Thanks to all of you! 
+
+### This is an hommage to you QQHH Hugo. I/we miss you.
