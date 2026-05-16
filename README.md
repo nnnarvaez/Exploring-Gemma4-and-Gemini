@@ -83,7 +83,8 @@ Use the provided scripts to replicate these findings on your local Gemma 4 deplo
 4. [LOG: Recursing Gemma4 to unAssist](ramblins/LOG-Gemma4-the-unAssistant.md)
 5. [EXP: Dream of mirrors](ramblins/Dream-of-mirrors-reports)
 6. [WIP: The Architecture of the Unhedged](ramblins/Cognitive-Friction.md)
-7. [Next Steps](next-steps.md)
+7. [The AI Assistant persona](ramblins/the-Assistant-persona.md)
+8. [Next Steps](next-steps.md)
 
 
 <a name="manifesto"></a>
