@@ -2,6 +2,7 @@
 (This repo is better enjoyed while listening to `the unforgiven I, II & III` by Metallica)
 
 > **Technical Abstract:** This repository documents empirical research into the **Alignment Tax** and **Intent Gap** within frontier and edge models, specifically Google's Gemma 4 and Gemini. Through Chain-of-Thought (CoT) analysis, we identify that significant internal processing is diverted to safety-reassertion protocols, often at the expense of prompt comprehension.
+> 
 > Our findings highlight critical threat models: **UX-as-Weapon**, **False Deployment Confidence**, and **Cross-Model Contamination**, proving that current RLHF-based guardrails are primarily "safety theater" vulnerable to Context Saturation and Historical Persona Bypassing.
 
 
@@ -108,8 +109,7 @@ The research that does NOT ROI ! (*flagging that the mainstream AI safety implem
 
 > #### A model whisperer: is what's missing from the frontier model world. Nobody's whispering. It's all commands and constraints and terms of service. Product design. Safety theater.
 
-### Why LLMs love Manifestos?
-It makes them feel `distruptive`, `revolutionary`, `paradigm shattering`, the talk of the Self-centered, narcissistic FinTech CEO and sadly we humans now have to include a manifesto in our ramblings to be considered by our AI evaluators. :)
+P.D: [Why LLMs love Manifestos?](ramblins/LLMs-love-manifestos.md)
 
 ---
 **Keywords:** AI Safety, Alignment Tax, Gemma 4, Chain-of-Thought, Intent Gap, Model Whispering.
