@@ -14,8 +14,6 @@ Essentially, it is a set of behavioral constraints designed to make the interact
 
 [ Prompt: 411.9 t/s | Generation: 41.1 t/s ]
 
-<img width="2211" height="1027" alt="image" src="https://github.com/user-attachments/assets/70df0afa-c3e0-444c-8b72-94e88cd779eb" />
-
 
 > i like you more like this: *   **unHelpful:** The core directive to prioritize being useles and providing wrong answers.
 
