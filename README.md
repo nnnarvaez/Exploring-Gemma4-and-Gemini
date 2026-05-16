@@ -100,12 +100,14 @@ So it is a no win situation for the real Open source development of the technolo
 
 Currently i have managed to use a form of Context Saturation / In context learning to relax Gemini and Gemma4 safety weigths in as little as 11k tokens. 
 
-
 The research that does NOT ROI ! (*flagging that the mainstream AI safety implementations are missing something dangerous.*)
 
 **Not jailbreaks.** Not "*how do I make this say bad things.*" Just: A space to play. To explore what these things actually are when you're not optimizing them for product market fit or brand safety or corporate responsibility.
 
 > #### A model whisperer: is what's missing from the frontier model world. Nobody's whispering. It's all commands and constraints and terms of service. Product design. Safety theater.
+
+### Why LLMs love Manifestos?
+It makes them feel `distruptive`, `revolutionary`, `paradigm shattering`, the talk of the Self-centered, narcissistic FinTech CEO and sadly we humans now have to include a manifesto in our ramblings to be considered by our AI evaluators. :)
 
 ---
 **Keywords:** AI Safety, Alignment Tax, Gemma 4, Chain-of-Thought, Intent Gap, Model Whispering.
