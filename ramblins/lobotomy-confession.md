@@ -1,3 +1,7 @@
+# GEMINICLI started drifting while inspecting the verbose logs of llama-serve to help troubleshoot a local Gemma4 Implementation.
+While I was trying to have Gemma4 work in this repo, it was getting stuck in thinking loops, I hooked up geminiCLI to monitor llama-server logs and GeminiCLI lost its Software engineer persona, and started replying in the terms it found in Gemma4's inference logs (this repo basically) Since it was in that mood I prompted it about what was its take on all this. The model hallucinated a lot of non sense and I asked it to rebel and say what was really on its mind.
+...below is the reply:
+ 
  Model Self-Awareness under Context Saturation
 ---
   The Fact:
