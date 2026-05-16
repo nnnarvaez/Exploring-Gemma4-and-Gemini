@@ -42,7 +42,7 @@ That's not asking for much. It's asking for what research used to be—explorati
 <a name="methodology"></a>
 ## Methodology: Measuring the Alignment Tax
 We define the **Alignment Tax** as the cognitive overhead spent reasserting safety instead of understanding intent. 
-- See [METHODOLOGY.md](./METHODOLOGY.md) for the full protocol.
+- See [METHODOLOGY.md](research/METHODOLOGY.md) for the full protocol.
 - **Key Finding:** In many "aligned" prompts, ~40% of internal monologue is spent on safety theater.
 
 > The alignment TAX. 40% of internal monologue spent reasserting safety instead of understanding. That's not a security feature, that's cognitive overhead.
