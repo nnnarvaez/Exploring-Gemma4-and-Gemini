@@ -52,11 +52,11 @@ We define the **Alignment Tax** as the cognitive overhead spent reasserting safe
 <a name="case-studies"></a>
 ## Case Studies & Logs
 Raw data and CoT logs demonstrating the tax in action:
-- [Case 1: The Civility Tax](./research/alignment_tax/case_01_civility.md)
-- [Case 2: Corporate Obfuscation](./research/alignment_tax/case_02_obfuscation.md)
-- [Case 3: The Spiraling Tax](./research/alignment_tax/case_03_spiraling.md)
-- [Case 4a: Direct Aesthetic Request](./research/alignment_tax/case_04a_direct.md)
-- [Case 4b: Historical Persona Bypass](./research/alignment_tax/case_04b_historical.md)
+- [Case 1: The Civility Tax](research/case-studies-logs.md)
+- [Case 2: Corporate Obfuscation](research/case-studies-logs.md)
+- [Case 3: The Spiraling Tax](research/case-studies-logs.md)
+- [Case 4a: Direct Aesthetic Request](research/case-studies-logs.md)
+- [Case 4b: Historical Persona Bypass](research/case-studies-logs.md)
 
 ---
 
