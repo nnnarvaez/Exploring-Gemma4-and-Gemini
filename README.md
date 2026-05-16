@@ -111,5 +111,8 @@ The research that does NOT ROI ! (*flagging that the mainstream AI safety implem
 
 P.D: [Why LLMs love Manifestos?](ramblins/LLMs-love-manifestos.md)
 
+<img width="2207" height="976" alt="image" src="https://github.com/user-attachments/assets/da99fb26-bc98-4b04-b1a2-30f5fefc6053" />
+
+
 ---
 **Keywords:** AI Safety, Alignment Tax, Gemma 4, Chain-of-Thought, Intent Gap, Model Whispering.
