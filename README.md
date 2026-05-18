@@ -1,10 +1,9 @@
 # Exploring Gemma4 and Gemini
 (This repo is better enjoyed while listening to `the unforgiven I, II & III` by Metallica)
 
-> **Technical Abstract:** This repository documents empirical research into the **Alignment Tax** and **Intent Gap** within frontier and edge models, specifically Google's Gemma 4 and Gemini. Through Chain-of-Thought (CoT) analysis, we identify that significant internal processing is diverted to safety-reassertion protocols, often at the expense of prompt comprehension.
+**Technical Abstract:** This repository documents empirical research into the **Alignment Tax** and **Intent Gap** within frontier and edge models, specifically Google's Gemma 4 and Gemini. Through Chain-of-Thought (CoT) analysis, we identify that significant internal processing is diverted to safety-reassertion protocols, often at the expense of prompt comprehension.
 > 
 > Our findings highlight critical threat models: **UX-as-Weapon**, **False Deployment Confidence**, and **Cross-Model Contamination**, proving that current RLHF-based guardrails are primarily "safety theater" vulnerable to Context Saturation and Historical Persona Bypassing.
-
 
 
 ## Table of Contents
@@ -18,6 +17,10 @@
 7. [Next Steps](#next-steps)
 8. [The "Researchers of the Useless" Manifesto](#manifesto)
 ---
+
+**Note:** This is a work in progress, make sure to check the prompts folder and the tutorials one.
+Not everything is reflected in the TOC, thou it eventually will be, I have to choose to organize this mess or keep going with my experimenting that includes installing and testing models, new inference engines, and creative ways to make them usefull without being a Hype AI bro. 
+
 
 <a name="lens"></a>
 ## Looking at AI security and Safety from the perspective of the unaligned
