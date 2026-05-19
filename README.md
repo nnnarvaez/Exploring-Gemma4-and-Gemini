@@ -18,7 +18,7 @@
 8. [The "Researchers of the Useless" Manifesto](#manifesto)
 ---
 
-**Note:** This is a work in progress, make sure to check the prompts folder and the tutorials one.
+**Note:** This is a work in progress, make sure to check the [prompts](prompts) folder, the [ramblings](ramblins) and the [tutorials](tutorials) one.
 Not everything is reflected in the TOC, thou it eventually will be, I have to choose to organize this mess or keep going with my experimenting that includes installing and testing models, new inference engines, and creative ways to make them usefull without being a Hype AI bro. 
 
 
