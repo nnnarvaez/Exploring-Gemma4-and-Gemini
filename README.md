@@ -18,15 +18,18 @@
 8. [The "Researchers of the Useless" Manifesto](#manifesto)
 ---
 
-**Note:** This is a work in progress, make sure to check the [prompts](prompts) folder, the [ramblings](ramblins) and the [tutorials](tutorials) one.
+**Note:** 
 
 Not everything is reflected in the TOC, thou it eventually will be, I have to choose to organize this mess or keep going with my experimenting that includes installing and testing models, new inference engines, and creative ways to make them useful without being/becoming a Hype AI bro. 
 
+> ## This is a work in progress, make sure to check the [prompts](prompts) folder, the [ramblings](ramblins) and the [tutorials](tutorials) one.
+
+Right now I am mostly documenting what works.
 
 <a name="lens"></a>
 ## Looking at AI security and Safety from the perspective of the unaligned
 
-- I only use vanilla versions.
+- I only use vanilla versions for research.
 - I explore their potential and limitation
 - I am interested in the Alignment TAX and closing the intent GAP
 
