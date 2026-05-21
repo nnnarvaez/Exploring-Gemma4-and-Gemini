@@ -1,3 +1,6 @@
+## llama-server FIT flag
+
+
 ## What this solves:
 
 Most of us are testing local inference in our gaming GPU (8, 12, 16, 24 GB vRAM), most guides assume you have bigger GPUs or you are renting them. 
