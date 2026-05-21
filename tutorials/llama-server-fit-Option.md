@@ -31,8 +31,3 @@ Automatically optimizes model loading across your hardware (multi-GPU or CPU/GPU
 • **Performance:** Optimizes placement for faster inference, sometimes doubling speed over generic manual configs.  
 • **Accessibility:** Lets lower-VRAM setups run larger models by intelligently spilling weights/context to system RAM.  
 • **Override Friendly:** Respects manually set flags like `--n-gpu-layers` or `--tensor-split`, only automating the remaining parameters.
-
-
-[Using multiple GPUs](https://github.com/ggml-org/llama.cpp/blob/6a257d44633d4a752183ed778b88d2924d0a6b9d/docs/multi-gpu.md)
-
-[llama-server presets](https://github.com/ggml-org/llama.cpp/blob/52fb93a2bd6b12673b9f4f225e61968e70443b11/docs/preset.md)
