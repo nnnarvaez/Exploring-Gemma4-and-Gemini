@@ -13,6 +13,7 @@ This is a set of tutorials, relevant articles for the power user seeking enlight
 
 [Inference Distributed over LAN](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/shardingGemma4-with-llamaCPP.md)
 
+[HONCHO a review, tutorial soon](tutorials/HONCHO-review.md)
 
 ### From other Repos and pages
 
