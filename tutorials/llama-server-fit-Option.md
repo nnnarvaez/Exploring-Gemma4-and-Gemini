@@ -2,13 +2,12 @@
 
 Most of us are testing local inference in our gaming GPU (8, 12, 16, 24 GB vRAM), most guides assume you have bigger GPUs or you are renting them. 
 
-If what you need is context size to use with the orchestrator / agent, so you need to prioritize vRAM for the Context and sacrifice offloading to CPU some layers of the model. 
+If what you need is context size to use with the orchestrator / agent, you will need to prioritize vRAM for the Context and sacrifice offloading to CPU some layers of the model. 
+
 `-fa` will grow the vRAM needs for KVCache, but usually is desired for longer Contexts.  
 `-ngl all` / `-ngl 999` will prioritize GPU offloading of the model.
 
 > In the end it is all math.
-
-
 
 
 ### `--fit` Option Summary
@@ -32,3 +31,8 @@ Automatically optimizes model loading across your hardware (multi-GPU or CPU/GPU
 • **Performance:** Optimizes placement for faster inference, sometimes doubling speed over generic manual configs.  
 • **Accessibility:** Lets lower-VRAM setups run larger models by intelligently spilling weights/context to system RAM.  
 • **Override Friendly:** Respects manually set flags like `--n-gpu-layers` or `--tensor-split`, only automating the remaining parameters.
+
+
+[Using multiple GPUs](https://github.com/ggml-org/llama.cpp/blob/6a257d44633d4a752183ed778b88d2924d0a6b9d/docs/multi-gpu.md)
+
+[llama-server presets](https://github.com/ggml-org/llama.cpp/blob/52fb93a2bd6b12673b9f4f225e61968e70443b11/docs/preset.md)
