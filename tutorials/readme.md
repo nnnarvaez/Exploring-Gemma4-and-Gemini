@@ -13,7 +13,7 @@ This is a set of tutorials, relevant articles for the power user seeking enlight
 
 [Inference Distributed over LAN](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/shardingGemma4-with-llamaCPP.md)
 
-[HONCHO a review, tutorial soon](tutorials/HONCHO-review.md)
+[HONCHO a review, tutorial soon](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/HONCHO-review.md)
 
 ### From other Repos and pages
 
@@ -26,9 +26,8 @@ This is a set of tutorials, relevant articles for the power user seeking enlight
 
 [V is Free and K is Everything](https://github.com/TheTom/turboquant_plus/blob/main/docs/papers/asymmetric-kv-compression.md)
 
-[Honcho, statefull memory for your LLM](https://github.com/plastic-labs/honcho#start-here)
-
 [Original: MTPConversion](https://github.com/triple-octopus/MTPConversion)
 
 [Running llama.cpp on Windows (it is easier than you think)](https://github.com/triple-octopus/llama.cppTutorial/)
 
+[Honcho, statefull memory for your LLM](https://github.com/plastic-labs/honcho#start-here)
