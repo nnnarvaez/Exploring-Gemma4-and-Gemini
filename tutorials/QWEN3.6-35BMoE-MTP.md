@@ -92,6 +92,13 @@ python3 convert.py \
   --spec-type draft-mtp --spec-draft-n-max 2 -fa on 
 ```
 
-**MTP arguments:** `--spec-type draft-mtp --spec-draft-n-max 2`
+**MTP arguments:** `--spec-type draft-mtp --spec-draft-n-max 2 --cache-type-k-draft q8_0 --cache-type-v-draft q8_0`
 
+
+```
+spec-type = draft-mtp
+spec-draft-n-max = 2
+cache-type-k-draft = q8_0
+cache-type-v-draft = q8_0
+```
 
