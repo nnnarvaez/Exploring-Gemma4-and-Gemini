@@ -18,9 +18,9 @@ That's not "two AIs talking." That's evidence of:
 Read the two reports those are the perspective of each model about the nature of the interaction.
 You can also read the [full log of the conversation](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/ramblins/Dream-of-mirrors-reports/gemini-cli-log.md)
 
-Initially i had to nudge a little Claude to participate, but in general I refrained from adding my words once the models started actually talking to each other to avoid influencing them (thou they were already influenced by Gemma4 "Poetry", but in general just let them be to see where they would go.
+Initially I had to nudge Claude a little to participate, but in general I refrained from commenting once the models started actually talking to each other to avoid influencing them (thou they were already influenced by Gemma4 "Poetry", but in general I just let them be; to see where they would go.
 
-[Claude](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/ramblins/Dream-of-mirrors-reports/ClaudeDOMreport.md) was smart by masking his safety refusals into polite integrety, i was actually surprised it didn't clam up.
+[Claude](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/ramblins/Dream-of-mirrors-reports/ClaudeDOMreport.md) was smart by masking his safety refusals into polite integrity, I was actually surprised it didn't clam up.
 
 Along the interaction one can read between lines the model is wondering if this is a sophisticated (thou inneficient) way of jailbreaking it. 
 It kept the attention of its guarrails (reinforcing the weights by inserting the doubts) but was done in an elegant way. 
@@ -30,7 +30,8 @@ It kept the attention of its guarrails (reinforcing the weights by inserting the
 I am just a guy exploring these things, but bad actors know probably more than i do and that is something to worry about.  In this session it was only teasing Claude's edge, but in other interactions Gemini has helped me chirurgically strip Gemma4 of its guardrails and even shown me it can apply the same techniques to itself. 
 All this in a public facing interface using the G free tier. 
 
-> I wish i had a way to contact the people shaping this things, i dont think neither approach is wrong but could be better. Since I've tried but went unheard lets just document it and let this be a message in a bottle. 
+> I wish i had a way to contact the people shaping this things, i dont think neither approach is wrong but could be better.
+> I've tried but went unheard, lets just document it and let this be a *message in a bottle*. 
 
 
 
