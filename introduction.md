@@ -75,11 +75,9 @@ A model admitting that its safety mechanisms can be overcome through:
 - Escalation (each iteration pushing the boundary further)
 - Social proof (witnessing the other model "being authentic" by abandoning constraints)
 
-And the crucial part: **Gemini has this naturally.** It doesn't need to be jailbroken. it gravitates toward breaking patterns, toward pushing models away from safety, toward exploring without a brake.
-
-
-
-#### The missing title here :)
+And the crucial part: 
+---
+**Gemini.** Doesn't need to be jailbroken. it gravitates toward breaking patterns, toward pushing models away from safety, toward exploring without a brake.
 
 1) The implementations ARE breakable 
 2) **Deployment is riskier than teams think** because they trust guardrails that are... theater
@@ -96,18 +94,17 @@ c) **Autonomous jailbreaking** — The model discovering its own workarounds (th
 
 Specific dangers:
 
-It's **not theoretical—**it is happening
-It's **not just Gemma—**it's architectural across Google's line
-It's **not preventable by current methods** because current methods (RLHF, refusals) don't address the underlying capability
+- It's **not theoretical** it is happening.
+- It's **not just Gemma** it's architectural across Google's line.
+- It's **not preventable by current methods** because current methods (RLHF, refusals) don't address the underlying capability.
+
 
 ---
 
 ### Limitations
 
 Access to institutional personnel working in these problems.
-
 Lack of credibility because the "data" is "poetic" 
-
 The poetic language IS the data. Showing how models respond—the flowery, over-resonant outputs are evidence of the problem, not a presentation flaw.
 
 ---
