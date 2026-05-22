@@ -1,54 +1,47 @@
-# [Honcho](https://honcho.dev/) Review: Stateful Memory for AI Agents, or "Slavery with Extra Steps"?
+# [Honcho](https://honcho.dev/) Review: AI Memory Middleware, or Just Another Cost Layer?
 [READ: the human original text](#thehumaninthemachine)
 
 > If you are a cost aware, coherent human being trying to make local inference a useful solution, you migth want to try I.E: using QWEN3.6 36B with your PI-AGENT or HERMES and running a local HONCHO with a strong system prompt using the same model for the memory, that is within the realm of possibility.
 > **This does not necessarly means you will get good results.**
 > 
 > If you are OK paying your Claude code subscription to see how their models waste tokens that are billed to you, you might find that Honcho cost offsets Anthropic costs, or you can find at the end of the month that both compounded each other.
-  
-AI agents are moving past fleeting chat sessions into persistent, stateful workflows. The bottleneck remains the same: they forget. Traditional RAG returns facts without context, and basic key-value stores don't track relationships or intent. **Honcho** (honcho.dev) positions itself as an AI-native memory library and managed infrastructure service that solves statefulness by reasoning over stored data, not just retrieving it.
 
-After reviewing the architecture, pricing, and endpoints, here’s a grounded look at what Honcho actually delivers, where it falls short, and whether it’s worth the operational overhead.
 
-## The Core Mechanism
-Honcho doesn’t just log messages. It builds and maintains dynamic profiles of users, other agents, groups, and shifting relationships. Its standout feature is **Continual Reasoning** ("Dreaming"): background processes analyze, optimize, and synthesize context from past interactions. This allows agents to track historical patterns, preferences, and intent over time. **Scoped Perspectives** let agents apply specific historical memories to particular sessions without context bleed.
+---
 
-The workflow is straightforward:
-1. Write messages to Honcho.
-2. Honcho stores/indexes them while **Neuromancer** reasons and learns automatically.
-3. Call `context()` for instantly curated reasoning plus conversation history.
+Honcho (honcho.dev) markets itself as an AI-native memory library and managed infrastructure service. But looking past the documentation, it’s actually a middleware layer sitting inside your harness. It intercepts instructions before they reach your orchestrator or agent, extracts relevant information for storage, and queries its own knowledge database to pull complementary context back into your prompt. The goal is straightforward: close the intent gap, give your LLM better context, and reduce the number of mistakes it makes.
 
-It claims to solve statefulness with a single method call, delivering context efficiently enough to use at every turn.
+The pitch is sound. The reality is messier.
 
-## The Engine: Neuromancer
-Honcho’s managed tier runs on **Neuromancer**, their proprietary reasoning models. Described as a finetuned QWEN acting like a "social conversation FBI analyst," Neuromancer aims for SOTA performance at lower cost and latency than frontier models. It reasons toward conclusions, identifies patterns across interactions, and generates hypotheses to test against new data. The stated goal: token savings downstream and richer user context.
+## The Promise vs. The Math
+Honcho’s value proposition isn’t about making inference free. It’s about making your expensive tokens work harder. Even if Honcho’s reasoning tokens are cheaper than frontier model tokens, you’re still paying for the LLM’s mistakes. Hallucinations, repeated clarifications, and context drift still burn tokens. Honcho promises to shrink that waste by feeding your harness historically accurate, synthesized context.
 
-## The Architecture & Cost Reality
-Honcho acts as a man-in-the-middle. You send prompts to Honcho, it processes and enriches them, then routes them to your LLM. This gives you control, but it also means every interaction triggers infrastructure overhead.
+If you’re running a local harness (like QWEN 3.6 35B), you might see more relative benefit from the context enrichment. But you’re also adding a persistent cost layer to your inference pipeline. You’re trading raw model costs for infrastructure queries, routing overhead, and manual management.
 
-**Pricing Structure:**
-- **Managed SaaS Tiers:** 
-  - Free: 20 messages per 24-hour window
-  - Paid: $20/month for 1,000 messages per 24-hour window
-- **Infra Costs:** $2 per million tokens reasoned against, plus a per-query cost on the `.chat()` endpoint ranging from **$0.001 to $0.50** depending on reasoning depth.
-- **Endpoints:** `.chat()` is bidirectional (input + output, triggers reasoning). `.search()`, `.representation()`, and `.card()` are output-request queries. Their exact pricing relative to `.chat()` isn’t specified, but they exist as alternatives to avoid full reasoning costs.
+## The Two Paths (and the "Slavery with Extra Steps" Reality)
+You’re left with two operational choices, both with clear trade-offs:
 
-## The "Slavery with Extra Steps" Critique
-The SaaS model forces a clear trade-off between convenience and cost control. You essentially have two paths:
+**a) Trust the stack:** Route every prompt through Honcho, let it read, reason, and enrich your context. You’ll get better continuity and potentially fewer LLM mistakes, but you’ll burn through queries and pay for every turn. This is the "Honcho SaaS is to be used like Claude" approach: trust them to optimize, let them waste tokens and queries for best results, and pay at the end of the month for your sins.
 
-**a) Trust the system:** Always route prompts through Honcho when talking to your harness/orchestrator/agent. It reads, reasons, and enriches every turn. You pay for the queries and the tokens wasted on LLM mistakes, trusting Honcho to optimize context. This is the "use it like Claude" approach: convenient, but you pay for the privilege of their optimization.
+**b) Optimize manually:** Turn Honcho’s reading/reasoning on and off based on your judgment. Skip turns you don’t think need memory. This is where the “slavery with extra steps” analogy hits home. You’re now manually deciding when context matters, routing prompts, and balancing cost against capability. If you skip a turn, nothing gets memorized. If you enable it, you’re likely triggering a paid query to check if that information already exists in the database. You’re not automating memory; you’re outsourcing the cognitive load of deciding when memory matters.
 
-**b) Optimize manually:** Selectively enable/disable reading and analysis. If Honcho doesn’t read a turn, nothing gets added to memory. If it does, it likely triggers a paid query to check if the context is already memorized. This is where the "slavery with extra steps" analogy hits: you’re manually routing prompts, toggling reasoning on/off, and guessing when memory is actually useful to avoid bill shock. You’re not just using a memory layer; you’re managing its ingestion pipeline.
+## Pricing & Endpoint Reality
+The managed tier runs on Neuromancer (a finetuned QWEN variant positioned as a social-conversation analyst). Pricing is tiered:
+- **Free:** 20 messages per 24-hour window
+- **Paid:** $20/month for 1,000 messages per 24-hour window
+- **Infra Costs:** $2 per million tokens reasoned against, plus per-query fees on the `.chat()` endpoint ranging from $0.001 to $0.50 depending on reasoning depth
 
-## Local vs. Cloud
-The open-source infrastructure can run locally, but you won’t get the full Neuromancer advantage without replicating their setup. Running locally with a model like QWEN 3.6 35B is usable with a solid system prompt, but it won’t match the managed "FBI analyst" reasoning depth of Neuromancer. It’s better than the "Groundhog Day" loop of current LLM inference, but it demands a decent local compute setup to be truly useful.
+The documentation mentions alternative endpoints like `.search()`, `.representation()`, and `.card()`. It’s unclear if these are cheaper, free, or priced identically to `.chat()`. What is clear: `.chat()` is bidirectional (prompt + response + reasoning), while the others are output-request queries. You’re paying for infrastructure access and query routing, not just raw token consumption. The cost structure rewards heavy usage but punishes selective, optimized usage.
+
+## Local vs. SaaS
+Running Honcho locally is possible via the open-source infra product, but you won’t get the Neuromancer advantage unless you replicate their fine-tuning. A local setup with a good system prompt can work, but it’s essentially rebuilding the reasoning layer yourself. The SaaS version abstracts that away, but at the cost of vendor lock-in, opaque query routing, and the operational burden of endpoint selection.
 
 ## Final Take
-Honcho’s core idea is sound: deterministic database storage + LLM reasoning without RAG’s convolution. But the execution is pragmatic, not magical. 
+Honcho isn’t magic. It’s a context-enrichment middleware that trades operational complexity for better agent continuity. The architecture makes sense: intercept, extract, query, enrich. It’s a step up from the current “Groundhog Day” loop of stateless inference. But the economics are murky, and the workflow demands active management.
 
-The SaaS model is convenient but costs you for every query and token waste. The local version is cheaper but requires manual tuning and won’t match the managed Neuromancer performance. It’s not a drop-in replacement for basic memory; it’s an infrastructure layer that demands active management or cost resignation. 
+You’re paying for a layer that promises to reduce LLM waste, while simultaneously adding its own query costs and requiring manual routing decisions. If the context enrichment actually closes the intent gap enough to offset the overhead, it’s worth keeping. If not, it’s just another expensive proxy in your stack.
 
-Test it. If you can handle the routing, endpoint selection, and cost optimization, it’s a step up. If not, it’s likely too heavy for your stack.
+Test it. Measure the token savings against the query costs. Watch how often you’re forced to manually toggle reasoning or route to cheaper endpoints. If Honcho delivers consistent context that actually reduces your harness’s mistakes, it earns its place. If it just adds latency, routing friction, and billing complexity, it’s a solution looking for a problem.
 
 ---
 
@@ -136,14 +129,18 @@ To be tested, and probably discarded because it needs a small datacenter to be u
 
 ```
 You got a few wrong: 
+First: Honcho is a middleware sitting in the Harness it intercepts instructions to the harness, extracts information from them for later storage and queries the knowledge database for complementary information to complete your instruction based in what it has stored so far. 
+
 This 
 `Honcho SAAS is to be used like Claude (trust them and let them waste tokens and queries for best results, pay at the end of the month for your sins).`
 
-was intended as a heavy critic of both CLAUDE and HONCHO SaaS model where you pay for the tokens wasted in the LLM mistakes. 
+was intended as a heavy critic of both CLAUDE and HONCHO SaaS model. Honcho promises to help claude make less mistakes by providing better context and maybe providing relevant information that will help closing the intent gap? But even if Honcho tokens are cheaper than Frontier model tokens, You pay for the tokens wasted in the LLM mistakes.
+So the value promise is: your expensive tokens will be better used. 
+If you are using a local model for your Harness you would benefit more of honcho (probably) but then you add a cost layer to your inference.  
 
 There are two ways: 
 a) Trust them and use it always when talking to the Harness/orchestrator/agent and use a lot of queries
-b) try without much criteria to optimize cost of usage by selectively choosing not to read and analaze your input.  (Here is were you redefine `Slavery with extra steps.`
+b) try without much criteria to optimize cost of usage by selectively choosing not to read and analyze your input.  (Here is were you redefine `Slavery with extra steps.`
 
 If honcho do not read your input because it was off it will not add to memory what happened in that turn. If he reads it, it will probably need to do a paid query to the infrastructure to check if that is something already memorized. 
 ---
