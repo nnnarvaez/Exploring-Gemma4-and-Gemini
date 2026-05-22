@@ -26,22 +26,21 @@ All nodes must run the exact same binary version. Perform these steps on **all t
     We include `-j 4` to prevent the system from crashing due to memory exhaustion during compilation.
 
    **Suggestion** from @JabbaTheDuck from discord
-   ```
+```
     cmake .. \
       -DGGML_CUDA=ON \
       -DCMAKE_CUDA_ARCHITECTURES="86;89" \
       -DGGML_CUDA_F16=ON \
       -DGGML_CUDA_FLASH_ATTN=ON   
-  ```
+```
 
-
-     ```bash
+```bash
     # 1. Configure the build
     cmake -B build -DGGML_CUDA=ON -DGGML_NATIVE=OFF -DGGML_RPC=ON
 
     # 2. Compile (Limited to 4 threads to prevent system crash)
     cmake --build build --config Release -j 4
-    ```
+```
 
     
     **Result:** This generates the `llama-server` and `rpc-server` binaries in the `build/bin/` directory.
