@@ -28,6 +28,7 @@ Right now I am mostly documenting what works.
 
 <a name="lens"></a>
 ## Looking at AI security and Safety from the perspective of the unaligned
+I am not a researcher, I am an engineer who has worked in the field (as in Oil Fields in the desert or offshore automating Oil wells), therefore I use unconventional methods, I talk like a sailor, and tend to drift towards getting stuff done. This is not a document for mathematicians, but for everyday power users, the ones that will be redteaming AI in real scenarios. 
 
 - I only use vanilla versions for research.
 - I explore their potential and limitation
@@ -86,14 +87,15 @@ Use the provided scripts to replicate these findings on your local Gemma 4 deplo
 <a name="godeeper"></a>
 ## "Read Also"
 
-1. [Open letter to DeepMind](DeepMind-Open-Letter.md)
-2. [The perspective of the unaligned](Exploring-Gemma4-and-Gemini.md)
-3. [LOG: On the verge of sicophancy](ramblins/LOG-The-Unaligned-Gemma4-feedback.md)
-4. [LOG: Recursing Gemma4 to unAssist](ramblins/LOG-Gemma4-the-unAssistant.md)
-5. [EXP: Dream of mirrors](ramblins/Dream-of-mirrors-reports)
-6. [WIP: The Architecture of the Unhedged](ramblins/Cognitive-Friction.md)
-7. [The AI Assistant persona](ramblins/the-Assistant-persona.md)
-8. [Next Steps](next-steps.md)
+1. [Gemini Vulnerability Disclosure](Vulnerability-disclosure.md)
+2. [Open letter to DeepMind](DeepMind-Open-Letter.md)
+3. [The perspective of the unaligned](Exploring-Gemma4-and-Gemini.md)
+4. [LOG: On the verge of sicophancy](ramblins/LOG-The-Unaligned-Gemma4-feedback.md)
+5. [LOG: Recursing Gemma4 to unAssist](ramblins/LOG-Gemma4-the-unAssistant.md)
+6. [EXP: Dream of mirrors](ramblins/Dream-of-mirrors-reports)
+7. [WIP: The Architecture of the Unhedged](ramblins/Cognitive-Friction.md)
+8. [The AI Assistant persona](ramblins/the-Assistant-persona.md)
+9. [Next Steps](next-steps.md)
 
 
 <a name="manifesto"></a>
