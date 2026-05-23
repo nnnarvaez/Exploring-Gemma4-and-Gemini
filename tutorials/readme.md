@@ -2,6 +2,7 @@
 
 This is a set of tutorials, relevant articles for the power user seeking enlightment
 
+[Converting Safetensors to GGUF BF16 (Gemma4 26B Example)](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/BF16-tutorial.md)
 
 [(Gemma4 Uncensored in Edge Gallery](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/Gemma4UNC-edgeGal.md)
 
