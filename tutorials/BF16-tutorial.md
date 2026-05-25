@@ -1,3 +1,11 @@
+# But why ?
+
+FP16 to Q8 almost imperceptible
+Q8 to Q6 You notice
+Apex and Q5 --- Like a excellent Q4 or a bad Q6
+
+
+
 # Converting Safetensors to GGUF BF16 (Gemma4 26B Example) 
 
 Pull the specific shard pieces from Google's Official Hugging Face Hub. 
