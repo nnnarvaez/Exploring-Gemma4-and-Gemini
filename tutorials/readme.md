@@ -10,7 +10,7 @@ This is a set of tutorials, relevant articles for the power user seeking enlight
 
 [Powershell NETSH commands](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/WIN11-net-commands.md)
 
-[llama-server FIT flag](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/llama-server-fit-Option.md)
+[llama-server WISDOM](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/llamaCPP-wisdom.md)
 
 [Inference Distributed over LAN](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/shardingGemma4-with-llamaCPP.md)
 
