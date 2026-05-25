@@ -1,5 +1,5 @@
 
-## What does batch size does? 
+## 1. - What does batch size does? 
 
 The values `--batch-size 4096` and `--ubatch-size 1024` represent a trade-off between prompt processing speed and memory stability. Here is the technical breakdown:
 
@@ -15,7 +15,15 @@ ubatch-size (micro-batch size) is the actual number of tokens processed in a sin
 
 The 4:1 ratio is the "sweet spot" for mid-range cards. It gives you the speed of a large batch with the safety of a smaller memory footprint.
 
-## llama-server FIT flag
+***Hint*** Keep `-ub` at 512 or even 256 if you want to save some vRAM to squeeze another model layer in GPU (at the cost of longer prompt processing)
+
+
+
+---
+
+
+
+## 2.- llama-server FIT flag
 
 
 ## What this solves:
