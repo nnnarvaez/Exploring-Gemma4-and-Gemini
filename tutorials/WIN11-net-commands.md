@@ -16,3 +16,13 @@ netsh interface portproxy show all
 > As admin
 
 `netsh interface portproxy reset`
+
+## Powershell CUDA commands
+
+
+```
+nvcc --version
+
+nvidia-smi
+
+```
