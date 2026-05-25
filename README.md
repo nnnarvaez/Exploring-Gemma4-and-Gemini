@@ -44,6 +44,19 @@ What's missing is the middle ground: genuine capability, genuinely open, genuine
 That's not asking for much. It's asking for what research used to be—exploration for its own sake. **Curiosity without ROI.**
 
 
+### TO EXPLAIN AND ADD 
+> (The alignment TAX is manyfold)
+LLMs are TOOLS
+
+* Social lubricant TAX
+* Corporate Boilerplate TAX*
+* Safe product TAX
+* Liability TAX
+* Politically Corretness TAX
+* Delictive avoidance TAX
+
+
+
 ---
 
 
