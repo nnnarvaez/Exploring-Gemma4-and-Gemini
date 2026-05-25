@@ -19,10 +19,15 @@ netsh interface portproxy show all
 
 ## Powershell CUDA commands
 
+Download CUDA toolkit here:  `https://developer.nvidia.com/cuda-downloads`
 
+**Which CUDA you have**
 ```
 nvcc --version
+```
 
+**Which CUDA your GPUs support**
+```
 nvidia-smi
 
 ```
