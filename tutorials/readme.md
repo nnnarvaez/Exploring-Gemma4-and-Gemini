@@ -2,19 +2,22 @@
 
 This is a set of tutorials, relevant articles for the power user seeking enlightment
 
-[Converting Safetensors to GGUF BF16 (Gemma4 26B Example)](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/BF16-tutorial.md)
+**Deeper stuff:**
 
-[(Gemma4 Uncensored in Edge Gallery](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/Gemma4UNC-edgeGal.md)
+- [Converting Safetensors to GGUF BF16 (Gemma4 26B Example)](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/BF16-tutorial.md)
+- [Guide: transplant MTP block into a non MTP model](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/QWEN3.6-35BMoE-MTP.md)
+- [(Gemma4 Uncensored in Edge Gallery](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/Gemma4UNC-edgeGal.md)
+- [Inference Distributed over LAN](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/shardingGemma4-with-llamaCPP.md)
 
-[Guide: transplant MTP block into a non MTP model](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/QWEN3.6-35BMoE-MTP.md)
 
-[Powershell NETSH commands](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/WIN11-net-commands.md)
+**Basic stuff:** 
+- [Powershell NETSH commands](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/WIN11-net-commands.md)
+- [llama-server WISDOM](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/llamaCPP-wisdom.md)
 
-[llama-server WISDOM](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/llamaCPP-wisdom.md)
-
-[Inference Distributed over LAN](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/shardingGemma4-with-llamaCPP.md)
-
-[HONCHO a review, tutorial soon](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/HONCHO-review.md)
+  
+**Begginner stuff:**
+- [HONCHO a review, tutorial soon](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/HONCHO-review.md)
+- [Add the Brain toggle to LMStudio](tutorials/Brain-toggle-thinking-LMStudio.md)
 
 ### From other Repos and pages
 
