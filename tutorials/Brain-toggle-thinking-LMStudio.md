@@ -18,7 +18,7 @@ You can just replace your `\.lmstudio\hub\models\` with the contents of the repo
 
 Since i only use many quants and versions of QWEN3.6 and Gemma4 i only dropped those folders. 
 
-Then I had 1 rebel model because i had just downloaded a freash finetune from: @LuffyTheFox](https://huggingface.co/LuffyTheFox)
+Then I had 1 rebel model because i had just downloaded a fresh finetune from: [@LuffyTheFox](https://huggingface.co/LuffyTheFox)
 And their repo is not updated yet, but Luffy himself provided an updated file, I just copied his File to the `model.yaml` in `hub\models\` folder.
 
 in case something happens to you and you can't call a friend here is what you do:
@@ -43,5 +43,5 @@ You can fill the info from the Hugginfface repo of the model here for reference:
 
 ---
 ## Enjoy your brains...
-
+This reddit post took me like 80% of the way [Tutorial - How to Toggle On/OFf the Thinking Mode Directly in LM Studio for Any Thinking Mode](https://www.reddit.com/r/LocalLLaMA/comments/1sc9s1x/tutorial_how_to_toggle_onoff_the_thinking_mode/) but a few things have changed and now we have the repo i linked.
 
