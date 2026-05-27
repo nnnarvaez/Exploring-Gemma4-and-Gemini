@@ -70,13 +70,13 @@ Using $\cos(\theta)$ with a negative base value (Enemy) creates a mathematical q
 ***Answer:*** no,
        first -1 is a control signal; the strongest enemy signal is -0.9,
        second i have my doubt and enemy behind would not be the dogfight (plane emoji) blind spot?  
-       third ($(-1.0) \times (-1) = +1.0$) that is a control signal to FLEE the brian needs nothing
+       third ($(-1.0) \times (-1) = +1.0$) that is a control signal to FLEE the brain needs nothing
 
 
 **C. Signal Saturation**
 In high-density environments (e.g., a massive plant bloom), the sum could theoretically grow very large, potentially saturating the `tanh` activation function of the neural network and causing the agent to "freeze" in a state of maximum stimulation.
 
-***Answer:*** no, the agents only scan and select closest entities this is what they do now and they can still do it (prioritize the input) ffs this is not a self driving car is an amoeba
+***Answer:*** no, the agents only scan and select closest entities this is what they do now and they can still do it (prioritize the input) ffs this is an amoeba not a Tesla
               Also Freeze is a common rabbit / ostrich behavior
 
 **D. The "Blind Spot" of Scalar Fusion**
@@ -86,4 +86,14 @@ By collapsing the world into a single scalar (Input A), we lose the ability to d
 
 ---
 
+The "Sensory Flux" is hybrid:
+
+* The Summation provides the "feeling" of the environment (the gradient).
+* The Selection (B & C) provides the "focus" on the most important object.
+* The Overrides (1.0 & 1.1) provide the "reflexes."
+
+
 **Conclusion:** This is a high-risk, high-reward architecture. It trades spatial precision for extreme computational efficiency and "intuitive" behavioral gradients. If the evolution can overcome the cancellation and paradox issues, it will produce much more "organic" movement than standard discrete-input networks.
+
+
+
