@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Simulation - Sensory Flux</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #111;
+            color: #eee;
+            font-family: 'Courier New', Courier, monospace;
+            user-select: none;
+        }
+        canvas {
+            display: block;
+        }
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            pointer-events: none;
+        }
+        .stat {
+            margin-bottom: 5px;
+            font-size: 14px;
+            text-shadow: 1px 1px 0 #000;
+        }
+        #controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            text-align: right;
+            font-size: 12px;
+            color: #888;
+        }
+        #cursor {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+     <canvas id="world"></canvas>
+    <div id="ui">
+        <div class="stat" id="stats">Loading...</div>
+    </div>
+    <div id="controls">
+        A: Plant | S: Prey | D: Predator<br>
+        Space: Pause | R: Reset | +/-: Speed<br>
+        <span id="w-line">W: Mx Pop toggle</span> | N: NN Monitor | <b>ESC: Menu</b>
+    </div>
+    <div id="cursor"></div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const CONFIG = {
+            PREY_START: 400,
+            PRED_START: 50,
+            PLANT_START: 10,
+            PLANT_SPAWN_RATE: 0.20,
+            PLANT_CAP: 800,              // Reduced from 600 for better GPU performance
+            CARCASS_DECAY: 0.7,
+            MUTATION_RATE: 0.25,
+            MUTATION_AMOUNT: 0.25,
+            MATING_DIST: 300,
+            COMBAT_DIST: 15,
+            WRAP: true,
+            MAX_GEN: 1000
+        };
+
+        // --- NEURAL NETWORK (8 inputs, 6 hidden, 3 outputs) ---
+        class Brain {
+            constructor(weights = null) {
+                this.inputSize = 8;      // Changed from 14 → SENSORY FLUX
+                this.hiddenSize = 6;     // Changed from 8 → reduced
+                this.outputSize = 3;
+                if (weights) {
+                    this.weights = [...weights];
+                } else {
+                    const totalWeights = (this.inputSize * this.hiddenSize) + this.hiddenSize + (this.hiddenSize * this.outputSize) + this.outputSize;
+                    this.weights = new Array(totalWeights).fill(0).map(() => (Math.random() * 2 - 1) * 0.5);
+                }
+            }
+
+            copy() {
+                return new Brain([...this.weights]);
+            }
+
+            mutate() {
+                const newWeights = [...this.weights];
+                for (let i = 0; i < newWeights.length; i++) {
+                    if (Math.random() < CONFIG.MUTATION_RATE) {
+                        newWeights[i] += (Math.random() * 2 - 1) * CONFIG.MUTATION_AMOUNT;
+                        // Weight clipping: prevent runaway growth
+                        newWeights[i] = Math.max(-2.5, Math.min(2.5, newWeights[i]));
+                    }
+                }
+                return new Brain(newWeights);
+            }
+
+            activate(inputs) {
+                // Inputs -> Hidden
+                const hidden = [];
+                let wIdx = 0;
+                for (let i = 0; i < this.hiddenSize; i++) {
+                    let sum = 0;
+                    for (let j = 0; j < this.inputSize; j++) {
+                        sum += inputs[j] * this.weights[wIdx++];
+                    }
+                    sum += this.weights[wIdx++];
+                    hidden.push(Math.tanh(sum));
+                }
+
+                // Hidden -> Outputs
+                const outputs = [];
+                for (let i = 0; i < this.outputSize; i++) {
+                    let sum = 0;
+                    for (let j = 0; j < this.hiddenSize; j++) {
+                        sum += hidden[j] * this.weights[wIdx++];
+                    }
+                    sum += this.weights[wIdx++];
+                    if (i === 0) outputs.push(Math.tanh(sum));
+                    else outputs.push(1 / (1 + Math.exp(-sum)));
+                }
+                return { steering: outputs[0], speed: outputs[1], mating: outputs[2] };
+            }
+        }
+
+        // --- ENTITIES ---
+        class Entity {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.dead = false;
+            }
+        }
+
+     class Plant extends Entity {
+            constructor(x, y) {
+                super(x, y);
+                this.size = 7;
+                this.sway = Math.random() * Math.PI * 2;
+                this.leafCount = 3 + Math.floor(Math.random() * 3);
+                this.rotOffset = Math.random() * Math.PI * 2;
+                this.age = 0;
+            }
+            draw(ctx) {
+                const s = this.size;
+                const cx = this.x;
+                const cy = this.y;
+                const alpha = Math.min(1, this.age / 30);
+                ctx.strokeStyle = `rgba(8, 138, 8, ${alpha})`;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy + s * 0.3);
+                ctx.lineTo(cx, cy);
+                ctx.stroke();
+                ctx.fillStyle = `rgba(8, 144, 8, ${alpha})`;
+                for (let i = 0; i < this.leafCount; i++) {
+                    const a = this.rotOffset + (i / this.leafCount) * Math.PI * 2;
+                    const lx = cx + Math.cos(a) * s * 0.4;
+                    const ly = cy + Math.sin(a) * s * 0.4;
+                    ctx.beginPath();
+                    ctx.ellipse(lx, ly, s * 0.35, s * 0.25, a, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.fillStyle = `rgba(8, 138, 8, ${alpha})`;
+                ctx.beginPath();
+                ctx.arc(cx, cy, s * 0.12, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        class Carcass extends Entity {
+            constructor(x, y, energy, size) {
+                super(x, y);
+                this.energy = energy * (1 + size / 2);
+                this.size = Math.max(1, size * 0.5);
+                this.age = 0;
+            }
+            update() {
+                this.energy -= CONFIG.CARCASS_DECAY;
+                this.age++;
+                if (this.energy <= 0) this.dead = true;
+            }
+            draw(ctx) {
+                ctx.fillStyle = '#888';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        class Agent extends Entity {
+            constructor(x, y, type, brain = null, generation = 0, parentMaturity = null) {
+                super(x, y);
+                this.type = type;
+                this.brain = brain || new Brain();
+                this.generation = generation;
+                
+                let baseMaturity;
+                if (parentMaturity !== null) {
+                    baseMaturity = parentMaturity;
+                  } else {
+                    if (type === 'prey') {
+                        baseMaturity = 9 * (0.85 + Math.random() * 0.14);
+                    } else {
+                        baseMaturity = 10 * (0.85 + Math.random() * 0.13);
+                    }
+                }
+                 this.maturitySize = baseMaturity;
+                 if (type === 'prey' && baseMaturity > stats.peakPreySize) stats.peakPreySize = baseMaturity;
+                if (type === 'predator' && baseMaturity > stats.peakPredSize) stats.peakPredSize = baseMaturity;
+                this.birthSize = this.maturitySize * 0.2;
+                this.size = this.birthSize;
+                
+                this.age = 0;
+                this.maxLifetime = type === 'prey' ? 8000 : 12000;
+                this.growthPeriod = Math.floor(this.maxLifetime / 3);
+                this.wellFedFrames = 0;
+                this.wellFedBonus = 0;
+                
+                this.angle = Math.random() * Math.PI * 2;
+                this.speed = 0;
+                this.state = 'wander';
+                this.mateEntered = 0;
+                this.mate = null;
+                this.vx = 0;
+                this.vy = 0;
+                this.fluxMemory = 0;
+				
+                this._peakFluxSens = 0;
+                this._peakFluxFood = 0;
+				this._peakFluxThreat = 0;
+				this._peakFluxMate = 0;
+				
+				
+                if (type === 'prey') {
+                    this.energy = 100;
+                    this.maxEnergy = 200;
+                    this.color = '#44f';
+                    this.baseSpeed = window.PREY_SPEED;
+                    this.reproThreshold = 100;
+                } else {
+                    this.energy = 150;
+                    this.maxEnergy = 300;
+                    this.color = '#a00';
+                    this.baseSpeed = window.PRED_SPEED;
+                    this.reproThreshold = 140;
+                }
+                this.hp = 10 + this.size;
+                this.maxHp = this.hp;
+                this.fitness = 0;
+            }
+
+            // Helper: normalize angle to [-π, π]
+            normalizeAngle(angle) {
+                while (angle > Math.PI) angle -= Math.PI * 2;
+                while (angle < -Math.PI) angle += Math.PI * 2;
+                return angle;
+            }
+
+            // NEW: Sensory Flux Input Construction (8 inputs)
+            getInputsFlux(plants, carcasses, agents) {
+                let foodFlux = 0;
+                let threatFlux = 0;
+                let mateFlux = 0;
+                
+                let closestFood = null;
+                let closestThreat = null;
+                let closestMate = null;
+                let minFoodDist = Infinity;
+                let minThreatDist = Infinity;
+                let minMateDist = Infinity;
+
+                // --- Scan Food (Plants + Carcasses) ---
+                // Spatial optimization: only check plants within scan radius
+                const PLANT_SCAN_RADIUS = window.PLANT_SCAN_DISTANCE;
+                for (const p of plants) {
+                    if (p.dead) continue;
+                    
+                    // Quick distance-squared check to skip far plants
+                    const dx = p.x - this.x;
+                    const dy = p.y - this.y;
+                    const distSq = dx*dx + dy*dy;
+                    if (distSq > PLANT_SCAN_RADIUS * PLANT_SCAN_RADIUS) continue;
+                    
+                    const dist = Math.sqrt(distSq);
+                    const angle = Math.atan2(p.y - this.y, p.x - this.x);
+                    const relAngle = this.normalizeAngle(angle - this.angle);
+                    
+                    const proximityWeight = 1 / Math.max(dist, 5);
+                    const directionalBias = Math.cos(relAngle);
+                    const value = 0.9;
+                    
+                    foodFlux += value * proximityWeight * directionalBias;
+                    
+                    if (dist < minFoodDist) {
+                        minFoodDist = dist;
+                        closestFood = { x: p.x, y: p.y, dist: dist, angle: angle };
+                    }
+                }
+                
+				for (const c of carcasses) {
+					if (c.dead) continue;
+
+					const dx = c.x - this.x;
+					const dy = c.y - this.y;
+					const distSq = dx * dx + dy * dy;
+					if (distSq > PLANT_SCAN_RADIUS * PLANT_SCAN_RADIUS) continue;
+
+					const dist = Math.sqrt(distSq);
+					const angle = Math.atan2(c.y - this.y, c.x - this.x);
+					const relAngle = this.normalizeAngle(angle - this.angle);
+
+					const proximityWeight = 1 / Math.max(dist, 5);
+					const directionalBias = Math.cos(relAngle);
+					const value = -1;
+
+					foodFlux += value * proximityWeight * directionalBias;
+					this._peakFluxFood = Math.max(this._peakFluxFood, Math.abs(foodFlux));
+					
+					if (dist < minFoodDist) {
+						minFoodDist = dist;
+						closestFood = { x: c.x, y: c.y, dist: dist, angle: angle };
+					}
+				}
+
+                // --- Scan Threats ---
+                for (const a of agents) {
+                    if (a.dead || a === this) continue;
+                    
+                    const isThreat = 
+                        (this.type === 'prey' && a.type === 'predator') ||
+                        (this.type === 'predator' && a.type === 'prey');
+                    
+                    if (!isThreat) continue;
+                    
+					const dx = a.x - this.x;
+					const dy = a.y - this.y;
+					const distSq = dx * dx + dy * dy;
+					if (distSq > PLANT_SCAN_RADIUS * PLANT_SCAN_RADIUS) continue;
+					
+                    const angle = Math.atan2(a.y - this.y, a.x - this.x);
+                    const relAngle = this.normalizeAngle(angle - this.angle);
+                    const dist = this.dist(a);
+                    
+                    const proximityWeight = 1 / Math.max(dist, 5);
+                    const directionalBias = Math.cos(relAngle);
+                    const value = -0.9;
+                    
+                    threatFlux += value * proximityWeight * directionalBias;
+                    this._peakFluxThreat = Math.max(this._peakFluxThreat, Math.abs(threatFlux));
+					
+                    if (dist < minThreatDist) {
+                        minThreatDist = dist;
+                        closestThreat = { x: a.x, y: a.y, dist: dist, angle: angle };
+                    }
+                }
+
+                // --- Scan Mates ---
+                for (const a of agents) {
+                    if (a.dead || a === this || a.type !== this.type) continue;
+                    if (a.energy < a.reproThreshold * 0.5) continue;
+                    
+					const dx = a.x - this.x;
+					const dy = a.y - this.y;
+					const distSq = dx * dx + dy * dy;
+					if (distSq > PLANT_SCAN_RADIUS * PLANT_SCAN_RADIUS) continue;
+                    const dist = this.dist(a);	
+					
+                    const angle = Math.atan2(a.y - this.y, a.x - this.x);
+                    const relAngle = this.normalizeAngle(angle - this.angle);
+                    
+                    const proximityWeight = 1 / Math.max(dist, 5);
+                    const directionalBias = Math.cos(relAngle);
+                    const value = 0.0;
+                    
+                    mateFlux += value * proximityWeight * directionalBias;
+                    this._peakFluxMate = Math.max(this._peakFluxMate, Math.abs(mateFlux));
+					
+                    if (dist < minMateDist) {
+                        minMateDist = dist;
+                        closestMate = { x: a.x, y: a.y, dist: dist, angle: angle };
+                    }
+                }
+
+                // Combine fluxes
+                let sensoryFlux = foodFlux + threatFlux + mateFlux;
+			    this._peakFluxSens = Math.max(this._peakFluxFood, Math.abs(foodFlux));
+				// Store for visualization
+				this._sensoryFlux = sensoryFlux;
+				this._fluxFood = foodFlux;
+				this._fluxThreat = threatFlux;
+				this._fluxMate = mateFlux;
+				this._fluxTotal = sensoryFlux;
+
+                // OVERRIDE 1: Critical threat → PANIC
+                if (closestThreat && closestThreat.dist < 40) {
+                    sensoryFlux = 1.0;
+                }
+                
+                // OVERRIDE 2: Jackpot (food + mate) → FEAST & BREED
+                if (closestFood && closestMate && 
+                    closestFood.dist < 100 && closestMate.dist < 100) {
+                    sensoryFlux = 1.1;
+                }
+
+                // Leaky integrator
+                this.fluxMemory = 0.8 * this.fluxMemory + 0.2 * sensoryFlux;
+
+                // Find strongest entity
+                let strongestDist = Infinity;
+                let strongestAngle = 0;
+                
+                if (closestFood && closestFood.dist < strongestDist) {
+                    strongestDist = closestFood.dist;
+                    strongestAngle = closestFood.angle;
+                }
+                if (closestThreat && closestThreat.dist < strongestDist) {
+                    strongestDist = closestThreat.dist;
+                    strongestAngle = closestThreat.angle;
+                }
+                if (closestMate && closestMate.dist < strongestDist) {
+                    strongestDist = closestMate.dist;
+                    strongestAngle = closestMate.angle;
+                }
+
+                const normalizedAngle = strongestDist === Infinity ? 0 : 
+                    this.normalizeAngle(strongestAngle - this.angle) / Math.PI;
+
+                // Return 8-element input vector
+                return [
+                    sensoryFlux,                                           // 0: Flux feeling
+                    strongestDist === Infinity ? 1 : Math.max(0, 1 - strongestDist / 200),  // 1: Urgency
+                    normalizedAngle,                                       // 2: Direction to strongest
+                    this.fluxMemory,                                       // 3: Memory
+                    this.vx / this.baseSpeed,                              // 4: Velocity X
+                    this.vy / this.baseSpeed,                              // 5: Velocity Y
+                    this.energy / this.maxEnergy,                          // 6: Energy
+                    this.size / 2.5                                        // 7: Size
+                ];
+            }
+
+            update(plants, carcasses, agents) {
+                this.age++;
+                
+            // Growth during first 1/3 of lifetime
+                if (this.age < this.growthPeriod && this.size < this.maturitySize) {
+                    const progress = this.age / this.growthPeriod;
+                    this.size = this.birthSize + (this.maturitySize - this.birthSize) * progress;
+                    this.size = Math.min(this.size, this.maturitySize);
+                    if (this.energy > this.reproThreshold) {
+                        this.wellFedFrames++;
+                    }
+                     if (this.wellFedFrames > this.growthPeriod / 2 && this.wellFedBonus === 0) {
+                        this.wellFedBonus = 0.05 + Math.random() * 0.10;
+                        this.maturitySize *= (1 + this.wellFedBonus);
+                         if (this.type === 'prey' && this.maturitySize > stats.peakPreySize) stats.peakPreySize = this.maturitySize;
+                        if (this.type === 'predator' && this.maturitySize > stats.peakPredSize) stats.peakPredSize = this.maturitySize;
+                        this.size = this.maturitySize;
+                    }
+                }
+
+                // CHANGED: Use sensory flux instead of discrete inputs
+                const outputs = this.brain.activate(this.getInputsFlux(plants, carcasses, agents));
+
+                // State logic
+                const MATE_TIMEOUT = 5000;
+                if (this.energy > this.reproThreshold && this.state !== 'combat') {
+                    if (this.state !== 'mate') {
+                        this.state = 'mate';
+                        this.mateEntered = Date.now();
+                    } else if (Date.now() - this.mateEntered > MATE_TIMEOUT) {
+                        this.state = 'wander';
+                        this.mateEntered = 0;
+                    }
+                } else if (this.state === 'mate') {
+                    this.state = 'wander';
+                    this.mateEntered = 0;
+                }
+
+                // Movement
+                const turnSpeed = 0.1;
+                this.angle += outputs.steering * turnSpeed;
+                
+                let speedMult = outputs.speed;
+                
+                // Find mate for special behavior
+                let nearestMate = null;
+                let minMateDist = Infinity;
+                for (const a of agents) {
+                    if (a.dead || a === this || a.type !== this.type) continue;
+                    if (a.energy < a.reproThreshold * 0.5) continue;
+                    const d = this.dist(a);
+                    if (d < minMateDist) { minMateDist = d; nearestMate = a; }
+                }
+                
+                if (this.state === 'mate' && nearestMate) {
+                    const dx = nearestMate.x - this.x;
+                    const dy = nearestMate.y - this.y;
+                    const targetAngle = Math.atan2(dy, dx);
+                    let diff = targetAngle - this.angle;
+                    while (diff > Math.PI) diff -= Math.PI * 2;
+                    while (diff < -Math.PI) diff += Math.PI * 2;
+                    this.angle += diff * 0.1;
+                    speedMult = 0.8;
+                }
+
+           this.vx = Math.cos(this.angle) * (this.baseSpeed / (1 + this.size * 0.1)) * speedMult;
+            this.vy = Math.sin(this.angle) * (this.baseSpeed / (1 + this.size * 0.1)) * speedMult;
+
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Wrap
+                if (CONFIG.WRAP) {
+                    if (this.x < 0) this.x = canvas.width;
+                    if (this.x > canvas.width) this.x = 0;
+                    if (this.y < 0) this.y = canvas.height;
+                    if (this.y > canvas.height) this.y = 0;
+                }
+
+                // Plant collision
+                for (const p of plants) {
+                    if (p.dead) continue;
+                    const dx = this.x - p.x;
+                    const dy = this.y - p.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const minDist = this.size + p.size;
+                    if (dist < minDist && dist > 0) {
+                        const overlap = minDist - dist;
+                        const nx = dx / dist;
+                        const ny = dy / dist;
+                         p.x -= nx * overlap * 0.2;
+                        p.y -= ny * overlap * 0.2;
+                        if (this.type === 'predator') this.energy -= 0.05;
+                    }
+                }
+
+                // Energy cost
+                const sizeCost = 1 + (this.size * 0.05);
+                let moveCost = 0.1 * sizeCost;
+                if (this.type === 'predator' && this.state === 'wander') moveCost += 0.15 * this.size;
+                if (this.state === 'mate') moveCost *= 0.5;
+                this.energy -= moveCost;
+
+                // Combat
+                let inCombat = false;
+                if (this.type === 'prey') {
+                    for (const p of agents) {
+                        if (p.type === 'predator' && !p.dead && this.dist(p) < CONFIG.COMBAT_DIST) {
+                            const dmg = 1.5 * p.size;
+                            this.hp -= dmg;
+                            this.energy -= dmg;
+                            inCombat = true;
+                            const dx = this.x - p.x;
+                            const dy = this.y - p.y;
+                            this.angle = Math.atan2(dy, dx);
+                        }
+                    }
+                } else {
+                    for (const p of agents) {
+                        if (p.type === 'prey' && !p.dead && this.dist(p) < CONFIG.COMBAT_DIST) {
+                            const dmg = 0.3 * p.size;
+                            this.hp -= dmg;
+                            this.energy -= dmg;
+                            inCombat = true;
+                            const dx = p.x - this.x;
+                            const dy = p.y - this.y;
+                            this.angle = Math.atan2(dy, dx);
+                        }
+                    }
+                }
+                if (inCombat) this.state = 'combat';
+
+                // Death
+                if (this.energy <= 0 || this.hp <= 0 || this.age >= this.maxLifetime) {
+                    this.dead = true;
+                    return new Carcass(this.x, this.y, this.energy, this.size);
+                }
+
+                // Fitness
+                this.fitness += 0.01;
+
+                return null;
+            }
+
+            dist(other) {
+                const dx = this.x - other.x;
+                const dy = this.y - other.y;
+                return Math.sqrt(dx*dx + dy*dy);
+            }
+
+            draw(ctx) {
+                const angle = this.angle;
+
+                if (this.state === 'mate') {
+                    const pulse = Math.sin(Date.now() / 200) * 0.3 + 0.7;
+                    const glowR = this.size * 1.5 + 10;
+                    const isReproduced = this.generation > 0;
+                    const glowColor = isReproduced
+                        ? (this.type === 'prey'
+                            ? `rgba(100, 160, 255, ${pulse * 0.25})`
+                            : `rgba(220, 50, 50, ${pulse * 0.25})`)
+                        : `rgba(180, 180, 180, ${pulse * 0.25})`;
+                    ctx.fillStyle = glowColor;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, glowR, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(angle);
+
+                const isReproduced = this.generation > 0;
+                const bodyGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size * 1.5);
+                if (this.type === 'prey') {
+                    if (isReproduced) {
+                        bodyGrad.addColorStop(0, '#66f');
+                        bodyGrad.addColorStop(1, '#22a');
+                    } else {
+                        bodyGrad.addColorStop(0, '#bbb');
+                        bodyGrad.addColorStop(1, '#888');
+                    }
+                } else {
+                    if (isReproduced) {
+                        bodyGrad.addColorStop(0, '#c22');
+                        bodyGrad.addColorStop(1, '#600');
+                    } else {
+                        bodyGrad.addColorStop(0, '#555');
+                        bodyGrad.addColorStop(1, '#333');
+                    }
+                }
+                ctx.fillStyle = bodyGrad;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, this.size * 1.5, this.size, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                const eyeX = this.size * 0.8;
+                const eyeY = this.size * 0.3;
+                const eyeSize = this.size * 0.15;
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(eyeX, -eyeY, eyeSize, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(eyeX, eyeY, eyeSize, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#000';
+                const pupilSize = eyeSize * 0.6;
+                ctx.beginPath();
+                ctx.arc(eyeX + eyeSize * 0.3, -eyeY, pupilSize, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(eyeX + eyeSize * 0.3, eyeY, pupilSize, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (this.type === 'predator') {
+                    ctx.fillStyle = '#fff';
+                    const fangLen = this.size * 0.3;
+                    const fangW = this.size * 0.12;
+                    const noseX = this.size * 1.3;
+                    ctx.beginPath();
+                    ctx.moveTo(noseX, -fangW);
+                    ctx.lineTo(noseX + fangLen, 0);
+                    ctx.lineTo(noseX, fangW * 0.5);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.moveTo(noseX, fangW);
+                    ctx.lineTo(noseX + fangLen, 0);
+                    ctx.lineTo(noseX, -fangW * 0.5);
+                    ctx.fill();
+                }
+
+                if (this.type === 'prey') {
+                    const earX = -this.size * 0.9;
+                    const earLen = this.size * 0.35;
+                    const earW = this.size * 0.12;
+                    ctx.fillStyle = isReproduced ? '#44f' : '#888';
+                    ctx.beginPath();
+                    ctx.ellipse(earX, -earLen, earW, earLen, -0.4, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(earX, earLen, earW, earLen, 0.4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                 ctx.restore();
+
+                 if (!isReproduced && this.type === 'predator') {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(angle);
+                    ctx.strokeStyle = 'rgba(200, 50, 50, 0.6)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, this.size * 1.7, this.size * 1.2, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                const energyPct = this.energy / this.maxEnergy;
+                const ringBase = isReproduced
+                    ? (this.type === 'prey' ? '68,136,255' : '170,0,0')
+                    : '150,150,150';
+                const ringGrad = ctx.createRadialGradient(this.x, this.y, this.size * 1.5, this.x, this.y, this.size * 1.5 + 8);
+                ringGrad.addColorStop(0, `rgba(${ringBase}, ${energyPct * 0.15})`);
+                ringGrad.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = ringGrad;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * 1.5 + 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                const hpPct = this.hp / this.maxHp;
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(angle);
+                ctx.fillStyle = `rgba(0, 0, 0, ${1 - hpPct})`;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, this.size * 1.5, this.size, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // --- MAIN ---
+        const canvas = document.getElementById('world');
+        const ctx = canvas.getContext('2d');
+
+        let agents = [];
+        let plants = [];
+        let carcasses = [];
+        let paused = false;
+        let speed = 1;
+        let frameCount = 0;
+         let stats = { births: 0, deaths: 0, maxGen: 0, peakPreySize: 0, peakPredSize: 0 };
+        let history = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function init() {
+            agents = [];
+            plants = [];
+            carcasses = [];
+            stats = { births: 0, deaths: 0, maxGen: 0, peakPreySize: 0, peakPredSize: 0 };
+            history = [];
+            for (let i = 0; i < CONFIG.PREY_START; i++) {
+                agents.push(new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 'prey', null, 0));
+            }
+            for (let i = 0; i < CONFIG.PRED_START; i++) {
+                agents.push(new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 'predator', null, 0));
+            }
+            for (let i = 0; i < CONFIG.PLANT_START; i++) {
+                plants.push(new Plant(Math.random() * canvas.width, Math.random() * canvas.height));
+            }
+        }
+
+        function update() {
+            if (paused) return;
+
+            if (plants.length < CONFIG.PLANT_CAP) {
+                for (let i = 0; i < plants.length; i++) {
+                    if (Math.random() < CONFIG.PLANT_SPAWN_RATE) {
+                        const p = plants[i];
+            const nx = p.x + (Math.random() - 0.5) * 600;
+                    const ny = p.y + (Math.random() - 0.5) * 600;
+                        if (nx > 0 && nx < canvas.width && ny > 0 && ny < canvas.height) {
+                            plants.push(new Plant(nx, ny));
+                        }
+                    }
+                }
+            }
+            // Periodically cull 10% of plants
+            if (frameCount % 300 === 0 && plants.length > 30) {
+                const cullCount = Math.floor(plants.length * 0.01);
+                for (let i = 0; i < cullCount; i++) {
+                    const idx = Math.floor(Math.random() * plants.length);
+                    plants.splice(idx, 1);
+                }
+            }
+
+            for (const p of plants) p.age++;
+			for (const c of carcasses) c.update();
+            const newCarcasses = [];
+            const newAgents = [];
+
+            // Update agents
+            for (const a of agents) {
+                const carcass = a.update(plants, carcasses, agents);
+                if (carcass) {
+                    newCarcasses.push(carcass);
+                    stats.deaths++;
+                }
+                
+                // Mating
+                if (a.state === 'mate' && a.energy > a.reproThreshold) {
+                    let mate = null;
+                    let minDist = Infinity;
+                    for (const other of agents) {
+                        if (other === a || other.dead || other.type !== a.type) continue;
+                        const d = a.dist(other);
+                        if (d < CONFIG.MATING_DIST && d < minDist) {
+                            minDist = d;
+                            mate = other;
+                        }
+                    }
+                    if (mate && mate.energy > mate.reproThreshold) {
+                        const myOut = a.brain.activate(a.getInputsFlux(plants, carcasses, agents));
+                        const theirOut = mate.brain.activate(mate.getInputsFlux(plants, carcasses, agents));
+                        
+                        if (myOut.mating > 0.4 && theirOut.mating > 0.4) {
+                            const crossoverBrain = new Brain();
+                            for (let i = 0; i < crossoverBrain.weights.length; i++) {
+                                crossoverBrain.weights[i] = Math.random() < 0.5 ? a.brain.weights[i] : mate.brain.weights[i];
+                            }
+                            const childBrain = crossoverBrain.mutate();
+                            const parentMaturity = (a.maturitySize + mate.maturitySize) / 2;
+                            const childMaturity = parentMaturity * (0.95 + Math.random() * 0.1);
+                            const child = new Agent(a.x, a.y, a.type, childBrain, Math.max(a.generation, mate.generation) + 1, childMaturity);
+                            child.energy = Math.min(a.energy / 2, a.maxEnergy * 0.3);
+                            mate.energy /= 3;
+                            a.energy /= 3;
+                            newAgents.push(child);
+                            stats.births++;
+                            if (child.generation > stats.maxGen) stats.maxGen = child.generation;
+                        }
+                    }
+                }
+
+                // Eating
+                for (const p of plants) {
+                    if (!p.dead && a.type === 'prey' && a.dist(p) < a.size + p.size) {
+                        a.energy += window.PLANT_ENERGY;
+                        p.dead = true;
+                    }
+                }
+                for (const c of carcasses) {
+                    if (!c.dead && a.type === 'predator' && a.dist(c) < a.size + c.size) {
+                        a.energy += window.CARCASS_ENERGY;
+                        c.dead = true;
+                    }
+                }
+            }
+
+            // Population floor
+            const preyFloor = floorMode ? CONFIG.PREY_START : window.PREY_FLOOR;
+            const predFloor = floorMode ? CONFIG.PRED_START : window.PRED_FLOOR;
+            const preyCount = agents.filter(a => a.type === 'prey').length;
+            const predCount = agents.filter(a => a.type === 'predator').length;
+            const carcassCount = carcasses.length;
+            if (preyCount < preyFloor) {
+                for (let i = 0; i < preyFloor - preyCount; i++) {
+                    agents.push(new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 'prey'));
+                }
+            }
+            if (predCount < predFloor) {
+                for (let i = 0; i < predFloor - predCount; i++) {
+                    agents.push(new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 'predator'));
+                }
+            }
+
+            // Population cap - remove excess agents
+            if (preyCount > window.MAX_PREY_POP) {
+                // Remove weakest prey (lowest energy)
+                const preyAgents = agents.filter(a => a.type === 'prey');
+                preyAgents.sort((a, b) => a.energy - b.energy);
+                for (let i = 0; i < preyCount - window.MAX_PREY_POP; i++) {
+                    preyAgents[i].dead = true;
+                }
+            }
+            if (predCount > window.MAX_PRED_POP) {
+                // Remove weakest predators (lowest energy)
+                const predAgents = agents.filter(a => a.type === 'predator');
+                predAgents.sort((a, b) => a.energy - b.energy);
+                for (let i = 0; i < predCount - window.MAX_PRED_POP; i++) {
+                    predAgents[i].dead = true;
+                }
+            }
+			if (carcasses.length > window.MAX_PREY_POP) {
+				// Remove oldest (first) carcasses
+				for (let i = 0; i < carcasses.length - window.MAX_PREY_POP; i++) {
+					carcasses[i].dead = true;
+				}
+			}
+			
+            // Cleanup
+            plants = plants.filter(p => !p.dead);
+            carcasses = carcasses.filter(c => !c.dead);
+            agents = agents.filter(a => !a.dead);
+            agents = agents.filter(c => !c.dead);
+            agents.push(...newAgents);
+            carcasses.push(...newCarcasses);
+
+            // History
+            if (frameCount % 10 === 0) {
+                history.push({
+                    prey: agents.filter(a => a.type === 'prey').length,
+                    pred: agents.filter(a => a.type === 'predator').length,
+                    carcass: carcasses.length
+                });
+                if (history.length > 300) history.shift();
+            }
+
+            frameCount++;
+        }
+
+        function drawMenu() {
+            // Semi-transparent overlay
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Menu background
+            const menuW = 500;
+            const menuH = Math.min(canvas.height - 60, 40 + MENU_PARAMS.length * 35);
+            const menuX = (canvas.width - menuW) / 2;
+            const menuY = (canvas.height - menuH) / 2;
+
+            ctx.fillStyle = 'rgba(30, 30, 30, 0.95)';
+            ctx.fillRect(menuX - 10, menuY - 10, menuW + 20, menuH + 20);
+            
+            ctx.strokeStyle = '#44f';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(menuX - 10, menuY - 10, menuW + 20, menuH + 20);
+
+            // Title
+            ctx.font = 'bold 18px Courier New';
+            ctx.fillStyle = '#44f';
+            ctx.textAlign = 'center';
+            ctx.fillText('SIMULATION PARAMETERS', canvas.width / 2, menuY + 25);
+
+            ctx.font = '12px Courier New';
+            ctx.fillStyle = '#888';
+            ctx.fillText('↑↓ Select | ← → Adjust | ESC Close', canvas.width / 2, menuY + 45);
+
+            // Parameters
+            const paramY = menuY + 60;
+            const paramPerPage = Math.floor((menuH - 60) / 35);
+
+            for (let i = 0; i < MENU_PARAMS.length; i++) {
+                const param = MENU_PARAMS[i];
+                const yPos = paramY + i * 35;
+
+                // Skip if off-screen
+                if (yPos > menuY + menuH - 10) continue;
+
+                const isSelected = i === selectedParam;
+                
+                // Highlight selected
+                if (isSelected) {
+                    ctx.fillStyle = 'rgba(68, 68, 255, 0.2)';
+                    ctx.fillRect(menuX, yPos - 15, menuW, 30);
+                    ctx.strokeStyle = '#44f';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(menuX, yPos - 15, menuW, 30);
+                }
+
+                // Label
+                ctx.font = isSelected ? 'bold 14px Courier New' : '14px Courier New';
+                ctx.fillStyle = param.color;
+                ctx.textAlign = 'left';
+                ctx.fillText(param.label, menuX + 15, yPos);
+
+                // Value bar
+                const barX = menuX + 280;
+                const barW = 180;
+                const barH = 18;
+                
+                // Background bar
+                ctx.fillStyle = '#333';
+                ctx.fillRect(barX, yPos - 8, barW, barH);
+                
+                // Value fill
+                const ratio = (param.value - param.min) / (param.max - param.min);
+                ctx.fillStyle = param.color;
+                ctx.fillRect(barX, yPos - 8, barW * ratio, barH);
+                
+                // Border
+                ctx.strokeStyle = '#666';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(barX, yPos - 8, barW, barH);
+
+                // Value text
+                ctx.font = '12px Courier New';
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                const displayVal = param.value.toFixed(param.step < 1 ? 2 : 0);
+                ctx.fillText(displayVal, barX + barW / 2, yPos + 4);
+            }
+
+            // Footer
+            ctx.font = '11px Courier New';
+            ctx.fillStyle = '#666';
+            ctx.textAlign = 'center';
+            ctx.fillText('Changes apply immediately to new/spawned agents', canvas.width / 2, menuY + menuH + 5);
+        }
+
+        function applyMenuParam(param) {
+            // Apply the parameter change to CONFIG and other places
+            switch (param.key) {
+                case 'plantSpawnRate':
+                    CONFIG.PLANT_SPAWN_RATE = param.value;
+                    break;
+                case 'maxPlants':
+                    CONFIG.PLANT_CAP = param.value;
+                    break;
+                case 'plantScanDist':
+                    window.PLANT_SCAN_DISTANCE = param.value;
+                    break;
+                case 'plantEnergy':
+                    window.PLANT_ENERGY = param.value;
+                    break;
+                case 'carcassEnergy':
+                    window.CARCASS_ENERGY = param.value;
+                    break;
+                case 'preyFloor':
+                    window.PREY_FLOOR = param.value;
+                    break;
+                case 'predFloor':
+                    window.PRED_FLOOR = param.value;
+                    break;
+                case 'maxPreyPop':
+                    window.MAX_PREY_POP = param.value;
+                    break;
+                case 'maxPredPop':
+                    window.MAX_PRED_POP = param.value;
+                    break;
+                case 'preySpeed':
+                    window.PREY_SPEED = param.value;
+                    break;
+                case 'predSpeed':
+                    window.PRED_SPEED = param.value;
+                    break;
+                case 'mutRate':
+                    CONFIG.MUTATION_RATE = param.value;
+                    break;
+                case 'mutAmount':
+                    CONFIG.MUTATION_AMOUNT = param.value;
+                    break;
+                case 'combatDist':
+                    CONFIG.COMBAT_DIST = param.value;
+                    break;
+                case 'matingDist':
+                    CONFIG.MATING_DIST = param.value;
+                    break;
+            }
+        }
+
+        function draw() {
+            ctx.fillStyle = '#111';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (const p of plants) p.draw(ctx);
+            for (const c of carcasses) c.draw(ctx);
+            for (const a of agents) a.draw(ctx);
+
+            // Combat sparks
+            const now = Date.now();
+            for (let i = 0; i < agents.length; i++) {
+                if (agents[i].type !== 'predator' || agents[i].dead) continue;
+                for (let j = 0; j < agents.length; j++) {
+                    if (agents[j].type !== 'prey' || agents[j].dead) continue;
+                    if (agents[i].dist(agents[j]) < CONFIG.COMBAT_DIST) {
+                        const mx = (agents[i].x + agents[j].x) / 2;
+                        const my = (agents[i].y + agents[j].y) / 2;
+                        const flash = Math.sin(now / 50) * 0.5 + 0.5;
+                        ctx.fillStyle = `rgba(255, 255, 100, ${flash * 0.8})`;
+                        ctx.beginPath();
+                        ctx.arc(mx, my, 3 + flash * 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            }
+
+            let curMaxPrey = 0, curMaxPred = 0;
+            for (const a of agents) {
+                if (a.type === 'prey' && a.size > curMaxPrey) curMaxPrey = a.size;
+                if (a.type === 'predator' && a.size > curMaxPred) curMaxPred = a.size;
+            }
+
+            // Graph
+            const graphH = 80;
+            const graphY = canvas.height - graphH;
+            ctx.fillStyle = 'rgba(0,0,0,0.6)';
+            ctx.fillRect(0, graphY, canvas.width, graphH);
+            if (history.length > 1) {
+                const maxPop = Math.max(...history.map(h => Math.max(h.prey, h.pred)), 1);
+                const step = canvas.width / (history.length - 1);
+                const gH = graphH - 20;
+                const gY = graphY + 18;
+
+                ctx.strokeStyle = '#44f';
+                ctx.beginPath();
+                for (let i = 0; i < history.length; i++) {
+                    const x = i * step;
+                    const y = gY + gH - (history[i].prey / maxPop) * gH;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+
+                ctx.strokeStyle = '#a00';
+                ctx.beginPath();
+                for (let i = 0; i < history.length; i++) {
+                    const x = i * step;
+                    const y = gY + gH - (history[i].pred / maxPop) * gH;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+
+               ctx.font = '12px Courier New';
+                let lx = canvas.width - 10;
+                ctx.fillStyle = '#44f';
+                ctx.textAlign = 'right';
+                ctx.fillText(`${curMaxPrey.toFixed(0)}/${stats.peakPreySize.toFixed(0)} Prey`, lx, graphY + 12);
+                lx -= ctx.measureText(`${curMaxPrey.toFixed(0)}/${stats.peakPreySize.toFixed(0)} Prey`).width + 30;
+                ctx.fillStyle = '#a00';
+                ctx.fillText(`${curMaxPred.toFixed(0)}/${stats.peakPredSize.toFixed(0)} Predator`, lx, graphY + 12);
+            }
+
+            // NN visualization
+            if (showNN && agents.length > 0) {
+                if (!monitoredAgent || monitoredAgent.dead) {
+                    let nearest = null;
+                    let nearestDist = Infinity;
+                    for (const a of agents) {
+                        const d = Math.hypot(a.x - mouseX, a.y - mouseY);
+                        if (d < nearestDist) { nearestDist = d; nearest = a; }
+                    }
+                    if (nearest) {
+                        monitorIndex = agents.indexOf(nearest);
+                        monitoredAgent = nearest;
+                    }
+                }
+                if (monitoredAgent && !monitoredAgent.dead) {
+                    ctx.save();
+                    ctx.shadowColor = '#fff';
+                    ctx.shadowBlur = 20;
+                    ctx.beginPath();
+                    ctx.arc(monitoredAgent.x, monitoredAgent.y, monitoredAgent.size * 1.5, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+                    ctx.fill();
+                    ctx.restore();
+
+                    const nnW = 260;
+                    const nnH = 360;
+                    const nnX = 5;
+                      const nnY = window.innerHeight - nnH - 20;
+
+                    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+                    ctx.fillRect(nnX - 10, nnY - 10, nnW + 20, nnH + 30);
+
+                    const inputSize = 8;      // Changed from 14
+                    const hiddenSize = 6;     // Changed from 8
+                    const outputSize = 3;
+
+                    const layers = [
+                        { count: inputSize, y: nnY + 15 },
+                        { count: hiddenSize, y: nnY + nnH * 0.45 },
+                        { count: outputSize, y: nnY + nnH - 15 },
+                    ];
+
+                    const positions = layers.map(layer => {
+                        const spacing = nnW / (layer.count + 1);
+                        return Array.from({ length: layer.count }, (_, i) => ({
+                            x: nnX + spacing * (i + 1),
+                            y: layer.y,
+                        }));
+                    });
+
+                    let idx = 0;
+                    for (let i = 0; i < inputSize; i++) {
+                        for (let j = 0; j < hiddenSize; j++) {
+                            const w = monitoredAgent.brain.weights[idx++];
+                            const alpha = Math.min(Math.abs(w), 1);
+                            ctx.strokeStyle = w > 0 ? `rgba(0,180,255,${alpha * 0.7})` : `rgba(255,80,80,${alpha * 0.7})`;
+                            ctx.lineWidth = Math.min(Math.abs(w) * 3.5, 3.5);
+                            ctx.beginPath();
+                            ctx.moveTo(positions[0][i].x, positions[0][i].y);
+                            ctx.lineTo(positions[1][j].x, positions[1][j].y);
+                            ctx.stroke();
+                        }
+                    }
+                    const biasW = monitoredAgent.brain.weights[idx++];
+                    const biasAlpha = Math.min(Math.abs(biasW), 1);
+                    ctx.strokeStyle = biasW > 0 ? `rgba(0,180,255,${biasAlpha * 0.4})` : `rgba(255,80,80,${biasAlpha * 0.4})`;
+                    ctx.lineWidth = Math.min(Math.abs(biasW) * 3.5, 3.5);
+                    ctx.beginPath();
+                    ctx.moveTo(nnX - 5, positions[1][0].y);
+                    ctx.lineTo(positions[1][0].x, positions[1][0].y);
+                    ctx.stroke();
+
+                    for (let i = 0; i < hiddenSize; i++) {
+                        for (let j = 0; j < outputSize; j++) {
+                            const w = monitoredAgent.brain.weights[idx++];
+                            const alpha = Math.min(Math.abs(w), 1);
+                            ctx.strokeStyle = w > 0 ? `rgba(0,180,255,${alpha * 0.7})` : `rgba(255,80,80,${alpha * 0.7})`;
+                            ctx.lineWidth = Math.min(Math.abs(w) * 3.5, 3.5);
+                            ctx.beginPath();
+                            ctx.moveTo(positions[1][i].x, positions[1][i].y);
+                            ctx.lineTo(positions[2][j].x, positions[2][j].y);
+                            ctx.stroke();
+                        }
+                    }
+                    const outBiasW = monitoredAgent.brain.weights[idx++];
+                    const outBiasAlpha = Math.min(Math.abs(outBiasW), 1);
+                    ctx.strokeStyle = outBiasW > 0 ? `rgba(0,180,255,${outBiasAlpha * 0.4})` : `rgba(255,80,80,${outBiasAlpha * 0.4})`;
+                    ctx.lineWidth = Math.min(Math.abs(outBiasW) * 3.5, 3.5);
+                    ctx.beginPath();
+                    ctx.moveTo(nnX - 5, positions[2][0].y);
+                    ctx.lineTo(positions[2][0].x, positions[2][0].y);
+                    ctx.stroke();
+
+                    const allPositions = [...positions[0], ...positions[1], ...positions[2]];
+                    for (const pos of allPositions) {
+                        ctx.fillStyle = '#fff';
+                        ctx.beginPath();
+                        ctx.arc(pos.x, pos.y, 4, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+					// Flux breakdown display
+					ctx.font = '15px Courier New';
+					ctx.textAlign = 'left';
+					const fluxX = nnX + nnW + 15;
+					const fluxY = nnY + 20; 
+					ctx.fillStyle = '#FC6A03';
+					ctx.fillText(`FLUX:${monitoredAgent._sensoryFlux?.toFixed(2) || '0.00'} / ${monitoredAgent._peakFluxSens?.toFixed(2) || '0.00'}`, fluxX, fluxY);
+					ctx.fillStyle = '#0f0';
+					ctx.fillText(`Food: ${monitoredAgent._fluxFood?.toFixed(2) || '0.00'} / ${monitoredAgent._peakFluxFood?.toFixed(2) || '0.00'}`, fluxX, fluxY + 14);
+					ctx.fillStyle = '#f00';
+					ctx.fillText(`Threat: ${monitoredAgent._fluxThreat?.toFixed(2) || '0.00'} / ${monitoredAgent._peakFluxThreat?.toFixed(2) || '0.00'}`, fluxX, fluxY + 28);
+					ctx.fillStyle = '#0ff';
+					ctx.fillText(`Mate: ${monitoredAgent._fluxMate?.toFixed(2) || '0.00'} / ${monitoredAgent._peakFluxMate?.toFixed(2) || '0.00'}`, fluxX, fluxY + 42);
+
+                    // Layer labels
+                    ctx.font = '10px Courier New';
+                    ctx.fillStyle = '#aaa';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Inputs (8)', positions[0][0].x, nnY - 10);
+                    ctx.fillText('Hidden (6)', positions[1][0].x, nnY - 10);
+                    ctx.fillText('Outputs (3)', positions[2][0].x, nnY - 10);
+
+                     ctx.font = '14px Courier New';
+                    ctx.textAlign = 'right';
+                    ctx.fillStyle = monitoredAgent.type === 'prey' ? '#66f' : '#c22';
+                    ctx.fillText(`${monitoredAgent.type} #${monitoredAgent.id} | gen:${monitoredAgent.generation} | size:${monitoredAgent.size.toFixed(1)} | energy:${Math.round(monitoredAgent.energy)}/${Math.round(monitoredAgent.maxEnergy)}`, canvas.width - 10, 70);
+                    ctx.fillStyle = '#888';
+                    ctx.fillText('← → cycle', canvas.width - 10, 86);
+                }
+             }
+
+               // Stats
+            const preyCount = agents.filter(a => a.type === 'prey').length;
+            const predCount = agents.filter(a => a.type === 'predator').length;
+                document.getElementById('stats').innerHTML = 
+                `Prey: ${preyCount} | Pred: ${predCount} | Plants: ${plants.length} | Carcasses: ${carcasses.length}<br>` +
+               `Gen: ${stats.maxGen} | Epoch: ${Math.floor(frameCount / 60)}s | Births: ${stats.births} | Deaths: ${stats.deaths}<br>` +
+                `Speed: ${speed}x | FPS: ${Math.round(1000 / (performance.now() - lastTime) || 0)}`;
+
+             if (floorMode) {
+                document.getElementById('w-line').style.color = '#ff0';
+            } else {
+                document.getElementById('w-line').style.color = '';
+            }
+
+            // Draw menu if open
+            if (showMenu) {
+                drawMenu();
+            }
+
+        }
+
+        let lastTime = performance.now();
+        function loop() {
+            const now = performance.now();
+            const dt = now - lastTime;
+            lastTime = now;
+
+            for (let i = 0; i < speed; i++) update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+          let showNN = false;
+        let monitoredAgent = null;
+        let monitorIndex = 0;
+        let floorMode = false;
+        let showMenu = false;
+        let selectedParam = 0;
+
+        // Global parameter variables (used by agents)
+        window.PLANT_ENERGY = 45;
+        window.CARCASS_ENERGY = 75;
+        window.PREY_FLOOR = 20;
+        window.PRED_FLOOR = 10;
+        window.PREY_SPEED = 3.0;
+        window.PRED_SPEED = 4.5;
+        window.PLANT_SCAN_DISTANCE = 200;
+        window.MAX_PREY_POP = 600;
+        window.MAX_PRED_POP = 50;
+        const MENU_PARAMS = [
+            { label: 'Plant Spawn Rate', key: 'plantSpawnRate', min: 0, max: 1.0, step: 0.05, value: CONFIG.PLANT_SPAWN_RATE, color: '#0f0' },
+            { label: 'Max Plants', key: 'maxPlants', min: 0, max: 3000, step: 50, value: CONFIG.PLANT_CAP, color: '#0f0' },
+            { label: 'Plant Scan Distance', key: 'plantScanDist', min: 10, max: 400, step: 10, value: 80, color: '#0f0' },
+            { label: 'Plant Energy Gain', key: 'plantEnergy', min: 5, max: 100, step: 1, value: 45, color: '#0f0' },
+            { label: 'Carcass Energy Gain', key: 'carcassEnergy', min: 5, max: 200, step: 5, value: 75, color: '#f00' },
+            { label: 'Prey Floor (Min Pop)', key: 'preyFloor', min: 1, max: 500, step: 1, value: 20, color: '#44f' },
+            { label: 'Predator Floor (Min Pop)', key: 'predFloor', min: 1, max: 500, step: 1, value: 10, color: '#a00' },
+            { label: 'Max Prey Population', key: 'maxPreyPop', min: 0, max: 3000, step: 50, value: 600, color: '#44f' },
+            { label: 'Max Predator Population', key: 'maxPredPop', min: 0, max: 1500, step: 10, value: 60, color: '#a00' },
+            { label: 'Prey Base Speed', key: 'preySpeed', min: 1.0, max: 10.0, step: 0.1, value: 3.0, color: '#44f' },
+            { label: 'Predator Base Speed', key: 'predSpeed', min: 0.5, max: 20.0, step: 0.1, value: 4.5, color: '#a00' },
+            { label: 'Mutation Rate', key: 'mutRate', min: 0.01, max: 0.5, step: 0.01, value: CONFIG.MUTATION_RATE, color: '#ff0' },
+            { label: 'Mutation Amount', key: 'mutAmount', min: 0.01, max: 0.5, step: 0.01, value: CONFIG.MUTATION_AMOUNT, color: '#ff0' },
+            { label: 'Combat Distance', key: 'combatDist', min: 5, max: 100, step: 1, value: CONFIG.COMBAT_DIST, color: '#f80' },
+            { label: 'Mating Distance', key: 'matingDist', min: 20, max: 1000, step: 50, value: CONFIG.MATING_DIST, color: '#f0f' },
+        ];
+
+        // --- MOUSE TRACKING ---
+        let mouseX = 0;
+        let mouseY = 0;
+        const cursorEl = document.getElementById('cursor');
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+            cursorEl.style.display = 'block';
+            cursorEl.style.left = e.clientX + 'px';
+            cursorEl.style.top = e.clientY + 'px';
+        });
+        canvas.addEventListener('mouseleave', () => {
+            cursorEl.style.display = 'none';
+        });
+
+        // --- CONTROLS ---
+        window.addEventListener('contextmenu', e => e.preventDefault());
+
+        window.addEventListener('keydown', (e) => {
+            // Menu controls
+            if (e.code === 'Escape') {
+                showMenu = !showMenu;
+                selectedParam = 0;
+                return;
+            }
+
+            if (showMenu) {
+                if (e.code === 'ArrowUp') {
+                    selectedParam = (selectedParam - 1 + MENU_PARAMS.length) % MENU_PARAMS.length;
+                    return;
+                }
+                if (e.code === 'ArrowDown') {
+                    selectedParam = (selectedParam + 1) % MENU_PARAMS.length;
+                    return;
+                }
+                if (e.code === 'ArrowLeft') {
+                    const param = MENU_PARAMS[selectedParam];
+                    param.value = Math.max(param.min, param.value - param.step);
+                    applyMenuParam(param);
+                    return;
+                }
+                if (e.code === 'ArrowRight') {
+                    const param = MENU_PARAMS[selectedParam];
+                    param.value = Math.min(param.max, param.value + param.step);
+                    applyMenuParam(param);
+                    return;
+                }
+                return;  // Block other controls while menu is open
+            }
+
+            // Normal controls (when menu is closed)
+            if (e.code === 'Space') {
+                paused = !paused;
+                return;
+            }
+            if (e.code === 'KeyR') {
+                init();
+                return;
+            }
+            if (e.code === 'Equal' || e.code === 'NumpadAdd' || e.code === 'NumpadEnter') {
+                speed = Math.min(10, speed + 1);
+                return;
+            }
+            if (e.code === 'Minus' || e.code === 'NumpadSubtract') {
+                speed = Math.max(1, speed - 1);
+                return;
+            }
+             if (e.code === 'KeyN') {
+                showNN = !showNN;
+                if (!showNN) { monitoredAgent = null; }
+                return;
+            }
+            if (e.code === 'KeyW') {
+                floorMode = !floorMode;
+                return;
+            }
+            if (showNN && agents.length > 0) {
+                if (e.code === 'ArrowLeft') {
+                    monitorIndex = (monitorIndex - 1 + agents.length) % agents.length;
+                    monitoredAgent = agents[monitorIndex];
+                    return;
+                }
+                if (e.code === 'ArrowRight') {
+                    monitorIndex = (monitorIndex + 1) % agents.length;
+                    monitoredAgent = agents[monitorIndex];
+                    return;
+                }
+            }
+            if (e.code === 'KeyA') {
+                if (e.shiftKey) {
+                    for (let i = 0; i < 20; i++) {
+                        const ox = (Math.random() - 0.5) * 60;
+                        const oy = (Math.random() - 0.5) * 60;
+                        plants.push(new Plant(mouseX + ox, mouseY + oy));
+                    }
+                } else {
+                    plants.push(new Plant(mouseX, mouseY));
+                }
+                return;
+            }
+            if (e.code === 'KeyS') {
+                if (e.shiftKey) {
+                    for (let i = 0; i < 20; i++) {
+                        const ox = (Math.random() - 0.5) * 60;
+                        const oy = (Math.random() - 0.5) * 60;
+                        agents.push(new Agent(mouseX + ox, mouseY + oy, 'prey'));
+                    }
+                } else {
+                    agents.push(new Agent(mouseX, mouseY, 'prey'));
+                }
+                return;
+            }
+            if (e.code === 'KeyD') {
+                if (e.shiftKey) {
+                    for (let i = 0; i < 20; i++) {
+                        const ox = (Math.random() - 0.5) * 60;
+                        const oy = (Math.random() - 0.5) * 60;
+                        agents.push(new Agent(mouseX + ox, mouseY + oy, 'predator'));
+                    }
+                } else {
+                    agents.push(new Agent(mouseX, mouseY, 'predator'));
+                }
+                return;
+            }
+       });
+
+        init();
+        loop();
+    </script>
+</body>
+</html>
