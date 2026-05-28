@@ -61,20 +61,36 @@
 
     <script>
         // --- CONFIGURATION ---
-        const CONFIG = {
-            PREY_START: 400,
+        const CONFIG = {		
+		    PREY_START: 400,
             PRED_START: 50,
             PLANT_START: 10,
             PLANT_SPAWN_RATE: 0.20,
-            PLANT_CAP: 800,              // Reduced from 600 for better GPU performance
-            CARCASS_DECAY: 0.7,
+            PLANT_CAP: 400,              // Reduced from 600 for better GPU performance
+            CARCASS_DECAY: 0.4,
             MUTATION_RATE: 0.25,
             MUTATION_AMOUNT: 0.25,
-            MATING_DIST: 300,
+            MATING_DIST: 100,
             COMBAT_DIST: 15,
             WRAP: true,
-            MAX_GEN: 1000
-        };
+            MAX_GEN: 1000,
+			// Global parameter variables (used by agents)
+			PLANT_SCAN_DISTANCE: 20,
+			PLANT_ENERGY: 45,
+			CARCASS_ENERGY: 75,
+			PREY_FLOOR:20,
+			PRED_FLOOR: 10,
+			MAX_PREY_POP: 300,
+			MAX_PRED_POP: 300,		
+			PREY_SPEED: 3.0,
+			PRED_SPEED: 14.5
+		};
+		
+		// FIFO: last 10 Oldest agents' brain weights
+		const AGENT_MEMORY = [];
+		const MAX_AGENT_MEMORY = 10;
+		const MEMORY_FILE = 'agent_memory.json';
+
 
         // --- NEURAL NETWORK (8 inputs, 6 hidden, 3 outputs) ---
         class Brain {
@@ -249,29 +265,34 @@
                 this.vx = 0;
                 this.vy = 0;
                 this.fluxMemory = 0;
-				
+				// Init Flux Monitor
                 this._peakFluxSens = 0;
                 this._peakFluxFood = 0;
 				this._peakFluxThreat = 0;
 				this._peakFluxMate = 0;
+
+                this._minFluxSens = 0;
+                this._minFluxFood = 0;
+                this._minFluxThreat = 0;
+                this._minFluxMate = 0;
 				
 				
                 if (type === 'prey') {
                     this.energy = 100;
                     this.maxEnergy = 200;
                     this.color = '#44f';
-                    this.baseSpeed = window.PREY_SPEED;
+                    this.baseSpeed = CONFIG.PREY_SPEED;
                     this.reproThreshold = 100;
                 } else {
                     this.energy = 150;
                     this.maxEnergy = 300;
                     this.color = '#a00';
-                    this.baseSpeed = window.PRED_SPEED;
+                    this.baseSpeed = CONFIG.PRED_SPEED;
                     this.reproThreshold = 140;
                 }
                 this.hp = 10 + this.size;
                 this.maxHp = this.hp;
-                this.fitness = 0;
+                //this.fitness = 0; // Commented because does nothing
             }
 
             // Helper: normalize angle to [-π, π]			
@@ -296,7 +317,7 @@
 
                 // --- Scan Food (Plants + Carcasses) ---	
                 // Spatial optimization: only check plants & Carcasses within scan radius				
-                const PLANT_SCAN_RADIUS = window.PLANT_SCAN_DISTANCE;
+                const PLANT_SCAN_RADIUS = CONFIG.PLANT_SCAN_DISTANCE;
                 for (const p of plants) {
                     if (p.dead) continue;
 
@@ -338,8 +359,10 @@
 					const directionalBias = Math.cos(relAngle);
 					const value = -1;
 
+					// Define the foodFlux (And init Peak and Min)
 					foodFlux += value * proximityWeight * directionalBias;
 					this._peakFluxFood = Math.max(this._peakFluxFood, Math.abs(foodFlux));
+					this._minFluxFood = Math.min(this._minFluxFood, foodFlux);	
 					
 					if (dist < minFoodDist) {
 						minFoodDist = dist;
@@ -369,9 +392,11 @@
                     const proximityWeight = 1 / Math.max(dist, 5);
                     const directionalBias = Math.cos(relAngle);
                     const value = -0.9;
-                    
+					
+					// Define the threatFlux (And init Peak and Min)                    
                     threatFlux += value * proximityWeight * directionalBias;
                     this._peakFluxThreat = Math.max(this._peakFluxThreat, Math.abs(threatFlux));
+					this._minFluxThreat = Math.min(this._minFluxThreat, threatFlux);
 					
                     if (dist < minThreatDist) {
                         minThreatDist = dist;
@@ -397,8 +422,10 @@
                     const directionalBias = Math.cos(relAngle);
                     const value = 0.0;
                     
+					// Define the threatFlux (And init Peak and Min)  
                     mateFlux += value * proximityWeight * directionalBias;
                     this._peakFluxMate = Math.max(this._peakFluxMate, Math.abs(mateFlux));
+					this._minFluxMate = Math.min(this._minFluxMate, mateFlux);
 					
                     if (dist < minMateDist) {
                         minMateDist = dist;
@@ -596,13 +623,24 @@
                 if (inCombat) this.state = 'combat';
 
 				// Death (Lifetime or Lack of energy)
-                if (this.energy <= 0 || this.hp <= 0 || this.age >= this.maxLifetime) {
-                    this.dead = true;
-                    return new Carcass(this.x, this.y, this.energy, this.size);
-                }
+				if (this.energy <= 0 || this.hp <= 0 || this.age >= this.maxLifetime) {
+					this.dead = true;
+					if (this.age >= this.maxLifetime && this.generation > 0) {
+						AGENT_MEMORY.push({
+							gen: this.generation,
+							type: this.type,
+							fitness: this.fitness || 0,
+							weights: [...this.brain.weights]
+						});
+						if (AGENT_MEMORY.length > MAX_AGENT_MEMORY) {
+							AGENT_MEMORY.shift();
+						}
+					}
+					return new Carcass(this.x, this.y, this.energy, this.size);
+				}
 
 				// Fitness (Is this used? if not what can we do with it? maybe is useful)
-                this.fitness += 0.01;
+                //this.fitness += 0.01;
 
                 return null;
             }
@@ -846,7 +884,8 @@
                             }
                             const childBrain = crossoverBrain.mutate();
                             const parentMaturity = (a.maturitySize + mate.maturitySize) / 2;
-                            const childMaturity = parentMaturity * (0.95 + Math.random() * 0.1);
+							const MAX_BASE = a.type === 'prey' ? 8.91 : 9.8;
+							const childMaturity = Math.min(parentMaturity * (0.95 + Math.random() * 0.1), MAX_BASE * 1.15);
                             const child = new Agent(a.x, a.y, a.type, childBrain, Math.max(a.generation, mate.generation) + 1, childMaturity);
                             child.energy = Math.min(a.energy / 2, a.maxEnergy * 0.3);
                             mate.energy /= 3;
@@ -861,13 +900,13 @@
                 // Eating
                 for (const p of plants) {
                     if (!p.dead && a.type === 'prey' && a.dist(p) < a.size + p.size) {
-                        a.energy += window.PLANT_ENERGY;
+                        a.energy += CONFIG.PLANT_ENERGY;
                         p.dead = true;
                     }
                 }
                 for (const c of carcasses) {
                     if (!c.dead && a.type === 'predator' && a.dist(c) < a.size + c.size) {
-                        a.energy += window.CARCASS_ENERGY;
+                        a.energy += CONFIG.CARCASS_ENERGY;
                         c.dead = true;
                     }
                 }
@@ -875,8 +914,8 @@
 
 
             // Population floor			
-            const preyFloor = floorMode ? CONFIG.PREY_START : window.PREY_FLOOR;
-            const predFloor = floorMode ? CONFIG.PRED_START : window.PRED_FLOOR;
+            const preyFloor = floorMode ? CONFIG.PREY_START : CONFIG.PREY_FLOOR;
+            const predFloor = floorMode ? CONFIG.PRED_START : CONFIG.PRED_FLOOR;
             const preyCount = agents.filter(a => a.type === 'prey').length;
             const predCount = agents.filter(a => a.type === 'predator').length;
             const carcassCount = carcasses.length;
@@ -894,25 +933,25 @@
             }
 			
             // Population cap - remove excess agents		
-            if (preyCount > window.MAX_PREY_POP) {
+            if (preyCount > CONFIG.MAX_PREY_POP) {
                 // Remove weakest prey (lowest energy)				
                 const preyAgents = agents.filter(a => a.type === 'prey');
                 preyAgents.sort((a, b) => a.energy - b.energy);
-                for (let i = 0; i < preyCount - window.MAX_PREY_POP; i++) {
+                for (let i = 0; i < preyCount - CONFIG.MAX_PREY_POP; i++) {
                     preyAgents[i].dead = true;
                 }
             }
-            if (predCount > window.MAX_PRED_POP) {
+            if (predCount > CONFIG.MAX_PRED_POP) {
                 // Remove weakest predators (lowest energy)				
                 const predAgents = agents.filter(a => a.type === 'predator');
                 predAgents.sort((a, b) => a.energy - b.energy);
-                for (let i = 0; i < predCount - window.MAX_PRED_POP; i++) {
+                for (let i = 0; i < predCount - CONFIG.MAX_PRED_POP; i++) {
                     predAgents[i].dead = true;
                 }
             }
-			if (carcasses.length > window.MAX_PREY_POP) {
+			if (carcasses.length > CONFIG.MAX_PREY_POP) {
 				// Remove oldest (first) carcasses				
-				for (let i = 0; i < carcasses.length - window.MAX_PREY_POP; i++) {
+				for (let i = 0; i < carcasses.length - CONFIG.MAX_PREY_POP; i++) {
 					carcasses[i].dead = true;
 				}
 			}
@@ -944,8 +983,10 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 			
 			// Menu background
-            const menuW = 500;
-            const menuH = Math.min(canvas.height - 60, 40 + MENU_PARAMS.length * 35);
+			const COLUMNS = 2;
+			const COL_WIDTH = 370;
+			const menuW = 760;
+			const menuH = Math.min(canvas.height - 60, 40 + Math.ceil(MENU_PARAMS.length / COLUMNS) * 35);
             const menuX = (canvas.width - menuW) / 2;
             const menuY = (canvas.height - menuH) / 2;
 
@@ -968,57 +1009,64 @@
 
             const paramY = menuY + 60;
 
-            for (let i = 0; i < MENU_PARAMS.length; i++) {
-                const param = MENU_PARAMS[i];
-                const yPos = paramY + i * 35;
-				
-				// Skip if off-screen
-                if (yPos > menuY + menuH - 10) continue;
-				
-                const isSelected = i === selectedParam;
-				
-                // Highlight selected
-                if (isSelected) {
-                    ctx.fillStyle = 'rgba(68, 68, 255, 0.2)';
-                    ctx.fillRect(menuX, yPos - 15, menuW, 30);
-                    ctx.strokeStyle = '#44f';
-                    ctx.lineWidth = 1;
-                    ctx.strokeRect(menuX, yPos - 15, menuW, 30);
-                }
+			for (let c = 0; c < COLUMNS; c++) {
+				for (let j = 0; j < Math.ceil(MENU_PARAMS.length / COLUMNS); j++) {
+					const i = c * Math.ceil(MENU_PARAMS.length / COLUMNS) + j;
+					if (i >= MENU_PARAMS.length) continue;
 
-				// Label
-                ctx.font = isSelected ? 'bold 14px Courier New' : '14px Courier New';
-                ctx.fillStyle = param.color;
-                ctx.textAlign = 'left';
-                ctx.fillText(param.label, menuX + 15, yPos);
+					const param = MENU_PARAMS[i];
+					const col = c;
+					const row = j;
+					const yPos = paramY + row * 35;
+					const xOffset = col * COL_WIDTH;
 
-				// Value bar
-                const barX = menuX + 280;
-                const barW = 180;
-                const barH = 18;
+					// Skip if off-screen
+					if (yPos > menuY + menuH - 10) continue;
 
-				// Background bar
-                ctx.fillStyle = '#333';
-                ctx.fillRect(barX, yPos - 8, barW, barH);
-				
-                // Value fill
-                const ratio = (param.value - param.min) / (param.max - param.min);
-                ctx.fillStyle = param.color;
-                ctx.fillRect(barX, yPos - 8, barW * ratio, barH);
+					const isSelected = i === selectedParam;
 
-				// Border
-                ctx.strokeStyle = '#666';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(barX, yPos - 8, barW, barH);
+					// Highlight selected
+					if (isSelected) {
+						ctx.fillStyle = 'rgba(68, 68, 255, 0.2)';
+						ctx.fillRect(menuX + xOffset, yPos - 15, COL_WIDTH, 30);
+						ctx.strokeStyle = '#44f';
+						ctx.lineWidth = 1;
+						ctx.strokeRect(menuX + xOffset, yPos - 15, COL_WIDTH, 30);
+					}
 
-				// Value text
-                ctx.font = '12px Courier New';
-                ctx.fillStyle = '#fff';
-                ctx.textAlign = 'center';
-                const displayVal = param.value.toFixed(param.step < 1 ? 2 : 0);
-                ctx.fillText(displayVal, barX + barW / 2, yPos + 4);
-            }
+					// Label
+					ctx.font = isSelected ? 'bold 14px Courier New' : '14px Courier New';
+					ctx.fillStyle = param.color;
+					ctx.textAlign = 'left';
+					ctx.fillText(param.label, menuX + 15 + xOffset, yPos);
 
+					// Value bar
+					const barX = menuX + 170 + xOffset;
+					const barW = 180;
+					const barH = 18;
+
+					// Background bar
+					ctx.fillStyle = '#333';
+					ctx.fillRect(barX, yPos - 8, barW, barH);
+
+					// Value fill
+					const ratio = (param.value - param.min) / (param.max - param.min);
+					ctx.fillStyle = param.color;
+					ctx.fillRect(barX, yPos - 8, barW * ratio, barH);
+
+					// Border
+					ctx.strokeStyle = '#666';
+					ctx.lineWidth = 1;
+					ctx.strokeRect(barX, yPos - 8, barW, barH);
+
+					// Value text
+					ctx.font = '12px Courier New';
+					ctx.fillStyle = '#fff';
+					ctx.textAlign = 'center';
+					const displayVal = param.value.toFixed(param.step < 1 ? 2 : 0);
+					ctx.fillText(displayVal, barX + barW / 2, yPos + 4);
+				}
+			}
 			// Footer
             ctx.font = '11px Courier New';
             ctx.fillStyle = '#666';
@@ -1036,31 +1084,31 @@
                     CONFIG.PLANT_CAP = param.value;
                     break;
                 case 'plantScanDist':
-                    window.PLANT_SCAN_DISTANCE = param.value;
+                    CONFIG.PLANT_SCAN_DISTANCE = param.value;
                     break;
                 case 'plantEnergy':
-                    window.PLANT_ENERGY = param.value;
+                    CONFIG.PLANT_ENERGY = param.value;
                     break;
                 case 'carcassEnergy':
-                    window.CARCASS_ENERGY = param.value;
+                    CONFIG.CARCASS_ENERGY = param.value;
                     break;
                 case 'preyFloor':
-                    window.PREY_FLOOR = param.value;
+                    CONFIG.PREY_FLOOR = param.value;
                     break;
                 case 'predFloor':
-                    window.PRED_FLOOR = param.value;
+                    CONFIG.PRED_FLOOR = param.value;
                     break;
                 case 'maxPreyPop':
-                    window.MAX_PREY_POP = param.value;
+                    CONFIG.MAX_PREY_POP = param.value;
                     break;
                 case 'maxPredPop':
-                    window.MAX_PRED_POP = param.value;
+                    CONFIG.MAX_PRED_POP = param.value;
                     break;
                 case 'preySpeed':
-                    window.PREY_SPEED = param.value;
+                    CONFIG.PREY_SPEED = param.value;
                     break;
                 case 'predSpeed':
-                    window.PRED_SPEED = param.value;
+                    CONFIG.PRED_SPEED = param.value;
                     break;
                 case 'mutRate':
                     CONFIG.MUTATION_RATE = param.value;
@@ -1324,14 +1372,16 @@
 					ctx.textAlign = 'left';
 					const fluxX = nnX + nnW + 15;
 					const fluxY = nnY + 20; 
+					// Show the flux min max current
+	
 					ctx.fillStyle = '#FC6A03';
-					ctx.fillText(`FLUX:${monitoredAgent._sensoryFlux?.toFixed(2) || '0.00'} / ${monitoredAgent._peakFluxSens?.toFixed(2) || '0.00'}`, fluxX, fluxY);
+					ctx.fillText(`FLUX: [${monitoredAgent._minFluxSens?.toFixed(2) || '0.00'} / ${monitoredAgent._peakFluxSens?.toFixed(2) || '0.00'}] ${monitoredAgent._sensoryFlux?.toFixed(2) || '0.00'} `, fluxX, fluxY);
 					ctx.fillStyle = '#0f0';
-					ctx.fillText(`Food: ${monitoredAgent._fluxFood?.toFixed(2) || '0.00'} / ${monitoredAgent._peakFluxFood?.toFixed(2) || '0.00'}`, fluxX, fluxY + 14);
+					ctx.fillText(`Food: [${monitoredAgent._minFluxFood?.toFixed(2) || '0.00'} / ${monitoredAgent._peakFluxFood?.toFixed(2) || '0.00'}] ${monitoredAgent._fluxFood?.toFixed(2) || '0.00'}`, fluxX, fluxY + 14);
 					ctx.fillStyle = '#f00';
-					ctx.fillText(`Threat: ${monitoredAgent._fluxThreat?.toFixed(2) || '0.00'} / ${monitoredAgent._peakFluxThreat?.toFixed(2) || '0.00'}`, fluxX, fluxY + 28);
+					ctx.fillText(`Threat: [${monitoredAgent._minFluxThreat?.toFixed(2) || '0.00'} / ${monitoredAgent._peakFluxThreat?.toFixed(2) || '0.00'}] ${monitoredAgent._fluxThreat?.toFixed(2) || '0.00'}`, fluxX, fluxY + 28);
 					ctx.fillStyle = '#0ff';
-					ctx.fillText(`Mate: ${monitoredAgent._fluxMate?.toFixed(2) || '0.00'} / ${monitoredAgent._peakFluxMate?.toFixed(2) || '0.00'}`, fluxX, fluxY + 42);
+					ctx.fillText(`Mate: [${monitoredAgent._minFluxMate?.toFixed(2) || '0.00'} / ${monitoredAgent._peakFluxMate?.toFixed(2) || '0.00'}] ${monitoredAgent._fluxMate?.toFixed(2) || '0.00'}`, fluxX, fluxY + 42);
 
                     // Layer labels
                     ctx.font = '10px Courier New';
@@ -1390,29 +1440,59 @@
         let showMenu = false;
         let selectedParam = 0;
 		
+		
+		/*  FROM LINE 65
+        const CONFIG = {		
+		    PREY_START: 400,
+            PRED_START: 50,
+            PLANT_START: 10,
+            PLANT_SPAWN_RATE: 0.20,
+            PLANT_CAP: 400,              // Reduced from 600 for better GPU performance
+            CARCASS_DECAY: 0.4,
+            MUTATION_RATE: 0.25,
+            MUTATION_AMOUNT: 0.25,
+            MATING_DIST: 100,
+            COMBAT_DIST: 15,
+            WRAP: true,
+            MAX_GEN: 1000
+			// Global parameter variables (used by agents)
+			PLANT_SCAN_DISTANCE = 20;
+			PLANT_ENERGY = 45;
+			CARCASS_ENERGY = 75;
+			PREY_FLOOR = 20;
+			PRED_FLOOR = 10;
+			MAX_PREY_POP = 300;
+			MAX_PRED_POP = 300;		
+			PREY_SPEED = 3.0;
+			PRED_SPEED = 14.5;
+		}	
+		*/
+		
         // Global parameter variables (used by agents)
+		/*window.PLANT_SCAN_DISTANCE = 20;
         window.PLANT_ENERGY = 45;
         window.CARCASS_ENERGY = 75;
         window.PREY_FLOOR = 20;
         window.PRED_FLOOR = 10;
+        window.MAX_PREY_POP = 300;
+        window.MAX_PRED_POP = 300;		
         window.PREY_SPEED = 3.0;
-        window.PRED_SPEED = 4.5;
-        window.PLANT_SCAN_DISTANCE = 200;
-        window.MAX_PREY_POP = 600;
-        window.MAX_PRED_POP = 50;
+        window.PRED_SPEED = 14.5;*/
+
+
         
         const MENU_PARAMS = [
             { label: 'Plant Spawn Rate', key: 'plantSpawnRate', min: 0, max: 1.0, step: 0.05, value: CONFIG.PLANT_SPAWN_RATE, color: '#0f0' },
             { label: 'Max Plants', key: 'maxPlants', min: 0, max: 3000, step: 50, value: CONFIG.PLANT_CAP, color: '#0f0' },
-            { label: 'Plant Scan Distance', key: 'plantScanDist', min: 10, max: 400, step: 10, value: 80, color: '#0f0' },
-            { label: 'Plant Energy Gain', key: 'plantEnergy', min: 5, max: 100, step: 1, value: 45, color: '#0f0' },
-            { label: 'Carcass Energy Gain', key: 'carcassEnergy', min: 5, max: 200, step: 5, value: 75, color: '#f00' },
-            { label: 'Prey Floor (Min Pop)', key: 'preyFloor', min: 1, max: 500, step: 1, value: 20, color: '#44f' },
-            { label: 'Predator Floor (Min Pop)', key: 'predFloor', min: 1, max: 500, step: 1, value: 10, color: '#a00' },
-            { label: 'Max Prey Population', key: 'maxPreyPop', min: 0, max: 3000, step: 50, value: 600, color: '#44f' },
-            { label: 'Max Predator Population', key: 'maxPredPop', min: 0, max: 1500, step: 10, value: 60, color: '#a00' },
-            { label: 'Prey Base Speed', key: 'preySpeed', min: 1.0, max: 10.0, step: 0.1, value: 3.0, color: '#44f' },
-            { label: 'Predator Base Speed', key: 'predSpeed', min: 0.5, max: 20.0, step: 0.1, value: 4.5, color: '#a00' },
+            { label: 'Plant Scan Distance', key: 'plantScanDist', min: 10, max: 400, step: 10, value: CONFIG.PLANT_SCAN_DISTANCE, color: '#0f0' },
+            { label: 'Plant Energy Gain', key: 'plantEnergy', min: 5, max: 100, step: 1, value: CONFIG.PLANT_ENERGY, color: '#0f0' },
+            { label: 'Carcass Energy Gain', key: 'carcassEnergy', min: 5, max: 200, step: 5, value: CONFIG.CARCASS_ENERGY, color: '#f00' },
+            { label: 'Prey Floor (Min Pop)', key: 'preyFloor', min: 1, max: 500, step: 1, value: CONFIG.PREY_FLOOR, color: '#44f' },
+            { label: 'Predator Floor (Min Pop)', key: 'predFloor', min: 1, max: 500, step: 1, value: CONFIG.PRED_FLOOR, color: '#a00' },
+            { label: 'Max Prey Population', key: 'maxPreyPop', min: 0, max: 3000, step: 50, value: CONFIG.MAX_PREY_POP, color: '#44f' },
+            { label: 'Max Predator Population', key: 'maxPredPop', min: 0, max: 1500, step: 10, value: CONFIG.MAX_PRED_POP, color: '#a00' },
+            { label: 'Prey Base Speed', key: 'preySpeed', min: 1.0, max: 10.0, step: 0.1, value: CONFIG.PREY_SPEED, color: '#44f' },
+            { label: 'Predator Base Speed', key: 'predSpeed', min: 0.5, max: 20.0, step: 0.1, value: CONFIG.PRED_SPEED, color: '#a00' },
             { label: 'Mutation Rate', key: 'mutRate', min: 0.01, max: 0.5, step: 0.01, value: CONFIG.MUTATION_RATE, color: '#ff0' },
             { label: 'Mutation Amount', key: 'mutAmount', min: 0.01, max: 0.5, step: 0.01, value: CONFIG.MUTATION_AMOUNT, color: '#ff0' },
             { label: 'Combat Distance', key: 'combatDist', min: 5, max: 100, step: 1, value: CONFIG.COMBAT_DIST, color: '#f80' },
@@ -1481,7 +1561,7 @@
                 return;
             }
             if (e.code === 'Equal' || e.code === 'NumpadAdd' || e.code === 'NumpadEnter') {
-                speed = Math.min(10, speed + 1);
+                speed = Math.min(50, speed + 1);
                 return;
             }
             if (e.code === 'Minus' || e.code === 'NumpadSubtract') {
