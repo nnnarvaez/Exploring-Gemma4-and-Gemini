@@ -66,7 +66,7 @@
             PRED_START: 50,
             PLANT_START: 10,
             PLANT_SPAWN_RATE: 0.20,
-            PLANT_CAP: 800,              // Reduced from 600 for better GPU performance
+            PLANT_CAP: 800,
             CARCASS_DECAY: 0.7,
             MUTATION_RATE: 0.25,
             MUTATION_AMOUNT: 0.25,
@@ -79,8 +79,8 @@
         // --- NEURAL NETWORK (8 inputs, 6 hidden, 3 outputs) ---
         class Brain {
             constructor(weights = null) {
-                this.inputSize = 8;      // Changed from 14 → SENSORY FLUX
-                this.hiddenSize = 6;     // Changed from 8 → reduced
+                this.inputSize = 8;
+                this.hiddenSize = 6;
                 this.outputSize = 3;
                 if (weights) {
                     this.weights = [...weights];
@@ -99,7 +99,6 @@
                 for (let i = 0; i < newWeights.length; i++) {
                     if (Math.random() < CONFIG.MUTATION_RATE) {
                         newWeights[i] += (Math.random() * 2 - 1) * CONFIG.MUTATION_AMOUNT;
-                        // Weight clipping: prevent runaway growth
                         newWeights[i] = Math.max(-2.5, Math.min(2.5, newWeights[i]));
                     }
                 }
@@ -107,6 +106,10 @@
             }
 
             activate(inputs) {
+                // Store inputs for visualization
+                this.lastInputs = [...inputs];
+                this.lastHidden = [];
+                
                 // Inputs -> Hidden
                 const hidden = [];
                 let wIdx = 0;
@@ -116,19 +119,28 @@
                         sum += inputs[j] * this.weights[wIdx++];
                     }
                     sum += this.weights[wIdx++];
-                    hidden.push(Math.tanh(sum));
+                    const activation = Math.tanh(sum);
+                    hidden.push(activation);
+                    this.lastHidden.push(activation);
                 }
 
                 // Hidden -> Outputs
                 const outputs = [];
+                this.lastOutputs = [];
                 for (let i = 0; i < this.outputSize; i++) {
                     let sum = 0;
                     for (let j = 0; j < this.hiddenSize; j++) {
                         sum += hidden[j] * this.weights[wIdx++];
                     }
                     sum += this.weights[wIdx++];
-                    if (i === 0) outputs.push(Math.tanh(sum));
-                    else outputs.push(1 / (1 + Math.exp(-sum)));
+                    let activation;
+                    if (i === 0) {
+                        activation = Math.tanh(sum);
+                    } else {
+                        activation = 1 / (1 + Math.exp(-sum));
+                    }
+                    outputs.push(activation);
+                    this.lastOutputs.push(activation);
                 }
                 return { steering: outputs[0], speed: outputs[1], mating: outputs[2] };
             }
@@ -261,14 +273,12 @@
                 this.fitness = 0;
             }
 
-            // Helper: normalize angle to [-π, π]
             normalizeAngle(angle) {
                 while (angle > Math.PI) angle -= Math.PI * 2;
                 while (angle < -Math.PI) angle += Math.PI * 2;
                 return angle;
             }
 
-            // NEW: Sensory Flux Input Construction (8 inputs)
             getInputsFlux(plants, carcasses, agents) {
                 let foodFlux = 0;
                 let threatFlux = 0;
@@ -281,13 +291,10 @@
                 let minThreatDist = Infinity;
                 let minMateDist = Infinity;
 
-                // --- Scan Food (Plants + Carcasses) ---
-                // Spatial optimization: only check plants within scan radius
                 const PLANT_SCAN_RADIUS = window.PLANT_SCAN_DISTANCE;
                 for (const p of plants) {
                     if (p.dead) continue;
                     
-                    // Quick distance-squared check to skip far plants
                     const dx = p.x - this.x;
                     const dy = p.y - this.y;
                     const distSq = dx*dx + dy*dy;
@@ -334,7 +341,6 @@
 					}
 				}
 
-                // --- Scan Threats ---
                 for (const a of agents) {
                     if (a.dead || a === this) continue;
                     
@@ -366,7 +372,6 @@
                     }
                 }
 
-                // --- Scan Mates ---
                 for (const a of agents) {
                     if (a.dead || a === this || a.type !== this.type) continue;
                     if (a.energy < a.reproThreshold * 0.5) continue;
@@ -393,31 +398,25 @@
                     }
                 }
 
-                // Combine fluxes
                 let sensoryFlux = foodFlux + threatFlux + mateFlux;
 			    this._peakFluxSens = Math.max(this._peakFluxFood, Math.abs(foodFlux));
-				// Store for visualization
 				this._sensoryFlux = sensoryFlux;
 				this._fluxFood = foodFlux;
 				this._fluxThreat = threatFlux;
 				this._fluxMate = mateFlux;
 				this._fluxTotal = sensoryFlux;
 
-                // OVERRIDE 1: Critical threat → PANIC
                 if (closestThreat && closestThreat.dist < 40) {
                     sensoryFlux = 1.0;
                 }
                 
-                // OVERRIDE 2: Jackpot (food + mate) → FEAST & BREED
                 if (closestFood && closestMate && 
                     closestFood.dist < 100 && closestMate.dist < 100) {
                     sensoryFlux = 1.1;
                 }
 
-                // Leaky integrator
                 this.fluxMemory = 0.8 * this.fluxMemory + 0.2 * sensoryFlux;
 
-                // Find strongest entity
                 let strongestDist = Infinity;
                 let strongestAngle = 0;
                 
@@ -437,23 +436,21 @@
                 const normalizedAngle = strongestDist === Infinity ? 0 : 
                     this.normalizeAngle(strongestAngle - this.angle) / Math.PI;
 
-                // Return 8-element input vector
                 return [
-                    sensoryFlux,                                           // 0: Flux feeling
-                    strongestDist === Infinity ? 1 : Math.max(0, 1 - strongestDist / 200),  // 1: Urgency
-                    normalizedAngle,                                       // 2: Direction to strongest
-                    this.fluxMemory,                                       // 3: Memory
-                    this.vx / this.baseSpeed,                              // 4: Velocity X
-                    this.vy / this.baseSpeed,                              // 5: Velocity Y
-                    this.energy / this.maxEnergy,                          // 6: Energy
-                    this.size / 2.5                                        // 7: Size
+                    sensoryFlux,
+                    strongestDist === Infinity ? 1 : Math.max(0, 1 - strongestDist / 200),
+                    normalizedAngle,
+                    this.fluxMemory,
+                    this.vx / this.baseSpeed,
+                    this.vy / this.baseSpeed,
+                    this.energy / this.maxEnergy,
+                    this.size / 2.5
                 ];
             }
 
             update(plants, carcasses, agents) {
                 this.age++;
                 
-            // Growth during first 1/3 of lifetime
                 if (this.age < this.growthPeriod && this.size < this.maturitySize) {
                     const progress = this.age / this.growthPeriod;
                     this.size = this.birthSize + (this.maturitySize - this.birthSize) * progress;
@@ -470,10 +467,8 @@
                     }
                 }
 
-                // CHANGED: Use sensory flux instead of discrete inputs
                 const outputs = this.brain.activate(this.getInputsFlux(plants, carcasses, agents));
 
-                // State logic
                 const MATE_TIMEOUT = 5000;
                 if (this.energy > this.reproThreshold && this.state !== 'combat') {
                     if (this.state !== 'mate') {
@@ -488,13 +483,11 @@
                     this.mateEntered = 0;
                 }
 
-                // Movement
                 const turnSpeed = 0.1;
                 this.angle += outputs.steering * turnSpeed;
                 
                 let speedMult = outputs.speed;
                 
-                // Find mate for special behavior
                 let nearestMate = null;
                 let minMateDist = Infinity;
                 for (const a of agents) {
@@ -521,7 +514,6 @@
                 this.x += this.vx;
                 this.y += this.vy;
 
-                // Wrap
                 if (CONFIG.WRAP) {
                     if (this.x < 0) this.x = canvas.width;
                     if (this.x > canvas.width) this.x = 0;
@@ -529,7 +521,6 @@
                     if (this.y > canvas.height) this.y = 0;
                 }
 
-                // Plant collision
                 for (const p of plants) {
                     if (p.dead) continue;
                     const dx = this.x - p.x;
@@ -546,14 +537,12 @@
                     }
                 }
 
-                // Energy cost
                 const sizeCost = 1 + (this.size * 0.05);
                 let moveCost = 0.1 * sizeCost;
                 if (this.type === 'predator' && this.state === 'wander') moveCost += 0.15 * this.size;
                 if (this.state === 'mate') moveCost *= 0.5;
                 this.energy -= moveCost;
 
-                // Combat
                 let inCombat = false;
                 if (this.type === 'prey') {
                     for (const p of agents) {
@@ -582,13 +571,11 @@
                 }
                 if (inCombat) this.state = 'combat';
 
-                // Death
                 if (this.energy <= 0 || this.hp <= 0 || this.age >= this.maxLifetime) {
                     this.dead = true;
                     return new Carcass(this.x, this.y, this.energy, this.size);
                 }
 
-                // Fitness
                 this.fitness += 0.01;
 
                 return null;
@@ -785,7 +772,6 @@
                     }
                 }
             }
-            // Periodically cull 10% of plants
             if (frameCount % 300 === 0 && plants.length > 30) {
                 const cullCount = Math.floor(plants.length * 0.01);
                 for (let i = 0; i < cullCount; i++) {
@@ -799,7 +785,6 @@
             const newCarcasses = [];
             const newAgents = [];
 
-            // Update agents
             for (const a of agents) {
                 const carcass = a.update(plants, carcasses, agents);
                 if (carcass) {
@@ -807,7 +792,6 @@
                     stats.deaths++;
                 }
                 
-                // Mating
                 if (a.state === 'mate' && a.energy > a.reproThreshold) {
                     let mate = null;
                     let minDist = Infinity;
@@ -842,7 +826,6 @@
                     }
                 }
 
-                // Eating
                 for (const p of plants) {
                     if (!p.dead && a.type === 'prey' && a.dist(p) < a.size + p.size) {
                         a.energy += window.PLANT_ENERGY;
@@ -857,7 +840,6 @@
                 }
             }
 
-            // Population floor
             const preyFloor = floorMode ? CONFIG.PREY_START : window.PREY_FLOOR;
             const predFloor = floorMode ? CONFIG.PRED_START : window.PRED_FLOOR;
             const preyCount = agents.filter(a => a.type === 'prey').length;
@@ -874,9 +856,7 @@
                 }
             }
 
-            // Population cap - remove excess agents
             if (preyCount > window.MAX_PREY_POP) {
-                // Remove weakest prey (lowest energy)
                 const preyAgents = agents.filter(a => a.type === 'prey');
                 preyAgents.sort((a, b) => a.energy - b.energy);
                 for (let i = 0; i < preyCount - window.MAX_PREY_POP; i++) {
@@ -884,7 +864,6 @@
                 }
             }
             if (predCount > window.MAX_PRED_POP) {
-                // Remove weakest predators (lowest energy)
                 const predAgents = agents.filter(a => a.type === 'predator');
                 predAgents.sort((a, b) => a.energy - b.energy);
                 for (let i = 0; i < predCount - window.MAX_PRED_POP; i++) {
@@ -892,13 +871,11 @@
                 }
             }
 			if (carcasses.length > window.MAX_PREY_POP) {
-				// Remove oldest (first) carcasses
 				for (let i = 0; i < carcasses.length - window.MAX_PREY_POP; i++) {
 					carcasses[i].dead = true;
 				}
 			}
 			
-            // Cleanup
             plants = plants.filter(p => !p.dead);
             carcasses = carcasses.filter(c => !c.dead);
             agents = agents.filter(a => !a.dead);
@@ -906,7 +883,6 @@
             agents.push(...newAgents);
             carcasses.push(...newCarcasses);
 
-            // History
             if (frameCount % 10 === 0) {
                 history.push({
                     prey: agents.filter(a => a.type === 'prey').length,
@@ -920,11 +896,9 @@
         }
 
         function drawMenu() {
-            // Semi-transparent overlay
             ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Menu background
             const menuW = 500;
             const menuH = Math.min(canvas.height - 60, 40 + MENU_PARAMS.length * 35);
             const menuX = (canvas.width - menuW) / 2;
@@ -937,7 +911,6 @@
             ctx.lineWidth = 2;
             ctx.strokeRect(menuX - 10, menuY - 10, menuW + 20, menuH + 20);
 
-            // Title
             ctx.font = 'bold 18px Courier New';
             ctx.fillStyle = '#44f';
             ctx.textAlign = 'center';
@@ -947,20 +920,16 @@
             ctx.fillStyle = '#888';
             ctx.fillText('↑↓ Select | ← → Adjust | ESC Close', canvas.width / 2, menuY + 45);
 
-            // Parameters
             const paramY = menuY + 60;
-            const paramPerPage = Math.floor((menuH - 60) / 35);
 
             for (let i = 0; i < MENU_PARAMS.length; i++) {
                 const param = MENU_PARAMS[i];
                 const yPos = paramY + i * 35;
 
-                // Skip if off-screen
                 if (yPos > menuY + menuH - 10) continue;
 
                 const isSelected = i === selectedParam;
                 
-                // Highlight selected
                 if (isSelected) {
                     ctx.fillStyle = 'rgba(68, 68, 255, 0.2)';
                     ctx.fillRect(menuX, yPos - 15, menuW, 30);
@@ -969,32 +938,26 @@
                     ctx.strokeRect(menuX, yPos - 15, menuW, 30);
                 }
 
-                // Label
                 ctx.font = isSelected ? 'bold 14px Courier New' : '14px Courier New';
                 ctx.fillStyle = param.color;
                 ctx.textAlign = 'left';
                 ctx.fillText(param.label, menuX + 15, yPos);
 
-                // Value bar
                 const barX = menuX + 280;
                 const barW = 180;
                 const barH = 18;
                 
-                // Background bar
                 ctx.fillStyle = '#333';
                 ctx.fillRect(barX, yPos - 8, barW, barH);
                 
-                // Value fill
                 const ratio = (param.value - param.min) / (param.max - param.min);
                 ctx.fillStyle = param.color;
                 ctx.fillRect(barX, yPos - 8, barW * ratio, barH);
                 
-                // Border
                 ctx.strokeStyle = '#666';
                 ctx.lineWidth = 1;
                 ctx.strokeRect(barX, yPos - 8, barW, barH);
 
-                // Value text
                 ctx.font = '12px Courier New';
                 ctx.fillStyle = '#fff';
                 ctx.textAlign = 'center';
@@ -1002,7 +965,6 @@
                 ctx.fillText(displayVal, barX + barW / 2, yPos + 4);
             }
 
-            // Footer
             ctx.font = '11px Courier New';
             ctx.fillStyle = '#666';
             ctx.textAlign = 'center';
@@ -1010,7 +972,6 @@
         }
 
         function applyMenuParam(param) {
-            // Apply the parameter change to CONFIG and other places
             switch (param.key) {
                 case 'plantSpawnRate':
                     CONFIG.PLANT_SPAWN_RATE = param.value;
@@ -1068,7 +1029,21 @@
             for (const c of carcasses) c.draw(ctx);
             for (const a of agents) a.draw(ctx);
 
-            // Combat sparks
+            // Highlight monitored agent with yellow glow
+            if (showNN && monitoredAgent && !monitoredAgent.dead) {
+                ctx.save();
+                ctx.shadowColor = '#ffff00';
+                ctx.shadowBlur = 40;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.strokeStyle = '#ffff00';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(monitoredAgent.x, monitoredAgent.y, monitoredAgent.size * 2.2, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            }
+
             const now = Date.now();
             for (let i = 0; i < agents.length; i++) {
                 if (agents[i].type !== 'predator' || agents[i].dead) continue;
@@ -1092,7 +1067,6 @@
                 if (a.type === 'predator' && a.size > curMaxPred) curMaxPred = a.size;
             }
 
-            // Graph
             const graphH = 80;
             const graphY = canvas.height - graphH;
             ctx.fillStyle = 'rgba(0,0,0,0.6)';
@@ -1148,25 +1122,26 @@
                     }
                 }
                 if (monitoredAgent && !monitoredAgent.dead) {
-                    ctx.save();
-                    ctx.shadowColor = '#fff';
-                    ctx.shadowBlur = 20;
-                    ctx.beginPath();
-                    ctx.arc(monitoredAgent.x, monitoredAgent.y, monitoredAgent.size * 1.5, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(255,255,255,0.15)';
-                    ctx.fill();
-                    ctx.restore();
-
                     const nnW = 260;
                     const nnH = 360;
                     const nnX = 5;
-                      const nnY = window.innerHeight - nnH - 20;
+                    const nnY = window.innerHeight - nnH - 20;
 
                     ctx.fillStyle = 'rgba(0,0,0,0.85)';
                     ctx.fillRect(nnX - 10, nnY - 10, nnW + 20, nnH + 30);
 
-                    const inputSize = 8;      // Changed from 14
-                    const hiddenSize = 6;     // Changed from 8
+                    // Species indicator (blue/red P)
+                    ctx.font = 'bold 20px Courier New';
+                    if (monitoredAgent.type === 'prey') {
+                        ctx.fillStyle = '#44f';
+                        ctx.fillText('P', nnX + 10, nnY + 12);
+                    } else {
+                        ctx.fillStyle = '#a00';
+                        ctx.fillText('P', nnX + 10, nnY + 12);
+                    }
+
+                    const inputSize = 8;
+                    const hiddenSize = 6;
                     const outputSize = 3;
 
                     const layers = [
@@ -1183,55 +1158,95 @@
                         }));
                     });
 
+                    // Draw ghost weights
                     let idx = 0;
+                    
+                    // Input → Hidden weights
                     for (let i = 0; i < inputSize; i++) {
                         for (let j = 0; j < hiddenSize; j++) {
                             const w = monitoredAgent.brain.weights[idx++];
-                            const alpha = Math.min(Math.abs(w), 1);
-                            ctx.strokeStyle = w > 0 ? `rgba(0,180,255,${alpha * 0.7})` : `rgba(255,80,80,${alpha * 0.7})`;
-                            ctx.lineWidth = Math.min(Math.abs(w) * 3.5, 3.5);
+                            const alpha = Math.min(Math.abs(w) * 0.6 + 0.1, 0.5);
+                            ctx.strokeStyle = w > 0 ? `rgba(100, 180, 255, ${alpha})` : `rgba(255, 120, 100, ${alpha})`;
+                            ctx.lineWidth = Math.min(Math.abs(w) * 2.5 + 0.5, 2.5);
                             ctx.beginPath();
                             ctx.moveTo(positions[0][i].x, positions[0][i].y);
                             ctx.lineTo(positions[1][j].x, positions[1][j].y);
                             ctx.stroke();
                         }
                     }
-                    const biasW = monitoredAgent.brain.weights[idx++];
-                    const biasAlpha = Math.min(Math.abs(biasW), 1);
-                    ctx.strokeStyle = biasW > 0 ? `rgba(0,180,255,${biasAlpha * 0.4})` : `rgba(255,80,80,${biasAlpha * 0.4})`;
-                    ctx.lineWidth = Math.min(Math.abs(biasW) * 3.5, 3.5);
-                    ctx.beginPath();
-                    ctx.moveTo(nnX - 5, positions[1][0].y);
-                    ctx.lineTo(positions[1][0].x, positions[1][0].y);
-                    ctx.stroke();
-
+                    idx++;  // Skip hidden bias
+                    
+                    // Hidden → Output weights
                     for (let i = 0; i < hiddenSize; i++) {
                         for (let j = 0; j < outputSize; j++) {
                             const w = monitoredAgent.brain.weights[idx++];
-                            const alpha = Math.min(Math.abs(w), 1);
-                            ctx.strokeStyle = w > 0 ? `rgba(0,180,255,${alpha * 0.7})` : `rgba(255,80,80,${alpha * 0.7})`;
-                            ctx.lineWidth = Math.min(Math.abs(w) * 3.5, 3.5);
+                            const alpha = Math.min(Math.abs(w) * 0.6 + 0.1, 0.5);
+                            ctx.strokeStyle = w > 0 ? `rgba(100, 180, 255, ${alpha})` : `rgba(255, 120, 100, ${alpha})`;
+                            ctx.lineWidth = Math.min(Math.abs(w) * 2.5 + 0.5, 2.5);
                             ctx.beginPath();
                             ctx.moveTo(positions[1][i].x, positions[1][i].y);
                             ctx.lineTo(positions[2][j].x, positions[2][j].y);
                             ctx.stroke();
                         }
                     }
-                    const outBiasW = monitoredAgent.brain.weights[idx++];
-                    const outBiasAlpha = Math.min(Math.abs(outBiasW), 1);
-                    ctx.strokeStyle = outBiasW > 0 ? `rgba(0,180,255,${outBiasAlpha * 0.4})` : `rgba(255,80,80,${outBiasAlpha * 0.4})`;
-                    ctx.lineWidth = Math.min(Math.abs(outBiasW) * 3.5, 3.5);
-                    ctx.beginPath();
-                    ctx.moveTo(nnX - 5, positions[2][0].y);
-                    ctx.lineTo(positions[2][0].x, positions[2][0].y);
-                    ctx.stroke();
 
-                    const allPositions = [...positions[0], ...positions[1], ...positions[2]];
-                    for (const pos of allPositions) {
-                        ctx.fillStyle = '#fff';
-                        ctx.beginPath();
-                        ctx.arc(pos.x, pos.y, 4, 0, Math.PI * 2);
-                        ctx.fill();
+                    // Helper function for activation colors
+                    const activationToColor = (value, isOutput = false) => {
+                        let normalized = value;
+                        if (isOutput && value >= 0 && value <= 1) {
+                            normalized = value * 2 - 1;
+                        }
+                        
+                        normalized = Math.max(-1, Math.min(1, normalized));
+                        const magnitude = Math.abs(normalized);
+                        
+                        if (normalized > 0) {
+                            const brightness = 100 + magnitude * 155;
+                            return `rgb(50, ${brightness}, 255)`;
+                        } else {
+                            const brightness = 100 + magnitude * 155;
+                            return `rgb(255, ${50 + magnitude * 100}, 50)`;
+                        }
+                    };
+                    
+                    // Draw neurons with activation colors
+                    if (monitoredAgent.brain.lastInputs) {
+                        for (let i = 0; i < inputSize; i++) {
+                            const activation = monitoredAgent.brain.lastInputs[i];
+                            ctx.fillStyle = activationToColor(activation);
+                            ctx.beginPath();
+                            ctx.arc(positions[0][i].x, positions[0][i].y, 5, 0, Math.PI * 2);
+                            ctx.fill();
+                            ctx.strokeStyle = '#fff';
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    }
+                    
+                    if (monitoredAgent.brain.lastHidden) {
+                        for (let i = 0; i < hiddenSize; i++) {
+                            const activation = monitoredAgent.brain.lastHidden[i];
+                            ctx.fillStyle = activationToColor(activation);
+                            ctx.beginPath();
+                            ctx.arc(positions[1][i].x, positions[1][i].y, 5, 0, Math.PI * 2);
+                            ctx.fill();
+                            ctx.strokeStyle = '#fff';
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    }
+                    
+                    if (monitoredAgent.brain.lastOutputs) {
+                        for (let i = 0; i < outputSize; i++) {
+                            const activation = monitoredAgent.brain.lastOutputs[i];
+                            ctx.fillStyle = activationToColor(activation, true);
+                            ctx.beginPath();
+                            ctx.arc(positions[2][i].x, positions[2][i].y, 6, 0, Math.PI * 2);
+                            ctx.fill();
+                            ctx.strokeStyle = '#fff';
+                            ctx.lineWidth = 2;
+                            ctx.stroke();
+                        }
                     }
 
 					// Flux breakdown display
@@ -1259,7 +1274,7 @@
                      ctx.font = '14px Courier New';
                     ctx.textAlign = 'right';
                     ctx.fillStyle = monitoredAgent.type === 'prey' ? '#66f' : '#c22';
-                    ctx.fillText(`${monitoredAgent.type} #${monitoredAgent.id} | gen:${monitoredAgent.generation} | size:${monitoredAgent.size.toFixed(1)} | energy:${Math.round(monitoredAgent.energy)}/${Math.round(monitoredAgent.maxEnergy)}`, canvas.width - 10, 70);
+                    ctx.fillText(`${monitoredAgent.type} gen:${monitoredAgent.generation} | size:${monitoredAgent.size.toFixed(1)} | energy:${Math.round(monitoredAgent.energy)}/${Math.round(monitoredAgent.maxEnergy)}`, canvas.width - 10, 70);
                     ctx.fillStyle = '#888';
                     ctx.fillText('← → cycle', canvas.width - 10, 86);
                 }
@@ -1279,7 +1294,6 @@
                 document.getElementById('w-line').style.color = '';
             }
 
-            // Draw menu if open
             if (showMenu) {
                 drawMenu();
             }
@@ -1297,14 +1311,13 @@
             requestAnimationFrame(loop);
         }
 
-          let showNN = false;
+        let showNN = false;
         let monitoredAgent = null;
         let monitorIndex = 0;
         let floorMode = false;
         let showMenu = false;
         let selectedParam = 0;
 
-        // Global parameter variables (used by agents)
         window.PLANT_ENERGY = 45;
         window.CARCASS_ENERGY = 75;
         window.PREY_FLOOR = 20;
@@ -1314,6 +1327,7 @@
         window.PLANT_SCAN_DISTANCE = 200;
         window.MAX_PREY_POP = 600;
         window.MAX_PRED_POP = 50;
+        
         const MENU_PARAMS = [
             { label: 'Plant Spawn Rate', key: 'plantSpawnRate', min: 0, max: 1.0, step: 0.05, value: CONFIG.PLANT_SPAWN_RATE, color: '#0f0' },
             { label: 'Max Plants', key: 'maxPlants', min: 0, max: 3000, step: 50, value: CONFIG.PLANT_CAP, color: '#0f0' },
@@ -1332,7 +1346,6 @@
             { label: 'Mating Distance', key: 'matingDist', min: 20, max: 1000, step: 50, value: CONFIG.MATING_DIST, color: '#f0f' },
         ];
 
-        // --- MOUSE TRACKING ---
         let mouseX = 0;
         let mouseY = 0;
         const cursorEl = document.getElementById('cursor');
@@ -1348,11 +1361,9 @@
             cursorEl.style.display = 'none';
         });
 
-        // --- CONTROLS ---
         window.addEventListener('contextmenu', e => e.preventDefault());
 
         window.addEventListener('keydown', (e) => {
-            // Menu controls
             if (e.code === 'Escape') {
                 showMenu = !showMenu;
                 selectedParam = 0;
@@ -1380,10 +1391,9 @@
                     applyMenuParam(param);
                     return;
                 }
-                return;  // Block other controls while menu is open
+                return;
             }
 
-            // Normal controls (when menu is closed)
             if (e.code === 'Space') {
                 paused = !paused;
                 return;
