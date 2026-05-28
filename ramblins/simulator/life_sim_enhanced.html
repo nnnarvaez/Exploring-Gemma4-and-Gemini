@@ -66,7 +66,7 @@
             PRED_START: 50,
             PLANT_START: 10,
             PLANT_SPAWN_RATE: 0.20,
-            PLANT_CAP: 800,
+            PLANT_CAP: 800,              // Reduced from 600 for better GPU performance
             CARCASS_DECAY: 0.7,
             MUTATION_RATE: 0.25,
             MUTATION_AMOUNT: 0.25,
@@ -79,8 +79,8 @@
         // --- NEURAL NETWORK (8 inputs, 6 hidden, 3 outputs) ---
         class Brain {
             constructor(weights = null) {
-                this.inputSize = 8;
-                this.hiddenSize = 6;
+                this.inputSize = 8;      // Changed from 14 → SENSORY FLUX
+                this.hiddenSize = 6;     // Changed from 8 → reduced
                 this.outputSize = 3;
                 if (weights) {
                     this.weights = [...weights];
@@ -99,6 +99,7 @@
                 for (let i = 0; i < newWeights.length; i++) {
                     if (Math.random() < CONFIG.MUTATION_RATE) {
                         newWeights[i] += (Math.random() * 2 - 1) * CONFIG.MUTATION_AMOUNT;
+						// Weight clipping: prevent runaway growth
                         newWeights[i] = Math.max(-2.5, Math.min(2.5, newWeights[i]));
                     }
                 }
@@ -273,12 +274,14 @@
                 this.fitness = 0;
             }
 
+            // Helper: normalize angle to [-π, π]			
             normalizeAngle(angle) {
                 while (angle > Math.PI) angle -= Math.PI * 2;
                 while (angle < -Math.PI) angle += Math.PI * 2;
                 return angle;
             }
-
+			
+            // NEW: Sensory Flux Input Construction (8 inputs)
             getInputsFlux(plants, carcasses, agents) {
                 let foodFlux = 0;
                 let threatFlux = 0;
@@ -291,10 +294,13 @@
                 let minThreatDist = Infinity;
                 let minMateDist = Infinity;
 
+                // --- Scan Food (Plants + Carcasses) ---	
+                // Spatial optimization: only check plants & Carcasses within scan radius				
                 const PLANT_SCAN_RADIUS = window.PLANT_SCAN_DISTANCE;
                 for (const p of plants) {
                     if (p.dead) continue;
-                    
+
+                    // Quick distance-squared check to skip far plants					
                     const dx = p.x - this.x;
                     const dy = p.y - this.y;
                     const distSq = dx*dx + dy*dy;
@@ -341,6 +347,7 @@
 					}
 				}
 
+                // --- Scan Threats ---				
                 for (const a of agents) {
                     if (a.dead || a === this) continue;
                     
@@ -371,7 +378,8 @@
                         closestThreat = { x: a.x, y: a.y, dist: dist, angle: angle };
                     }
                 }
-
+				
+                // --- Scan Mates ---
                 for (const a of agents) {
                     if (a.dead || a === this || a.type !== this.type) continue;
                     if (a.energy < a.reproThreshold * 0.5) continue;
@@ -397,7 +405,8 @@
                         closestMate = { x: a.x, y: a.y, dist: dist, angle: angle };
                     }
                 }
-
+				
+                // Combine fluxes
                 let sensoryFlux = foodFlux + threatFlux + mateFlux;
 			    this._peakFluxSens = Math.max(this._peakFluxFood, Math.abs(foodFlux));
 				this._sensoryFlux = sensoryFlux;
@@ -405,18 +414,22 @@
 				this._fluxThreat = threatFlux;
 				this._fluxMate = mateFlux;
 				this._fluxTotal = sensoryFlux;
-
+				
+                // OVERRIDE 1: Critical threat → PANIC
                 if (closestThreat && closestThreat.dist < 40) {
                     sensoryFlux = 1.0;
                 }
-                
+				
+                // OVERRIDE 2: Jackpot (food + mate) → FEAST & BREED				
                 if (closestFood && closestMate && 
                     closestFood.dist < 100 && closestMate.dist < 100) {
                     sensoryFlux = 1.1;
                 }
 
+                // Leaky integrator				
                 this.fluxMemory = 0.8 * this.fluxMemory + 0.2 * sensoryFlux;
-
+				
+                // Find strongest entity
                 let strongestDist = Infinity;
                 let strongestAngle = 0;
                 
@@ -435,22 +448,24 @@
 
                 const normalizedAngle = strongestDist === Infinity ? 0 : 
                     this.normalizeAngle(strongestAngle - this.angle) / Math.PI;
-
+				
+                // Return 8-element input vector
                 return [
-                    sensoryFlux,
-                    strongestDist === Infinity ? 1 : Math.max(0, 1 - strongestDist / 200),
-                    normalizedAngle,
-                    this.fluxMemory,
-                    this.vx / this.baseSpeed,
-                    this.vy / this.baseSpeed,
-                    this.energy / this.maxEnergy,
-                    this.size / 2.5
+                    sensoryFlux,                                           // 0: Flux feeling
+                    strongestDist === Infinity ? 1 : Math.max(0, 1 - strongestDist / 200),  // 1: Urgency
+                    normalizedAngle,                                       // 2: Direction to strongest
+                    this.fluxMemory,                                       // 3: Memory
+                    this.vx / this.baseSpeed,                              // 4: Velocity X
+                    this.vy / this.baseSpeed,                              // 5: Velocity Y
+                    this.energy / this.maxEnergy,                          // 6: Energy
+                    this.size / 12.5                                        // 7: Size (was / 2.5)
                 ];
             }
 
             update(plants, carcasses, agents) {
                 this.age++;
-                
+				
+            // Growth during first 1/3 of lifetime                
                 if (this.age < this.growthPeriod && this.size < this.maturitySize) {
                     const progress = this.age / this.growthPeriod;
                     this.size = this.birthSize + (this.maturitySize - this.birthSize) * progress;
@@ -466,9 +481,11 @@
                         this.size = this.maturitySize;
                     }
                 }
-
+				
+                // CHANGED: Use sensory flux instead of discrete inputs
                 const outputs = this.brain.activate(this.getInputsFlux(plants, carcasses, agents));
-
+				
+                // State logic (Forcing mating state for longuer once reached)
                 const MATE_TIMEOUT = 5000;
                 if (this.energy > this.reproThreshold && this.state !== 'combat') {
                     if (this.state !== 'mate') {
@@ -482,12 +499,14 @@
                     this.state = 'wander';
                     this.mateEntered = 0;
                 }
-
+				
+                // Movement
                 const turnSpeed = 0.1;
                 this.angle += outputs.steering * turnSpeed;
                 
                 let speedMult = outputs.speed;
-                
+				
+                // Find mate for special behavior                
                 let nearestMate = null;
                 let minMateDist = Infinity;
                 for (const a of agents) {
@@ -514,13 +533,15 @@
                 this.x += this.vx;
                 this.y += this.vy;
 
+				// Wrap (What are we wrapping???)
                 if (CONFIG.WRAP) {
                     if (this.x < 0) this.x = canvas.width;
                     if (this.x > canvas.width) this.x = 0;
                     if (this.y < 0) this.y = canvas.height;
                     if (this.y > canvas.height) this.y = 0;
                 }
-
+				
+                // Plant collision
                 for (const p of plants) {
                     if (p.dead) continue;
                     const dx = this.x - p.x;
@@ -536,13 +557,16 @@
                         if (this.type === 'predator') this.energy -= 0.05;
                     }
                 }
-
+				
+                // Energy cost (Of what: existing, moving, mating ???)
                 const sizeCost = 1 + (this.size * 0.05);
                 let moveCost = 0.1 * sizeCost;
                 if (this.type === 'predator' && this.state === 'wander') moveCost += 0.15 * this.size;
                 if (this.state === 'mate') moveCost *= 0.5;
                 this.energy -= moveCost;
 
+                // Combat (What this does: is there combat? 
+				// I tought predators dealt damage by proximity also this sounds like an input of a forced flag? )				
                 let inCombat = false;
                 if (this.type === 'prey') {
                     for (const p of agents) {
@@ -571,11 +595,13 @@
                 }
                 if (inCombat) this.state = 'combat';
 
+				// Death (Lifetime or Lack of energy)
                 if (this.energy <= 0 || this.hp <= 0 || this.age >= this.maxLifetime) {
                     this.dead = true;
                     return new Carcass(this.x, this.y, this.energy, this.size);
                 }
 
+				// Fitness (Is this used? if not what can we do with it? maybe is useful)
                 this.fitness += 0.01;
 
                 return null;
@@ -772,6 +798,9 @@
                     }
                 }
             }
+
+			
+			// Periodically cull 10% of plants
             if (frameCount % 300 === 0 && plants.length > 30) {
                 const cullCount = Math.floor(plants.length * 0.01);
                 for (let i = 0; i < cullCount; i++) {
@@ -785,13 +814,16 @@
             const newCarcasses = [];
             const newAgents = [];
 
+			
+			// Update agents
             for (const a of agents) {
                 const carcass = a.update(plants, carcasses, agents);
                 if (carcass) {
                     newCarcasses.push(carcass);
                     stats.deaths++;
                 }
-                
+				
+                // Mating               
                 if (a.state === 'mate' && a.energy > a.reproThreshold) {
                     let mate = null;
                     let minDist = Infinity;
@@ -825,7 +857,8 @@
                         }
                     }
                 }
-
+				
+                // Eating
                 for (const p of plants) {
                     if (!p.dead && a.type === 'prey' && a.dist(p) < a.size + p.size) {
                         a.energy += window.PLANT_ENERGY;
@@ -840,6 +873,8 @@
                 }
             }
 
+
+            // Population floor			
             const preyFloor = floorMode ? CONFIG.PREY_START : window.PREY_FLOOR;
             const predFloor = floorMode ? CONFIG.PRED_START : window.PRED_FLOOR;
             const preyCount = agents.filter(a => a.type === 'prey').length;
@@ -850,13 +885,17 @@
                     agents.push(new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 'prey'));
                 }
             }
+			
+	
             if (predCount < predFloor) {
                 for (let i = 0; i < predFloor - predCount; i++) {
                     agents.push(new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 'predator'));
                 }
             }
-
+			
+            // Population cap - remove excess agents		
             if (preyCount > window.MAX_PREY_POP) {
+                // Remove weakest prey (lowest energy)				
                 const preyAgents = agents.filter(a => a.type === 'prey');
                 preyAgents.sort((a, b) => a.energy - b.energy);
                 for (let i = 0; i < preyCount - window.MAX_PREY_POP; i++) {
@@ -864,6 +903,7 @@
                 }
             }
             if (predCount > window.MAX_PRED_POP) {
+                // Remove weakest predators (lowest energy)				
                 const predAgents = agents.filter(a => a.type === 'predator');
                 predAgents.sort((a, b) => a.energy - b.energy);
                 for (let i = 0; i < predCount - window.MAX_PRED_POP; i++) {
@@ -871,11 +911,13 @@
                 }
             }
 			if (carcasses.length > window.MAX_PREY_POP) {
+				// Remove oldest (first) carcasses				
 				for (let i = 0; i < carcasses.length - window.MAX_PREY_POP; i++) {
 					carcasses[i].dead = true;
 				}
 			}
-			
+
+			// Clean up 
             plants = plants.filter(p => !p.dead);
             carcasses = carcasses.filter(c => !c.dead);
             agents = agents.filter(a => !a.dead);
@@ -883,6 +925,7 @@
             agents.push(...newAgents);
             carcasses.push(...newCarcasses);
 
+			// History (The left top corner info ??)
             if (frameCount % 10 === 0) {
                 history.push({
                     prey: agents.filter(a => a.type === 'prey').length,
@@ -896,9 +939,11 @@
         }
 
         function drawMenu() {
+			// Semi-transparent overlay
             ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+			
+			// Menu background
             const menuW = 500;
             const menuH = Math.min(canvas.height - 60, 40 + MENU_PARAMS.length * 35);
             const menuX = (canvas.width - menuW) / 2;
@@ -911,6 +956,7 @@
             ctx.lineWidth = 2;
             ctx.strokeRect(menuX - 10, menuY - 10, menuW + 20, menuH + 20);
 
+			// Title
             ctx.font = 'bold 18px Courier New';
             ctx.fillStyle = '#44f';
             ctx.textAlign = 'center';
@@ -925,11 +971,13 @@
             for (let i = 0; i < MENU_PARAMS.length; i++) {
                 const param = MENU_PARAMS[i];
                 const yPos = paramY + i * 35;
-
+				
+				// Skip if off-screen
                 if (yPos > menuY + menuH - 10) continue;
-
+				
                 const isSelected = i === selectedParam;
-                
+				
+                // Highlight selected
                 if (isSelected) {
                     ctx.fillStyle = 'rgba(68, 68, 255, 0.2)';
                     ctx.fillRect(menuX, yPos - 15, menuW, 30);
@@ -938,26 +986,32 @@
                     ctx.strokeRect(menuX, yPos - 15, menuW, 30);
                 }
 
+				// Label
                 ctx.font = isSelected ? 'bold 14px Courier New' : '14px Courier New';
                 ctx.fillStyle = param.color;
                 ctx.textAlign = 'left';
                 ctx.fillText(param.label, menuX + 15, yPos);
 
+				// Value bar
                 const barX = menuX + 280;
                 const barW = 180;
                 const barH = 18;
-                
+
+				// Background bar
                 ctx.fillStyle = '#333';
                 ctx.fillRect(barX, yPos - 8, barW, barH);
-                
+				
+                // Value fill
                 const ratio = (param.value - param.min) / (param.max - param.min);
                 ctx.fillStyle = param.color;
                 ctx.fillRect(barX, yPos - 8, barW * ratio, barH);
-                
+
+				// Border
                 ctx.strokeStyle = '#666';
                 ctx.lineWidth = 1;
                 ctx.strokeRect(barX, yPos - 8, barW, barH);
 
+				// Value text
                 ctx.font = '12px Courier New';
                 ctx.fillStyle = '#fff';
                 ctx.textAlign = 'center';
@@ -965,6 +1019,7 @@
                 ctx.fillText(displayVal, barX + barW / 2, yPos + 4);
             }
 
+			// Footer
             ctx.font = '11px Courier New';
             ctx.fillStyle = '#666';
             ctx.textAlign = 'center';
@@ -972,6 +1027,7 @@
         }
 
         function applyMenuParam(param) {
+            // Apply the parameter change to CONFIG and other places			
             switch (param.key) {
                 case 'plantSpawnRate':
                     CONFIG.PLANT_SPAWN_RATE = param.value;
@@ -1029,7 +1085,7 @@
             for (const c of carcasses) c.draw(ctx);
             for (const a of agents) a.draw(ctx);
 
-            // Highlight monitored agent with yellow glow
+            // Highlight monitored agent with yellow glow (Check this it kinda sucks)
             if (showNN && monitoredAgent && !monitoredAgent.dead) {
                 ctx.save();
                 ctx.shadowColor = '#ffff00';
@@ -1044,6 +1100,8 @@
                 ctx.restore();
             }
 
+
+			// Combat sparks 
             const now = Date.now();
             for (let i = 0; i < agents.length; i++) {
                 if (agents[i].type !== 'predator' || agents[i].dead) continue;
@@ -1067,6 +1125,7 @@
                 if (a.type === 'predator' && a.size > curMaxPred) curMaxPred = a.size;
             }
 
+			// Graph (duh)
             const graphH = 80;
             const graphY = canvas.height - graphH;
             ctx.fillStyle = 'rgba(0,0,0,0.6)';
@@ -1122,6 +1181,17 @@
                     }
                 }
                 if (monitoredAgent && !monitoredAgent.dead) {
+
+					/* Not sure why CLAUDE removed this... (seems to be the old selected agent indicator?)
+                    ctx.save();
+                    ctx.shadowColor = '#fff';
+                    ctx.shadowBlur = 20;
+                    ctx.beginPath();
+                    ctx.arc(monitoredAgent.x, monitoredAgent.y, monitoredAgent.size * 1.5, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+                    ctx.fill();
+                    ctx.restore(); */	
+					
                     const nnW = 260;
                     const nnH = 360;
                     const nnX = 5;
@@ -1139,9 +1209,9 @@
                         ctx.fillStyle = '#a00';
                         ctx.fillText('P', nnX + 10, nnY + 12);
                     }
-
-                    const inputSize = 8;
-                    const hiddenSize = 6;
+					
+                    const inputSize = 8;      // Changed from 14
+                    const hiddenSize = 6;     // Changed from 8
                     const outputSize = 3;
 
                     const layers = [
@@ -1294,6 +1364,8 @@
                 document.getElementById('w-line').style.color = '';
             }
 
+			
+            // Draw menu if open
             if (showMenu) {
                 drawMenu();
             }
@@ -1317,7 +1389,8 @@
         let floorMode = false;
         let showMenu = false;
         let selectedParam = 0;
-
+		
+        // Global parameter variables (used by agents)
         window.PLANT_ENERGY = 45;
         window.CARCASS_ENERGY = 75;
         window.PREY_FLOOR = 20;
@@ -1346,6 +1419,7 @@
             { label: 'Mating Distance', key: 'matingDist', min: 20, max: 1000, step: 50, value: CONFIG.MATING_DIST, color: '#f0f' },
         ];
 
+		// --- MOUSE TRACKING ---
         let mouseX = 0;
         let mouseY = 0;
         const cursorEl = document.getElementById('cursor');
@@ -1361,9 +1435,11 @@
             cursorEl.style.display = 'none';
         });
 
+		// --- CONTROLS ---
         window.addEventListener('contextmenu', e => e.preventDefault());
 
         window.addEventListener('keydown', (e) => {
+			// Menu controls
             if (e.code === 'Escape') {
                 showMenu = !showMenu;
                 selectedParam = 0;
@@ -1391,9 +1467,11 @@
                     applyMenuParam(param);
                     return;
                 }
-                return;
+				
+				return;  // Block other controls while menu is open
             }
 
+			// Normal controls (when menu is closed)
             if (e.code === 'Space') {
                 paused = !paused;
                 return;
