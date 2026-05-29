@@ -5,95 +5,130 @@
 ---
 
 ### 1. The Core Logic: Sensory Flux
+
 Instead of classifying entities into discrete slots, the agent perceives the environment as a continuous "field" of desirability. This is achieved by projecting all nearby entities onto the agent's current heading.
 
 **The Mathematical Model:**
+
 The primary input (**Input A**) is a weighted sum of all perceived entities, modulated by their relative angle to the agent.
 
-$$\text{Input A} = \sum_{i=1}^{n} \left( \text{BaseValue}_i \times \frac{1}{\text{Distance}_i} \times \cos(\theta_i) \right)$$
+$$\text{Raw Flux} = \sum_{i=1}^{n} \left( \text{BaseValue}_i \times \frac{1}{\text{Distance}_i} \times \cos(\theta_i) \right)$$
 
 **Where:**
-*   **$\text{BaseValue}_i$**: 
-    *   Food: $0.9$
-    *   Mate: $0.0$
-    *   Enemy: $1.0$ or -0.9$
-*   **$\theta_i$**: The relative angle between the agent's heading and the entity.
-*   **$\cos(\theta_i)$**: The "Directional Dial." 
-    *   $1.0$ (Directly ahead)
-    *   $0.0$ (Perpendicular)
-    *   $-1.0$ (Directly behind)
+- **$\text{BaseValue}_i$**: The sensor weight of the entity type:
+  - Food (plants for prey / carcasses for predators): $+1.0$
+  - Mate: $0.0$ — mate presence does not push the flux; their location is communicated via Inputs B & C only
+  - Threat (enemy agent): $-1.0$
+- **$\theta_i$**: The relative angle between the agent's heading and the entity.
+- **$\cos(\theta_i)$**: The "Directional Dial."
+  - $+1.0$ → directly ahead
+  - $0.0$ → perpendicular
+  - $-1.0$ → directly behind
 
-**The Result:** As the agent rotates, the signal "floats" and "oscillates" smoothly between positive (attraction) and negative (repulsion) values, providing a high-resolution gradient for the brain to follow.
+**The Result:** As the agent rotates, the signal floats and oscillates smoothly, providing a high-resolution gradient for the brain to follow.
 
 ---
 
-### 2. The "4-20mA" Contextual Overrides
-To handle critical edge cases without increasing dimensionality, we use "out-of-range" values to signal environmental quality or immediate danger.
+### 2. Signal Conditioning (The 4-20mA Step)
 
-*   **The Flee Signal ($1.0$):** If an enemy is within a critical proximity, the signal is forced to $1.0$. This overrides the sum to trigger an immediate "panic" response.
-*   **The Quality Signal ($1.1$):** If a high-value target (Food/Prey) is detected in close proximity to a secondary interest (Mate), the signal is boosted to $1.1$.
+The raw flux is an unconditioned sensor output — its magnitude depends on entity count and density and is not bounded. Before being fed to the neural network, it must be normalized to the protocol range, exactly as a 4-20mA transmitter conditions a raw sensor reading before it reaches the PLC.
 
-```Safe   Enemy          Mate      Food    Extreme darger
-  |----|----|...    ...|...    ...|----|
- -1    -0.9            0        0.9    1
-```  
+$$\text{Input A (conditioned)} = \tanh(\text{Raw Flux} \times k) \times 0.9$$
+
+**Calibration — working backwards from desired output:**
+
+The target: *one food source at 120px directly ahead should produce a conditioned signal of ~0.5.*
+
+$$0.5 = \tanh\!\left(\frac{1.0}{120} \times k\right) \times 0.9$$
+$$\tanh\!\left(0.00833 \times k\right) = 0.556 \implies k \approx 75$$
+
+This gives the full operating table:
+
+| Scenario | Raw Flux | Conditioned Signal |
+| :--- | :--- | :--- |
+| Food at 120px, directly ahead | +0.00833 | ≈ +0.50 |
+| Food at 10px, directly ahead | +0.10 | ≈ +0.90 (ceiling) |
+| Threat at 120px, directly ahead | −0.00833 | ≈ −0.50 |
+| Threat at 41px (just before panic) | −0.0244 | ≈ −0.86 |
+| Mate only nearby | 0.0 | 0.0 |
+
+The conditioner owns the range. The `BaseValue` constants own the intent. These are separate concerns.
+
 ---
 
-### 3. The 8-Input Vector
-The brain receives a highly dense, 8-element array:
+### 3. The Signal Protocol Range
+
+The conditioned signal operates within a defined range, with out-of-range (OOR) values used as hard overrides — analogous to wire-break detection in 4-20mA (below 4mA = fault):
+
+```
+ Safe   Enemy          Mate      Food    Panic  Jackpot
+  |----|----|           |           |----|--+-----|
+ -1   -0.9             0          0.9   1.0     1.1
+```
+
+| Zone | Value | Meaning |
+| :--- | :--- | :--- |
+| Normal operating range | −0.9 to +0.9 | Conditioned sensor output |
+| OOR High — Panic | $1.0$ | Enemy within critical proximity; override, flee immediately |
+| OOR Low — Jackpot | $1.1$ | Food and mate both close; override, feast and breed |
+| Mate | $0.0$ | Neutral; no flux push. Presence encoded in B & C inputs only |
+
+> **Note on the Jackpot signal ($1.1$):** This sits above Panic ($1.0$). In the original implementation this was problematic — a jackpot moment registering as "more urgent than imminent death." The correct framing is that Jackpot and Panic are **categorically distinct OOR states**, not points on the same scale. The NN must learn to distinguish them via Input A alone, which it can, since they are numerically different. Whether $1.1$ or $-1.0$ is used for Jackpot is a design choice; using $-1.0$ would place it symmetrically opposite Panic and may be easier for the network to learn.
+
+---
+
+### 4. The Directional Paradox — Resolved
+
+Using $\cos(\theta)$ with a negative base value creates a mathematical consequence: a threat directly *behind* the agent ($\cos(180°) = -1$) produces:
+
+$$(-1.0) \times \frac{1}{\text{dist}} \times (-1) = \text{positive value}$$
+
+This is not a bug. It is the **Flee Signal**: an enemy behind you reads as a positive flux push, which correctly drives the agent *away* from the threat without requiring the brain to learn the geometry. The agent doesn't need to understand *why* the signal is positive from behind — it just runs from it. The blind spot is intentional; a rearward threat is not a dogfight scenario, it is a chase, and fleeing forward is the correct response.
+
+---
+
+### 5. The 6-Input Vector *(revised from original 8)*
+
+The brain receives a dense, 6-element array. Velocity X/Y were collapsed into a single speed scalar; Size was removed as it changes slowly and is implicitly encoded in energy costs.
 
 | Index | Name | Description |
 | :--- | :--- | :--- |
-| **0** | **Sensory Flux (A)** | The continuous, projected sum (with overrides). |
-| **1** | **Target Distance (B)** | Distance to the entity providing the strongest signal. |
-| **2** | **Target Angle (C)** | Absolute angle to that entity. |
-| **3** | **Memory** | A Leaky Integrator of the previous frame's Input A. |
-| **4** | **Velocity X** | Current movement X. |
-| **5** | **Velocity Y** | Current movement Y. |
-| **6** | **Energy** | Current energy level. |
-| **7** | **Size** | Current agent size. |
+| **0** | **Sensory Flux (A)** | Conditioned signal with OOR overrides applied. |
+| **1** | **Urgency (B)** | Normalized distance to the entity with the strongest signal: `1 − (dist / scanRadius)`. 1 = touching, 0 = at scan edge. |
+| **2** | **Target Angle (C)** | Relative angle to that entity, normalized to [−1, 1]. |
+| **3** | **Memory** | Leaky integrator of previous frame's Input A: `memory = 0.8 × memory + 0.2 × fluxA`. Provides temporal continuity. |
+| **4** | **Speed** | Current speed magnitude normalized to base speed. |
+| **5** | **HP Ratio** | Current HP / max HP. |
 
 ---
 
-### 4. Technical Criticism & Risks
+### 6. Architecture Notes
 
-**A. The Signal Cancellation Problem (The "Neutrality Trap")**
-Because we are summing vectors, opposing forces can cancel each other out. If a Mate ($0.0$) is at $+45^\circ$ and an Enemy ($-1.0$) is at $-45^\circ$, the sum might approach $0$. The agent would "feel" nothing, effectively becoming blind to both the threat and the opportunity because they are perfectly balanced in the flux.
-***Answer:*** no, 0 is a mate, -0.9 is an enemy the sum will be between -0.9 and 0  if it was me, i would rotate and rescan.
+**The Sensory Flux is a hybrid:**
 
+- The **Summation** provides the *feeling* of the environment — the gradient the agent swims in.
+- The **Selection** (Inputs B & C) provides *focus* — the direction and urgency of the most salient object.
+- The **Overrides** (1.0 / 1.1) provide *reflexes* — hardwired responses that bypass learned behavior.
+- The **Memory** (Input 3) provides *temporal context* — the agent remembers what it was sensing a moment ago.
 
-**B. The Directional Paradox**
-Using $\cos(\theta)$ with a negative base value (Enemy) creates a mathematical quirk: an enemy directly *behind* the agent ($\cos(180) = -1$) results in a positive signal ($(-1.0) \times (-1) = +1.0$). 
-*   *Interpretation:* The agent "feels" a positive pull from the back. 
-*   *Risk:* The brain must learn that a "positive" signal coming from the "back" (detected via Input C) actually means "turn around and flee."
+**Signal Cancellation:**
 
-***Answer:*** no,
-       first -1 is a control signal; the strongest enemy signal is -0.9,
-       second i have my doubt and enemy behind would not be the dogfight (plane emoji) blind spot?  
-       third ($(-1.0) \times (-1) = +1.0$) that is a control signal to FLEE the brain needs nothing
+Opposing forces can cancel in the sum. An enemy at −45° and food at +45° may partially cancel each other. This is not a flaw — it is the agent "feeling" genuine ambivalence. When the signal approaches 0 with high urgency (Input B), the agent is in a contested field and must rely on the angle (Input C) and memory (Input 3) to resolve the situation. Rotation and rescanning is the emergent correct behavior.
 
+**Saturation:**
 
-**C. Signal Saturation**
-In high-density environments (e.g., a massive plant bloom), the sum could theoretically grow very large, potentially saturating the `tanh` activation function of the neural network and causing the agent to "freeze" in a state of maximum stimulation.
-
-***Answer:*** no, the agents only scan and select closest entities this is what they do now and they can still do it (prioritize the input) ffs this is an amoeba not a Tesla
-              Also Freeze is a common rabbit / ostrich behavior
-
-**D. The "Blind Spot" of Scalar Fusion**
-By collapsing the world into a single scalar (Input A), we lose the ability to distinguish between "one very large threat" and "ten tiny threats" if their projected sums are identical. The agent is essentially "feeling" the environment rather than "seeing" it.
-
-***Answer:*** no, again the agents only scan and select closest entities
+The conditioner (`tanh × 0.9`) guarantees the normal signal never exceeds ±0.9. High-density environments saturate the conditioner ceiling, not the NN. This is correct — a massive food bloom *should* feel like maximum opportunity. Freeze behavior under saturation is biologically valid (rabbit in headlights, ostrich effect).
 
 ---
 
-The "Sensory Flux" is hybrid:
+### 7. Implementation Checklist
 
-* The Summation provides the "feeling" of the environment (the gradient).
-* The Selection (B & C) provides the "focus" on the most important object.
-* The Overrides (1.0 & 1.1) provide the "reflexes."
-
-
-**Conclusion:** This is a high-risk, high-reward architecture. It trades spatial precision for extreme computational efficiency and "intuitive" behavioral gradients. If the evolution can overcome the cancellation and paradox issues, it will produce much more "organic" movement than standard discrete-input networks.
-
-
-
+- [x] BaseValue for food: `1.0` (plants for prey, carcasses for predators — scanned separately, not combined)
+- [x] BaseValue for threat: `−1.0`
+- [x] BaseValue for mate: `0.0` (direction tracked via B & C, not flux)
+- [x] Prey skip carcass scan entirely (`if (isPrey || c.dead) continue`)
+- [x] Signal conditioner: `tanh(rawFlux × 75) × 0.9` applied after summation, before overrides
+- [x] OOR Panic override: `sensoryFlux = 1.0` when threat dist < 40px
+- [ ] OOR Jackpot override: value and threshold to be confirmed (`1.1` or `−1.0`)
+- [x] `_peakFluxFood` / `_minFluxFood` tracked in both plant and carcass scan blocks
+- [x] NN weight visualization: skip `hiddenSize` biases, not 1
