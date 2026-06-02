@@ -2,6 +2,8 @@
 
 **Objective:** To compress multi-object spatial awareness into a single, high-fidelity analog signal, enabling extremely low-parameter neural networks to perform complex survival behaviors.
 
+#### Asexual reproduction Mate input signal removed
+
 ---
 
 ### 1. The Core Logic: Sensory Flux
@@ -129,6 +131,6 @@ The conditioner (`tanh × 0.9`) guarantees the normal signal never exceeds ±0.9
 - [x] Prey skip carcass scan entirely (`if (isPrey || c.dead) continue`)
 - [x] Signal conditioner: `tanh(rawFlux × 75) × 0.9` applied after summation, before overrides
 - [x] OOR Panic override: `sensoryFlux = 1.0` when threat dist < 40px
-- [ ] OOR Jackpot override: value and threshold to be confirmed (`1.1` or `−1.0`)
+- [ ] OOR Jackpot override: value and threshold to be removed (`−1.0`) 
 - [x] `_peakFluxFood` / `_minFluxFood` tracked in both plant and carcass scan blocks
 - [x] NN weight visualization: skip `hiddenSize` biases, not 1
