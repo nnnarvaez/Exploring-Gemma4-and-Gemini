@@ -1,5 +1,5 @@
 # These are instructions to install honcho self hosted not containerized
-Fine tuned with instructions from here https://honcho.dev/docs/v2/contributing/self-hosting
+Fine tuned with instructions from here https://honcho.dev/docs/v2/contributing/self-hosting (Meaning this is the direct translation to what worked)
 
 *WARNING*: Honcho is heavy in inference, if it has backlog it will monopolize your endpoint, be adviced you should let it clear its backlog. Dont use it with a smaller model on the same endpoint in router mode, it will constantly kick the main model out to do its honching... I let it use the same main model and this works.
 
