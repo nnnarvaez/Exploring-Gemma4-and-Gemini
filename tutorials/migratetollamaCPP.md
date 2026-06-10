@@ -28,7 +28,7 @@ Make a `anyname-start.bat`
 paste this:
 
 ```
-.\llama-server.exe --model "C:\Users\NEW\.lmstudio\models\lmstudio-community\Qwen3.6-35B-A3B-GGUF\Qwen3.6-35B-A3B-Q6_K.gguf" --parallel 1 -fit on --jinja --flash-attn --cache-type-k q8_0 --cache-type-v q8_0 --timeout 3600 --verbosity 4 --mmproj-offload off --reasoning --reasoning-budget 3072 --reasoning-budget-message "</think>[Output Generation]" --no-mmap --batch-size 2048 --ubatch-size 2048 --ctx-size 98304 --device-id 0 --temp 0.6 --top-p 0.95 --top-k 20 --presence-penalty 0.0 --repeat-penalty 1.0
+.\llama-server.exe --model "C:\Users\NEW\.lmstudio\models\lmstudio-community\Qwen3.6-35B-A3B-GGUF\Qwen3.6-35B-A3B-Q6_K.gguf" --parallel 1 -fit on --jinja --flash-attn on --cache-type-k q8_0 --cache-type-v q8_0 --timeout 3600 --verbosity 4 --no-mmproj-offload  --reasoning --reasoning-budget 3072 --reasoning-budget-message "</think>[Output Generation]" --no-mmap --batch-size 2048 --ubatch-size 2048 --ctx-size 98304 --device-id 0 --temp 0.6 --top-p 0.95 --top-k 20 --presence-penalty 0.0 --repeat-penalty 1.0
 ```
 
 
