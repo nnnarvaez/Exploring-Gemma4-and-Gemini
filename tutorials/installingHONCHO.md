@@ -159,6 +159,7 @@ DIALECTIC_MODEL=Gemma4-12B-Q6KP-Harness  # Ensure this exact string matches your
 ```
 
 # The .env template is a mess all comented and with predefined several inference providers maybe as illustrative examples you need to clear that mess some values are commented but stupid honcho expects them to be defined and fail
+<img width="2598" height="1207" alt="image" src="https://github.com/user-attachments/assets/3001d7a3-d5e5-4441-831f-cd48efb70fef" />
 
 *PS:* The more i try, the more i hate AI
 
