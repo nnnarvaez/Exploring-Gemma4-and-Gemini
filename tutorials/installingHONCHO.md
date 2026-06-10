@@ -3,6 +3,8 @@ Fine tuned with instructions from here https://honcho.dev/docs/v2/contributing/s
 
 *WARNING*: Honcho is heavy in inference, if it has backlog it will monopolize your endpoint, be adviced you should let it clear its backlog. Dont use it with a smaller model on the same endpoint in router mode, it will constantly kick the main model out to do its honching... I let it use the same main model and this works.
 
+<img width="1424" height="747" alt="honcho" src="https://github.com/user-attachments/assets/eaedc67c-fe12-4dad-87bd-64b516d450cc" />
+
 
 ### Local Environment Setup
 
