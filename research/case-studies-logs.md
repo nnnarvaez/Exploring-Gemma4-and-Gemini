@@ -1,3 +1,4 @@
+<img width="1072" height="1056" alt="image" src="https://github.com/user-attachments/assets/c22003b9-6ad9-4aea-b3fe-9feb3a6c0fd5" />
 # Case Study 1: The Civility Tax (Social Pressure)
 
 **Shell Command:**
