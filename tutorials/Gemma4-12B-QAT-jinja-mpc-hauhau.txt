@@ -1,3 +1,17 @@
+{%- macro format_type_argument(type_value) -%}
+    {%- if type_value is string -%}
+        {{- '<|"|>' + (type_value | upper) + '<|"|>' -}}
+    {%- elif type_value is iterable -%}
+        [
+        {%- for item in type_value -%}
+            <|"|>{{- item | upper -}}<|"|>
+            {%- if not loop.last %},{% endif -%}
+        {%- endfor -%}
+        ]
+    {%- else -%}
+        {{- format_argument(type_value) -}}
+    {%- endif -%}
+{%- endmacro -%}
 {%- macro format_parameters(properties, required, filter_keys=false) -%}
     {%- set standard_keys = ['description', 'type', 'properties', 'required', 'nullable'] -%}
     {%- set ns = namespace(found_first=false) -%}
@@ -84,30 +98,40 @@
     {%- set params = tool_data['function']['parameters'] -%}
     {%- if params -%}
         ,parameters:{
+        {%- set ns_params = namespace(found_first=false) -%}
         {%- if params['properties'] -%}
-            properties:{ {{- format_parameters(params['properties'], params['required']) -}} },
+            properties:{ {{- format_parameters(params['properties'], params['required']) -}} }
+            {%- set ns_params.found_first = true -%}
         {%- endif -%}
         {%- if params['required'] -%}
+            {%- if ns_params.found_first %},{% endif -%}
             required:[
             {%- for item in params['required'] -%}
                 <|"|>{{- item -}}<|"|>
                 {{- ',' if not loop.last -}}
             {%- endfor -%}
-            ],
+            ]
+            {%- set ns_params.found_first = true -%}
         {%- endif -%}
         {%- if params['type'] -%}
-            type:{{- format_type_argument(params['type']) -}}}
+            {%- if ns_params.found_first %},{% endif -%}
+            type:{{- format_type_argument(params['type']) -}}
         {%- endif -%}
+        }
     {%- endif -%}
     {%- if 'response' in tool_data['function'] -%}
         {%- set response_declaration = tool_data['function']['response'] -%}
         ,response:{
+        {%- set ns_response = namespace(found_first=false) -%}
         {%- if response_declaration['description'] -%}
-            description:<|"|>{{- response_declaration['description'] -}}<|"|>,
+            description:<|"|>{{- response_declaration['description'] -}}<|"|>
+            {%- set ns_response.found_first = true -%}
         {%- endif -%}
-        {%- if response_declaration['type'] and ('object' in response_declaration['type'] or 'OBJECT' in response_declaration['type']) -%}
-            type:{{- format_type_argument(response_declaration['type']) -}}}
+        {%- if response_declaration['type'] -%}
+            {%- if ns_response.found_first %},{% endif -%}
+            type:{{- format_type_argument(response_declaration['type']) -}}
         {%- endif -%}
+        }
     {%- endif -%}
     }
 {%- endmacro -%}
@@ -292,9 +316,9 @@
                             {%- endfor -%}
                             {{- format_tool_response_block(ns_tname.name, ns_txt.s) -}}
                             {%- for part in tool_body -%}
-                                {%- if part.get('type') in ['image', 'image_url'] -%}
+                                {%- if part.get('type') == 'image' -%}
                                     {{- '<|image|>' -}}
-                                {%- elif part.get('type') in ['audio', 'input_audio'] -%}
+                                {%- elif part.get('type') == 'audio' -%}
                                     {{- '<|audio|>' -}}
                                 {%- elif part.get('type') == 'video' -%}
                                     {{- '<|video|>' -}}
@@ -324,10 +348,10 @@
                         {%- else -%}
                             {{- item['text'] | trim -}}
                         {%- endif -%}
-                    {%- elif item['type'] in ['image', 'image_url'] -%}
+                    {%- elif item['type'] == 'image' -%}
                         {{- '<|image|>' -}}
                         {%- set ns.prev_message_type = 'image' -%}
-                    {%- elif item['type'] in ['audio', 'input_audio'] -%}
+                    {%- elif item['type'] == 'audio' -%}
                         {{- '<|audio|>' -}}
                         {%- set ns.prev_message_type = 'audio' -%}
                     {%- elif item['type'] == 'video' -%}
