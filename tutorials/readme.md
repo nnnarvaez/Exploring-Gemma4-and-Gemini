@@ -17,7 +17,7 @@ This is a set of tutorials, relevant articles for the power user seeking enlight
   
 **Begginner stuff:**
 - [HONCHO a review, tutorial soon](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/HONCHO-review.md)
-- [Add the Brain toggle to LMStudio](tutorials/Brain-toggle-thinking-LMStudio.md)
+- [Add the Brain toggle to LMStudio](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/Brain-toggle-thinking-LMStudio.md)
 - [Migrate your inference to Llama CPP](tutorials/migratetollamaCPP.md)
 
 ### From other Repos and pages
