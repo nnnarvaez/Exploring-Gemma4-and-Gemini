@@ -21,6 +21,7 @@ LLAMA-SERVER started with the following:
 
 ## 1. Context & Objectives
 This report evaluates the impact of **Key-Value (KV) Cache Quantization** on the **Gemma 4 12b** model. 
+Test rig: I5 12th gen, 32gb ddr 5 5600, RTX4070 super 12gB.
 
 ### What is being measured?
 Just as model weights can be quantized to reduce size at the cost of precision, the **Context KV Cache** can also be quantized. The primary goal of this testing was to measure the trade-off between:
@@ -86,11 +87,40 @@ The "Asymmetric" test was designed based on research (e.g., **TurboQuant**) sugg
 *   **Avoid:** Asymmetric quantization in current non-turbo environments due to the extreme performance bottleneck.
 
 
+### Older hardware GTX 1660 super 6GB
+Speed is much more affected by KV Quantization
+
+Compiled with:
+<img width="1311" height="123" alt="image" src="https://github.com/user-attachments/assets/94402383-5690-41ce-a4aa-486840447562" />
+
+```
+./llama-server \
+    -m /home/nathan/wsl-shared/models/unsloth/gemma-4-12B-it-qat-GGUF/gemma-4-12B-it-qat-UD-Q4_K_XL.gguf \
+    -md /home/nathan/wsl-shared/models/unsloth/gemma-4-12B-it-qat-GGUF/gemma-4-12B-it-Q4_0-MTP.gguf \
+    --mmproj /home/nathan/wsl-shared/models/unsloth/gemma-4-12B-it-qat-GGUF/mmproj-F32.gguf \
+    --spec-type draft-mtp --spec-draft-n-max 3 -fa on \
+    --ctx-size 98304 --temperature 0.6 --top_k 64 --top_p 0.9 --min_p 0.05 \
+    --repeat_penalty 1.1 --host 0.0.0.0 --mmproj-offload \
+    -ctkd iq4_nl -ctvd iq4_nl --tools all --webui-mcp-proxy --jinja \
+    --cache-type-k iq4_nl --cache-type-v iq4_nl --threads-batch 6 --parallel 1 --kv-unified \
+    -b 1024 -ub 512 -ag --alias "Gemma4 12B QAT4 Unsloth" --reasoning-budget 2048 \
+    --reasoning-budget-message "</think>[Output Generation]" 
+```
+<img width="1683" height="417" alt="image" src="https://github.com/user-attachments/assets/1117c37d-31af-4822-bd9b-97c04976fe74" />
+
+---
+
+Using Q8
+<img width="1103" height="415" alt="image" src="https://github.com/user-attachments/assets/1ace0b5a-9dff-4c45-b44b-e6a813c93cd7" />
+
+
 ---
 
 # Annex: Logs
 
-# With Q4 V AND K 
+
+
+### With Q4 V AND K 
 
 1st run 
 ```
