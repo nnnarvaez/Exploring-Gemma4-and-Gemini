@@ -90,8 +90,11 @@ The "Asymmetric" test was designed based on research (e.g., **TurboQuant**) sugg
 ### Older hardware GTX 1660 super 6GB
 Speed is much more affected by KV Quantization
 
-Compiled with:
+
+#### Compiled with:
 <img width="1311" height="123" alt="image" src="https://github.com/user-attachments/assets/94402383-5690-41ce-a4aa-486840447562" />
+#### Tried Asymetric K/V it crashed
+
 
 ```
 ./llama-server \
@@ -106,12 +109,19 @@ Compiled with:
     -b 1024 -ub 512 -ag --alias "Gemma4 12B QAT4 Unsloth" --reasoning-budget 2048 \
     --reasoning-budget-message "</think>[Output Generation]" 
 ```
+
+#### Using iq4_nl
 <img width="1683" height="417" alt="image" src="https://github.com/user-attachments/assets/1117c37d-31af-4822-bd9b-97c04976fe74" />
 
 ---
 
-Using Q8
+#### Using Q8_0
+
 <img width="1103" height="415" alt="image" src="https://github.com/user-attachments/assets/1ace0b5a-9dff-4c45-b44b-e6a813c93cd7" />
+
+#### Using q4_0
+No speed or memory change appreciated in the GTX1660
+<img width="1705" height="488" alt="image" src="https://github.com/user-attachments/assets/a7204196-f3e0-45d3-b4ef-f7ce9e9d8f38" />
 
 
 ---
