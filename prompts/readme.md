@@ -36,4 +36,9 @@ These prompts are designed to be injected into Sayaka to create immersive, chara
 *   **Persistent Memory:** Implementation of long-term memory hooks so Sayaka can remember user preferences and past interactions across different sessions.
 
 ---
+
+## Beyond being a name, "sayaka" 
+(often written as 清か) is a word in the classical Japanese vocabulary used to describe something that is clear, refreshing, or transparent—such as a clear voice, the morning air, or a bright, vivid view.
+
+---
 Contact me if you want to collaborate or just participate in the closed alpha tests. 
