@@ -29,9 +29,9 @@ We built **Project NOVA** to show how Sayaka can bridge the gap between learning
 
 
 > **Read the White Papers:**
-> * [English Version](./project_Nova_english.md)
-> * [French Version](./project_Nova_french.md)
-> * [Spanish Version](./project_Nova_spanish.md)
+> * [English Version](../prompts/project_Nova_english.md)
+> * [French Version](../prompts/project_Nova_french.md)
+> * [Spanish Version](../prompts/project_Nova_spanish.md)
 
 
 ---
