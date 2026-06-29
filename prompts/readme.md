@@ -18,7 +18,7 @@ The **Project NOVA** files serve as the white papers for this repository. They d
 
 *   [**NOVA White Paper (English)**](./project_Nova_english.md) - *Technical literacy and linguistic "recasting" strategies.*
 *   [**NOVA White Paper (French)**](./project_Nova_french.md) - *Detailed breakdown of the educational framework in French.*
-*   [**NOVA White Paper (Spanish)**](./project_Nova_french.md) - *Detailed breakdown of the educational framework in Spanish.*
+*   [**NOVA White Paper (Spanish)**](./project_Nova_spanish.md) - *Detailed breakdown of the educational framework in Spanish.*
 ---
 
 ## 🎭 Prompt Library (Companion Personas)
