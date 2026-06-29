@@ -7,7 +7,7 @@ Sayaka operates on a "Thread-per-Topic" logic, allowing for deep context isolati
 
 1.  **Summoning:** Users interact with the bot by mentioning `@sayaka [topic]`.
 2.  **Context Creation:** Sayaka instantly generates a **new private thread** dedicated to that specific topic.
-3.  **Dynamic Injection:** Each thread is assigned a unique system prompt (e.g., a tutor, a storyteller, or a technical mentor).
+3.  **Dynamic Injection:** Each thread starts with the basic generalist system prompt, but the user can assign a unique one by uploading in the tread a `SYSTEM_PROMPT.md` (e.g., a tutor, a storyteller, or a technical mentor).
 4.  **Multi-Tenancy:** Users can maintain multiple active threads simultaneously—one for learning Linux, another for roleplaying, and another for language practice.
 5.  **Collaborative Learning:** Users can invite friends into these private threads to study together or collaborate in an AI-moderated space.
 
@@ -17,8 +17,8 @@ Sayaka operates on a "Thread-per-Topic" logic, allowing for deep context isolati
 The **Project NOVA** files serve as the white papers for this repository. They demonstrate how Sayaka's framework can be applied to high-impact educational use cases, showcasing the intersection of AI creativity and pedagogy:
 
 *   [**NOVA White Paper (English)**](./project_Nova_english.md) - *Technical literacy and linguistic "recasting" strategies.*
+*   [**NOVA White Paper (French)**](./project_Nova_french.md) - *Detailed breakdown of the educational framework in French.*
 *   [**NOVA White Paper (Spanish)**](./project_Nova_french.md) - *Detailed breakdown of the educational framework in Spanish.*
-
 ---
 
 ## 🎭 Prompt Library (Companion Personas)
