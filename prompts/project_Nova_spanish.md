@@ -1,5 +1,26 @@
 # Proyecto NOVA: Un Marco de IA Multifuncional Adaptativo para la Educación Intercultural y el Alfabetismo Técnico
 
+## Resumen
+**Diseño y Despliegue de un Marco de Discord Adaptativo y Multiteniente para la Mediación Transcultural Automatizada y el Alfabetismo Técnico**
+
+Este documento presenta Sayaka, una arquitectura inteligente de Discord multiteniente diseñada para aislar los límites del contexto dinámicamente mediante un conjunto de lógica de "Hilo por Tema". Mientras que las implementaciones estándar de modelos de lenguaje extensos (LLM) sufren de deriva semántica y contaminación cruzada en entornos multiusuario, Sayaka establece estados de sesión aislados en tiempo de ejecución, activados bajo demanda por invocaciones del usuario.
+
+Demostramos la eficacia de alto impacto de este marco a través del Proyecto NOVA, una prueba de concepto educativa y lingüística desplegada en nodos locales de computación perimetral (*edge computing*). El Proyecto NOVA orquestra una lógica operativa de doble modo para cerrar las brechas de alfabetización técnica y transcultural dentro de grupos multilingües. Operando en una división binaria estructural, el sistema transita sin interrupciones entre una utilidad de traducción silenciosa "zero-fluff" (Modo Normal) y una personalidad activa gamificada (Modo Nova).
+
+Al aprovechar la re-expresión lingüística (*linguistic recasting*) implícita, el marco reduce el filtro afectivo del alumno, corrigiendo silenciosamente errores estructurales, ortográficos y gramaticales para hablantes de herencia sin introducir la fatiga por corrección explícita. Simultáneamente, el sistema implementa un sistema de misiones gamificadas para guiar pasivamente a los usuarios a través del alfabetismo en hardware informático, protocolos de red y paradigmas básicos de programación.
+
+Nuestros resultados empíricos en despliegues de alfa cerrada confirman que la combinación de filtros estrictos de supresión de tokens, enrutamiento de archivos bloqueados por contexto y compuertas de microparámetros permite que modelos perimetrales a pequeña escala (como Gemma 4) mantengan una robusta fidelidad de personaje y un alto alineamiento con el dominio. En última instancia, este marco proporciona un patrón de diseño reproducible y de bajo consumo de VRAM para convertir espacios digitales pasivos en entornos de aprendizaje colaborativo seguros y multifuncionales.
+
+------------------------------
+## Vectores Clave Sintetizados:
+
+*   **El Núcleo del Software:** Destaca las capacidades de gestión de hilos, aislamiento de sesiones y manejo dinámico de archivos de Sayaka.
+*   **La Filosofía Educativa:** Describe el uso por parte del Proyecto NOVA de la teoría de carga cognitiva, el filtro afectivo de Stephen Krashen y la re-expresión lingüística.
+*   **La Realidad de la IA en el Edge:** Enmarca claramente los parámetros de hardware localizados de bajo consumo de VRAM (el entorno de orquestación especializado) utilizados para probar estos modelos.
+
+---
+
+
 ## 1. Resumen Ejecutivo
 **Proyecto NOVA** es un bot inteligente y multifuncional para Discord, diseñado para cerrar la brecha entre el entretenimiento y la educación. Aprovechando los Modelos de Lenguaje Extensos (LLM), NOVA actúa como un compañero versátil que adapta su personalidad, capacidades lingüísticas y enfoque pedagógico basándose en tres perfiles de usuario distintos: **Mentoría Técnica**, **Inmersión Lingüística** y **Mediación Translingüística**. El proyecto tiene como objetivo transformar el tiempo de pantalla pasivo en aprendizaje activo mediante la gamificación, la técnica de "re-expresión" (recasting) lingüístico y una lógica operativa de doble modo.
 
