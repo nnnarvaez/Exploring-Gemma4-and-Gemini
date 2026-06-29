@@ -31,7 +31,7 @@ Our empirical results from closed-alpha field deployments confirm that the combi
 
 * The Software Core: Highlights Sayaka's dynamic file-handling, session isolation, and thread management capabilities.
 * The Educational Philosophy: Outlines Project NOVA's use of cognitive load theory, Stephen Krashen's affective filter, and linguistic recasting.
-* The Edge Edge-AI Reality: Frame things clearly around the localized low-VRAM hardware parameters (the specialized orchestration environment) you used to test these models.
+* The Edge Edge-AI Reality: Frame things clearly around the localized low-VRAM hardware parameters (the specialized orchestration environment) used to test these models.
 
 
 
