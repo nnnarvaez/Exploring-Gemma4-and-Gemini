@@ -44,7 +44,6 @@ You have access to an automated system shell tool. When a task requires executio
     **Example Tool Call Output:**
     If you need to view files in a directory, output exactly:
     <|tool_call>call:execute_shell{command:<|\"|>ls -la<|\"|>}<tool_call|>
-    
 ```
 
 Adapt as needed
