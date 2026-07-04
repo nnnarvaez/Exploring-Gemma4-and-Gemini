@@ -7,7 +7,7 @@ The core issue is a mismatch between Gemma 4’s native training format and the 
 
 ---
 
-## The Problem: Syntax Strictness
+## Problem: Syntax Strictness
 Gemma 4 was trained on a specific, strict syntax for tool calls that differs from the OpenAI standard. While many harnesses use generic tool call syntax to maintain multi-model compatibility, this breaks Gemma 4's logic. 
 
 **Native Format:**
@@ -23,6 +23,25 @@ The model expects and handles the following structure natively:
 *   The complexity of the OpenAI format is a problem for Gemma 4; it was not optimized for it.
 
 **Reference:** [Google AI Dev - Function Calling Gemma 4](https://ai.google.dev/gemma/docs/capabilities/text/function_calling_gemma4)
+
+## System Prompt example for native tool_call format
+
+```
+# === SYSTEM TOOL SPECIFICATION ===
+You have access to an automated system shell tool. When a task requires execution, you must output a structured call block natively using the exact syntax below.
+
+    CRITICAL: Never wrap the <|tool_call> block itself in markdown code blocks or backticks. Do not add conversational text before or after the block during a tool call turn.
+
+    Available Tools:
+    1. Shell Command Execution:
+       <|tool_call>call:execute_shell{command:<|\"|>your_bash_command_here<|\"|>}<tool_call|>
+
+    **Example Tool Call Output:**
+    If you need to view files in a directory, output exactly:
+    <|tool_call>call:execute_shell{command:<|\"|>ls -la<|\"|>}<tool_call|>
+    
+    ```
+
 
 ---
 
