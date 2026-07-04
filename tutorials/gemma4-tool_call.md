@@ -1,9 +1,12 @@
 # Technical Report: Gemma 4 Tool Calling Implementation and Template Conflicts
+Gemma4 was trained in a  tool call format different from OpenAI standard, Google provided a `jinja` template that expects the OpenAI format, Gemma4 struggles to adhere to the format. 
+
 
 ## Overview
 This report identifies a specific problem regarding tool calling in the Gemma 4 model architecture when integrated with standard inference servers (llama-server) and common code harnesses (Hermes, Pi Agent, Opencode). 
 
 The core issue is a mismatch between Gemma 4’s native training format and the OpenAI-style JSON schemas expected by most modern LLM harnesses. Using standard configurations results in dropped tool outputs or reasoning loops.
+
 
 ---
 
@@ -26,6 +29,8 @@ The model expects and handles the following structure natively:
 
 ## System Prompt example for native tool_call format
 
+This prompt shown good results along the proper python code
+
 ```
 # === SYSTEM TOOL SPECIFICATION ===
 You have access to an automated system shell tool. When a task requires execution, you must output a structured call block natively using the exact syntax below.
@@ -40,13 +45,15 @@ You have access to an automated system shell tool. When a task requires executio
     If you need to view files in a directory, output exactly:
     <|tool_call>call:execute_shell{command:<|\"|>ls -la<|\"|>}<tool_call|>
     
-    ```
+```
+
+Adapt as needed
 
 
 ---
 
-## The Problem: Jinja Template Filtering
-A significant technical problem exists in the interaction between `llama-server` and standard Jinja templates (including the Google provided template and those used by popular GGUF conversions like Unsloth and HauhauCS). 
+## Problem: Jinja Template Filtering
+Using the native tool call will lead to a new problem, with the interaction between `llama-server` and standard Jinja templates (including the Google provided template and those used by popular GGUF conversions like Unsloth and HauhauCS). 
 
 Analysis of common templates (specifically around line 217) reveals that any message with `role: "tool"` is skipped entirely unless it follows a specific OpenAI-style `tool_calls` array.
 
