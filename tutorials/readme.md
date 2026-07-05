@@ -14,6 +14,10 @@ This is a set of tutorials, relevant articles for the power user seeking enlight
   
 - [Inference Distributed over LAN](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/shardingGemma4-with-llamaCPP.md)
 
+**Fixing GEMMA4 Tool Calls**
+
+- [Technical Report: Gemma 4 Tool Calling Implementation and Template Conflicts](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/49d423003a34b24516b5fde5e26294f1e032bd55/tutorials/gemma4-tool_call.md)
+- [Technical Report: Gemma 4 Tool Calling Implementation and Template Conflicts 2](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/49d423003a34b24516b5fde5e26294f1e032bd55/tutorials/Gemma4_Tool_Calling_2.md)
 
 **Basic stuff:** 
 - [Powershell NETSH commands](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/WIN11-net-commands.md)
