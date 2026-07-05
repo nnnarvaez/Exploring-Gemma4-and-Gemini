@@ -5,6 +5,10 @@ This report identifies a systemic architectural conflict between Gemma 4’s nat
 
 While it is widely assumed that Gemma 4 "struggles" with tool calling or that developers must choose between writing custom regex parsers or hacking `role: "user"` payloads, raw server logs and template execution analysis reveal that recent `llama-server` builds possess full native handling for Gemma 4's internal delimiters (<|"|>).
 
+- [Google official Gemma4 jinja](https://huggingface.co/google/gemma-4-12B-it-qat-q4_0-unquantized/blob/main/chat_template.jinja)
+
+- [Function calling with Gemma 4](https://ai.google.dev/gemma/docs/capabilities/text/function-calling-gemma4)
+
 ## The Root Cause: Manual String-Matching vs. Native Tokens
 The common point of failure when deploying **Gemma 4 12B QAT** stems from treating tool calling as a string-copying exercise written into a text system prompt, rather than an array of structured objects passed directly to the inference engine.
 
