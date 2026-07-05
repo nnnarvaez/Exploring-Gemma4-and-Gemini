@@ -1,4 +1,4 @@
-# Technical Report: Gemma 4 Tool Calling Implementation and Template Conflicts
+# Technical Report: Gemma 4 Tool Calling Implementation and Template Conflicts 2
 
 ## Overview
 This report identifies a systemic architectural conflict between Gemma 4’s native fine-tuned token structures, `llama-server` capabilities, and the standard implementation methods used in common orchestrators.
