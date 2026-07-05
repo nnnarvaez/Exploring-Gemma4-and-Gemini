@@ -39,11 +39,11 @@ You have access to an automated system shell tool. When a task requires executio
 
     Available Tools:
     1. Shell Command Execution:
-       <|tool_call>call:execute_shell{command:<|\"|>your_bash_command_here<|\"|>}<tool_call|>
+       <|tool_call>call:execute_shell{command:<|"|>your_bash_command_here<|"|>}<tool_call|>
 
     **Example Tool Call Output:**
     If you need to view files in a directory, output exactly:
-    <|tool_call>call:execute_shell{command:<|\"|>ls -la<|\"|>}<tool_call|>
+    <|tool_call>call:execute_shell{command:<|"|>ls -la<|"|>}<tool_call|>
 ```
 
 Adapt as needed
@@ -85,5 +85,7 @@ To verify the templates currently being used by your GGUF files and identify dis
 curl -s http://localhost:8080/props | python3 -c "import json,sys; print(json.load(sys.stdin)['chat_template'])" > gemma4_us.jinja
 ```
 ### Not that is matters as Google trained Gemma4 in a format and provided a jinja template in OpenAI format which is different. 
+
+https://huggingface.co/google/gemma-4-12B-it-qat-q4_0-unquantized/blob/main/chat_template.jinja
 
 **Note on Versions:** There are minimal differences between HauhauCS and the current Google official template regarding audio/image parsing, the Unsloth version currently corresponds to the latest Google release. 
