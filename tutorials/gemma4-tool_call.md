@@ -8,6 +8,10 @@ This report identifies a specific problem regarding tool calling in the Gemma 4 
 The core issue is a mismatch between Gemma 4’s native training format and the OpenAI-style JSON schemas expected by most modern LLM harnesses. Using standard configurations results in dropped tool outputs or reasoning loops.
 
 
+- [Google official Gemma4 jinja](https://huggingface.co/google/gemma-4-12B-it-qat-q4_0-unquantized/blob/main/chat_template.jinja)
+
+- [Function calling with Gemma 4](https://ai.google.dev/gemma/docs/capabilities/text/function-calling-gemma4)
+
 ---
 
 ## Problem: Syntax Strictness
