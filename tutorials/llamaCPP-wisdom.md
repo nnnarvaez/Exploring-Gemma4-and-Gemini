@@ -59,3 +59,20 @@ Automatically optimizes model loading across your hardware (multi-GPU or CPU/GPU
 • **Performance:** Optimizes placement for faster inference, sometimes doubling speed over generic manual configs.  
 • **Accessibility:** Lets lower-VRAM setups run larger models by intelligently spilling weights/context to system RAM.  
 • **Override Friendly:** Respects manually set flags like `--n-gpu-layers` or `--tensor-split`, only automating the remaining parameters.
+
+## 3.- Curling llama-server
+
+```
+Thinking on curl
+curl -s http://192.168.1.240:8080/v1/chat/completions   -H "Content-Type: application/json"   -d '{ "model": "your-model-name",  "messages": [  { "role": "user",  "content": "how much is 2+2." } ],  "chat_template_kwargs": { "enable_thinking": false}, "thinking_budget_tokens": 512, "reasoning_budget_message":"</think>[Output Generation]" }'
+
+Get Jinja
+curl -s http://localhost:8080/props | python3 -c "import json,sys; print(json.load(sys.stdin)['chat_template'])" > gemma4_us.jinja
+
+
+Has tools enabled ? "--tools all"
+curl -s http://192.168.1.240:8080/props | python3 -m json.tool
+
+
+```
+
