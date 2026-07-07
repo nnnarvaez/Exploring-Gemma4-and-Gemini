@@ -32,7 +32,7 @@ This is a set of tutorials, relevant articles for the power user seeking enlight
   
 - [Add the Brain toggle to LMStudio](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/Brain-toggle-thinking-LMStudio.md)
   
-- [Migrate your inference to Llama CPP](tutorials/migratetollamaCPP.md)
+- [Migrate your inference to Llama CPP](migratetollamaCPP.md)
 
 ### From other Repos and pages
 

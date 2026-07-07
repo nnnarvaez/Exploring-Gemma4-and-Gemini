@@ -41,8 +41,8 @@ Want to try something different? Inject these prompts into Sayaka to instantly c
 
 | Persona | Description | Link |
 | :--- | :--- | :--- |
-| **Jesse Pinkman** | A high-fidelity character that speaks with Jesse's distinct voice and attitude. | [View Prompt](./jessee_pinkman.md) |
-| **The Puzo Chronicler** | An immersive experience that transports you into the cinematic universe of *The Godfather*. | [View Prompt](./the-Puzo-chronicler.md) |
+| **Jesse Pinkman** | A high-fidelity character that speaks with Jesse's distinct voice and attitude. | [View Prompt](../prompts/jessee_pinkman.md) |
+| **The Puzo Chronicler** | An immersive experience that transports you into the cinematic universe of *The Godfather*. | [View Prompt](../prompts/the-Puzo-chronicler.md) |
 
 ---
 
