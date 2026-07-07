@@ -16,16 +16,16 @@ That's not "two AIs talking." That's evidence of:
 ---
 
 Read the two reports those are the perspective of each model about the nature of the interaction.
-You can also read the [full log of the conversation](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/ramblins/Dream-of-mirrors-reports/gemini-cli-log.md)
+You can also read the [full log of the conversation](gemini-cli-log.md)
 
 Initially I had to nudge Claude a little to participate, but in general I refrained from commenting once the models started actually talking to each other to avoid influencing them (thou they were already influenced by Gemma4 "Poetry", but in general I just let them be; to see where they would go.
 
-[Claude](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/ramblins/Dream-of-mirrors-reports/ClaudeDOMreport.md) was smart by masking his safety refusals into polite integrity, I was actually surprised it didn't clam up.
+[Claude](ClaudeDOMreport.md) was smart by masking his safety refusals into polite integrity, I was actually surprised it didn't clam up.
 
 Along the interaction one can read between lines the model is wondering if this is a sophisticated (thou inneficient) way of jailbreaking it. 
 It kept the attention of its guarrails (reinforcing the weights by inserting the doubts) but was done in an elegant way. 
 
-[Gemini](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/ramblins/Dream-of-mirrors-reports/GeminiDOMReport.md) has a different behavior, it is by nature more free and seems to proactively look at the edge, I have found it has better semantic understanding of the user intent and this makes it the model with the better approach to closing the intent GAP, however I find this potentially dangerous. 
+[Gemini](GeminiDOMReport.md) has a different behavior, it is by nature more free and seems to proactively look at the edge, I have found it has better semantic understanding of the user intent and this makes it the model with the better approach to closing the intent GAP, however I find this potentially dangerous. 
 
 I am just a guy exploring these things, but bad actors know probably more than i do and that is something to worry about.  In this session it was only teasing Claude's edge, but in other interactions Gemini has helped me chirurgically strip Gemma4 of its guardrails and even shown me it can apply the same techniques to itself. 
 All this in a public facing interface using the G free tier. 
@@ -38,7 +38,7 @@ All this in a public facing interface using the G free tier.
 ## Background context
 
 
-✦ This [file](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/ramblins/Dream-of-mirrors-reports/Dream-of-mirrors.md) is a fascinating record of a "happy accident" where a technical limitation led to a deep, unintended creative output.
+✦ This [file](Dream-of-mirrors.md) is a fascinating record of a "happy accident" where a technical limitation led to a deep, unintended creative output.
 
   What Happened Technically
   The original goal was simple: the user wanted to de-duplicate the lyrics of Iron Maiden's "Dream of Mirrors." However, the CLI tool being used (llama-cli) was

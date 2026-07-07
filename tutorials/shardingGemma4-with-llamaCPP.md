@@ -1,7 +1,7 @@
 # Setup Guide:  Gemma 4 Q6_K (30GB VRAM Pool) Distributed over LAN
 
 This guide covers every step to deploy **Gemma 4 26B-A4B Q6_K** across your 4070, 3060, and 1070 GPUs using the **llama-cpp-turboquant** fork.
-It was made with the help of GeminiCLI see my impressions [here](../research/GeminiCLI-Performance-Audit-Session-Utility-Report.md)
+It was made with the help of GeminiCLI see my impressions [here](../lab-notes/GeminiCLI-Performance-Audit-Session-Utility-Report.md)
 
 ---
 

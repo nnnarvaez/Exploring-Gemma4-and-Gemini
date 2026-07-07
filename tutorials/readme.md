@@ -4,7 +4,7 @@ This is a set of tutorials, relevant articles for the power user seeking enlight
 
 **Deeper stuff:**
 
-- [Technical Report: Gemma 4 12b KV Cache Quantization Analysis](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/d6e59e2e7bb8397dafaa0fb3d6307167cf96430b/research/Gemma4-12b-KV_Cache-Quantization-Analysis.md)
+- [Technical Report: Gemma 4 12b KV Cache Quantization Analysis](Gemma4-12b-KV_Cache-Quantization-Analysis.md)
   
 - [Converting Safetensors to GGUF BF16 (Gemma4 26B Example)](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/tutorials/BF16-tutorial.md)
 
