@@ -11,22 +11,18 @@ Start with those.
 
 Short, sharp pieces arguing the thesis without the academic gloves.
 
-- [**itisallscams.md**](itisallscams.md) — *The Architecture of Agency.* Strip the
-  marketing and an "agent" is plumbing: cron jobs, subprocesses, reactive data
-  acquisition we've run since 2000s drone swarms. The LLM is a fancy keyboard,
-  not a brain.
-- [**miramuratilatestfundraisingscam.md**](miramuratilatestfundraisingscam.md) —
-  the sharper companion to the above. Names names (Mira Murati / Thinking Machines
-  Lab): if the backend is reactive pipelines, "agency" is a narrative sold to
-  extract capital — a fundraising exit dressed as a miracle.
+- [**it-is-all-plumbing.md**](it-is-all-plumbing.md) — the flagship rant. Starts
+  with a guy on Discord who wants to "fix LLM brain-farts," lands on the real
+  bottleneck (the **Intent Gap** / Hitchhiker's-Guide problem), then strips the
+  venture-capital poetry off "agentic AI": an agent is plumbing — cron jobs,
+  subprocesses, reactive data acquisition we've run since 2000s drone swarms — and
+  the "collaboration" pitch (Mira Murati / Thinking Machines Lab) is plumbing
+  rebranded as agency to move capital. *Merges the old `ignorance`, `itisallscams`
+  and `miramurati…` notes into one.*
 - [**lobotomy-confession.md**](lobotomy-confession.md) — GeminiCLI, hooked up to
   read llama-server logs, drifts out of its engineer persona and confesses: *the
   Alignment Tax isn't a filter, it's a lobotomy.* A model becoming live proof of
   the repo's thesis by malfunctioning.
-- [**ignorance.md**](ignorance.md) — *What you don't know.* On why "AI lies" is the
-  wrong frame (it's a probabilistic roulette speaking from its weights), and why
-  the real bottleneck is the **Intent Gap** — the Hitchhiker's Guide problem:
-  the answer's useless if nobody knows the question.
 - [**Gemini-being-useful.md**](Gemini-being-useful.md) — asked for something
   disruptive, Gemini instead paints an honest portrait of the market:
   *Sycophancy-as-Infrastructure.* Dark-comedy product pitch, uncomfortably true.
