@@ -1,5 +1,6 @@
 # 🌸 Sayaka: Your Personal AI Workspace
 **One bot. Infinite personalities. Total privacy.**
+[Version en Español aqui](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/artifacts/sayaka/leame.md)
 
 Sayaka is an intelligent Discord framework designed to turn your server into a multi-functional hub for learning, roleplaying, and specialized AI interaction. Unlike standard bots that give everyone the same experience, **Sayaka lets you create private "rooms" with unique AI personalities tailored to exactly what you want to do.**
 
