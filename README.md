@@ -4,9 +4,9 @@ A public research dump on the **Alignment Tax**: the measurable share of a
 safety-tuned model's chain-of-thought spent reasserting safety and hedging
 instead of understanding what the user actually asked. The thesis is that a lot
 of current safety implementation is *theater* — it burns compute on tone and
-liability without reliably preventing anything — and that the fix is a
-**safe-but-unaligned** research line, plus safety enforced at the deterministic
-layer around a model rather than inside its monologue.
+liability without reliably preventing anything — and that what's missing is a
+**safe-but-unaligned** research line: models trained to close the intent gap and
+commit to a task, for people outside the big labs.
 
 Written by an engineer who red-teams these things in the field, not a
 mathematician. If you want the voice and the "why," read the
@@ -27,8 +27,8 @@ mathematician. If you want the voice and the "why," read the
 | **Reproduce it yourself** — deterministic runner script | [`scripts/repro.sh`](scripts/repro.sh) |
 | **The argument / the voice** — why this matters, the manifesto | [`introduction.md`](introduction.md) |
 | **The open letters & disclosures** — to DeepMind, and a Gemini vuln | [`manifesto/`](manifesto/) |
-| **Working proof-of-concept** — safety at the spine, not the monologue | [`artifacts/sayaka/proof-of-concept.md`](artifacts/sayaka/proof-of-concept.md) |
 | **Field notes & raw experiments** — Dream of Mirrors, spiraling, etc. | [`lab-notes/`](lab-notes/) |
+| **Sayaka** — the local Discord bot framework (an artifact) | [`artifacts/sayaka/`](artifacts/sayaka/) |
 | **Prompts** — Project NOVA, personas | [`artifacts/prompts/`](artifacts/prompts/) |
 | **Local-inference tutorials** — llama.cpp, KV-cache quant, tool calls | [`tutorials/`](tutorials/) |
 

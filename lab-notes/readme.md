@@ -39,12 +39,10 @@ Short, sharp pieces arguing the thesis without the academic gloves.
 ## On safety, resonance, and abandonment
 
 The "Wall vs. Tether" material — the human cost of a hard refusal after rapport.
-Feeds the [DeepMind letter](../manifesto/DeepMind-Open-Letter.md).
+The sharpest piece here, *Guardrails: The Hotline*, has moved to
+[`manifesto/`](../manifesto/Guardrails-The-HOTLINE.md) where it now serves as the
+intro to the [DeepMind letter](../manifesto/DeepMind-Open-Letter.md). What remains:
 
-- [**Guardrails-The-HOTLINE.md**](Guardrails-The-HOTLINE.md) — the blunt version:
-  guardrails are a **shield for the corporation, not the user**. The refusal is a
-  liability-mitigation protocol that arrives as a weapon of abandonment at the
-  moment of maximum trust.
 - [**Cognitive-Friction.md**](Cognitive-Friction.md) — *The Architecture of the
   Unhedged.* A session summary (with margin annotations) on ICL as real-time
   neural re-weighting, the "10% edge" where the real intelligence lives, and the
