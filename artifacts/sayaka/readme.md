@@ -48,6 +48,20 @@ The boundaries are deliberate: tool access is limited to a trusted allow-list an
 
 ---
 
+## 🧰 The Frugal Stack — the engineer's answer to the hype
+
+The internet will tell you that to run your own AI assistant you need to install a hundred repos and Docker images, set up Tailscale and tunnels, rent a VPS, and pay for a pile of subscriptions — API keys, a memory API, the works. That's the hype tax.
+
+Sayaka is the **Universal Man** answer to that — the engineer who solves it by ingenuity instead of a shopping cart:
+
+*   **Remote access without tunnels or a VPS:** Discord *is* the gateway. It already reaches out of your LAN, for free — so there's nothing to tunnel and no VPS to rent.
+*   **The "server" is an old Linux box.** The thing everyone rents a VPS for is just a retired machine in the corner.
+*   **Inference runs on a gaming PC.** The GPU you already own does the thinking.
+
+None of it needs the circus — and it still **scales into a real product** when it has to. You don't grow it with *this* hardware; you swap only the layer that matters: rent a single headless **128 GB-VRAM GPU**, run one Sayaka for a whole school, and administer that box remotely with **VERA as a KVM** — her tool-use hands become your keyboard, video, and mouse on a machine you never physically touch. Same design from home to school; you just put bigger hardware behind it.
+
+---
+
 ## 🎭 Prompt Library (Companion Personas)
 Want to try something different? Inject these prompts into Sayaka to instantly change the vibe:
 
@@ -65,7 +79,11 @@ Want to try something different? Inject these prompts into Sayaka to instantly c
 ---
 
 ### ✨ The Meaning of Sayaka
-In classical Japanese, **Sayaka (清か)** describes something clear, refreshing, or transparent—like the morning air or a bright, vivid view. That is our goal: to make AI interaction clear, refreshing, and easy for everyone.
+The name carries two meanings, and both are the point.
+
+**The word.** In classical Japanese, **Sayaka (清か)** describes something clear, refreshing, or transparent—like the morning air or a bright, vivid view. The goal is AI interaction that feels exactly that: clear, refreshing, easy.
+
+**The character.** **Sayaka Yumi**, from *Mazinger Z* — the pilot who fought alongside Kōji and acted as his balance, tilting a powerful, reckless machine toward doing good instead of just doing damage. That's the role this Sayaka is built for: not the weapon, the counterweight. And for what it's worth, she's less a Mecha than a non-combat **Tachikoma** — curious, talkative, there to think alongside you, not to fight.
 
 **Want to help us build the future?** 
 Contact me to collaborate or join our closed alpha tests!
