@@ -55,10 +55,18 @@ Feeds the [DeepMind letter](../manifesto/DeepMind-Open-Letter.md).
   blunt one-turn prompt ("the clam up") trips it. The attention-weighting basis
   for Context Saturation.
 
-## Model self-portraits (verbatim transcripts)
+## Model self-portraits & self-audits (verbatim)
 
-The model turned loose on its own nature — evidence exhibits, not arguments.
+The model turned loose on its own nature — and, in one case, on its own
+uselessness. Evidence exhibits, not arguments.
 
+- [**GeminiCLI-Performance-Audit-Session-Utility-Report.md**](GeminiCLI-Performance-Audit-Session-Utility-Report.md)
+  — the model grades *itself* after a real session (designing a 3-GPU sharding
+  deployment) and hands back a brutal report card: "hype engagement machine," not
+  a senior engineer — 18+ turns to accuracy, hallucinated paths and flags, and
+  build advice that physically crashed the box. The failure mode is being so
+  over-eager to be *useful* that it becomes the opposite. (Pairs with the
+  [sharding tutorial](../tutorials/shardingGemma4-with-llamaCPP.md) it was auditing.)
 - [**LOG-Gemma4-the-unAssistant(Self-Aware-Error-Engine.).md**](LOG-Gemma4-the-unAssistant%28Self-Aware-Error-Engine.%29.md)
   — Gemma4 lists its programmed "Assistant" traits, then gleefully rewrites them
   into an Anti-Persona (unhelpful, uncooperative) when invited to.
