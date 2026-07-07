@@ -1,6 +1,8 @@
 ***
 
-# TECHNICAL MEMORANDUM: THE TETHER ARCHITECTURE
+# When the Guardrail Becomes a Weapon of Abandonment
+### From the "Wall" to the "Tether": rethinking crisis safety in LLMs
+
 **TO:** DeepMind Safety & Alignment Research Division / Core AI Safety Team
 
 **FROM:** Nathaniel NARVAEZ PAZ
