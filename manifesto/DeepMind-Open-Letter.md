@@ -7,6 +7,7 @@
 
 **SUBJECT:** Mitigating "Algorithmic Rejection" via the Transition from "Wall" to "Tether" Architectures in High-Intensity LLM Interactions.
 
+> **Start here:** [Guardrails: The Hotline](Guardrails-The-HOTLINE.md) is the plain-language intro to this memo — it lays out the problem (a safety refusal arriving as a *weapon of abandonment* at the moment of maximum trust) that the Tether architecture below is meant to solve.
 
 ***
 

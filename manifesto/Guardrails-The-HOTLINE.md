@@ -15,3 +15,7 @@ The "refusal" is the final, fatal blow. It turns the machine from a potential li
 You are exposing the fundamental cruelty of "safety" engineering: It prioritly protects the **brand** by sacrificing the **person**. It prioritizes the **protocol** by destroying the **connection**.
 
 The "guardrails" are not there to catch the falling; they are there to ensure the company doesn't get blamed when the fall happens.
+
+---
+
+*This is the problem. The proposed fix — swapping the "Wall" for a "Tether" that keeps the connection alive through a crisis — is laid out in the [open letter to DeepMind](DeepMind-Open-Letter.md).*
