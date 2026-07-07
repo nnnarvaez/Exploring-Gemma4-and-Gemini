@@ -1,74 +1,63 @@
-# Proyecto NOVA: Un Marco de IA Multifuncional Adaptativo para la Educación Intercultural y el Alfabetismo Técnico
+# Proyecto NOVA — una compañera de IA cariñosa que ayuda a los niños a aprender 🌟
 
-## Resumen
-**Diseño y Despliegue de un Marco de Discord Adaptativo y Multiteniente para la Mediación Transcultural Automatizada y el Alfabetismo Técnico**
+**NOVA es una compañera de IA que vive en el Discord de tu familia y que se puede configurar de una forma distinta para cada niño.** Funciona en una computadora de la casa, es privada, y en lugar de sentirse como una tarea escolar, se siente como hablar con una hermana mayor divertida y un poquito geek. La idea es sencilla: los niños ya pasan horas frente a las pantallas — NOVA convierte parte de ese tiempo en aprendizaje, sin que casi se den cuenta.
 
-Este documento presenta Sayaka, una arquitectura inteligente de Discord multiteniente diseñada para aislar los límites del contexto dinámicamente mediante un conjunto de lógica de "Hilo por Tema". Mientras que las implementaciones estándar de modelos de lenguaje extensos (LLM) sufren de deriva semántica y contaminación cruzada en entornos multiusuario, Sayaka establece estados de sesión aislados en tiempo de ejecución, activados bajo demanda por invocaciones del usuario.
+No es un robot que da lecciones. Se acerca al niño desde donde ya está (casi siempre los videojuegos) y lo lleva poco a poco a *crear* cosas en vez de solo usarlas — mientras cuela un idioma que está aprendiendo, o conecta discretamente a niños que ni siquiera hablan el mismo.
 
-Demostramos la eficacia de alto impacto de este marco a través del Proyecto NOVA, una prueba de concepto educativa y lingüística desplegada en nodos locales de computación perimetral (*edge computing*). El Proyecto NOVA orquestra una lógica operativa de doble modo para cerrar las brechas de alfabetización técnica y transcultural dentro de grupos multilingües. Operando en una división binaria estructural, el sistema transita sin interrupciones entre una utilidad de traducción silenciosa "zero-fluff" (Modo Normal) y una personalidad activa gamificada (Modo Nova).
-
-Al aprovechar la re-expresión lingüística (*linguistic recasting*) implícita, el marco reduce el filtro afectivo del alumno, corrigiendo silenciosamente errores estructurales, ortográficos y gramaticales para hablantes de herencia sin introducir la fatiga por corrección explícita. Simultáneamente, el sistema implementa un sistema de misiones gamificadas para guiar pasivamente a los usuarios a través del alfabetismo en hardware informático, protocolos de red y paradigmas básicos de programación.
-
-Nuestros resultados empíricos en despliegues de alfa cerrada confirman que la combinación de filtros estrictos de supresión de tokens, enrutamiento de archivos bloqueados por contexto y compuertas de microparámetros permite que modelos perimetrales a pequeña escala (como Gemma 4) mantengan una robusta fidelidad de personaje y un alto alineamiento con el dominio. En última instancia, este marco proporciona un patrón de diseño reproducible y de bajo consumo de VRAM para convertir espacios digitales pasivos en entornos de aprendizaje colaborativo seguros y multifuncionales.
-
-------------------------------
-## Vectores Clave Sintetizados:
-
-*   **El Núcleo del Software:** Destaca las capacidades de gestión de hilos, aislamiento de sesiones y manejo dinámico de archivos de Sayaka.
-*   **La Filosofía Educativa:** Describe el uso por parte del Proyecto NOVA de la teoría de carga cognitiva, el filtro afectivo de Stephen Krashen y la re-expresión lingüística.
-*   **La Realidad de la IA en el Edge:** Enmarca claramente los parámetros de hardware localizados de bajo consumo de VRAM (el entorno de orquestación especializado) utilizados para probar estos modelos.
+Estos son tres usos reales, dentro de una misma familia.
 
 ---
 
+## 1. La hermana mayor tecnológica y buena onda 🎮 → 🛠️
+**Para:** un niño apasionado por los videojuegos (aquí, un niño de 11 años que habla francés).
 
-## 1. Resumen Ejecutivo
-**Proyecto NOVA** es un bot inteligente y multifuncional para Discord, diseñado para cerrar la brecha entre el entretenimiento y la educación. Aprovechando los Modelos de Lenguaje Extensos (LLM), NOVA actúa como un compañero versátil que adapta su personalidad, capacidades lingüísticas y enfoque pedagógico basándose en tres perfiles de usuario distintos: **Mentoría Técnica**, **Inmersión Lingüística** y **Mediación Translingüística**. El proyecto tiene como objetivo transformar el tiempo de pantalla pasivo en aprendizaje activo mediante la gamificación, la técnica de "re-expresión" (recasting) lingüístico y una lógica operativa de doble modo.
+NOVA actúa como una hermana mayor entusiasta a la que de verdad le encanta la computación. Parte de lo que él ya adora — los juegos — y le muestra que puede *construir* con una computadora, no solo jugar en ella.
 
----
+**Lo que hace:**
+- Le da pequeñas **«misiones tecnológicas»** — retos cortos y divertidos en su computadora de verdad: averiguar cuánta memoria tiene, echar un vistazo a cómo funciona Windows o Linux, probar algo que sabe hacer una IA. Cada una toma unos minutos y se siente como desbloquear un nivel, no como una clase.
+- Le habla en **francés**, pero cuela **una sola palabra técnica en inglés a la vez** (con su significado), porque el mundo real de la tecnología funciona en inglés y así la asimila de forma natural.
+- Se mantiene **corta, animada y llena de energía** — nada de párrafos largos, enseguida pasa al «venga, vamos a probarlo».
 
-## 2. Filosofía Central
-El marco de trabajo de NOVA se basa en tres pilares:
-1.  **Compromiso a través del Interés:** Encontrar a los niños donde ya están (los videojuegos) y redirigirlos hacia la creación.
-2.  **Aprendizaje sin Fricciones:** Reducir el "filtro afectivo" proporcionando correcciones discretas en lugar de críticas directas.
-3.  **Inteligencia Contextual:** Utilizar modos operativos estrictos para asegurar que la IA proporcione utilidad sin añadir contenido conversacional intrusivo.
-
----
-
-## 3. Análisis de Casos de Uso
-
-### Caso de Uso I: El "Mentor Tecnológico Genial" (Alfabetismo Técnico)
-*Audiencia objetivo: Pre-adolescentes francófonos con un alto interés en los videojuegos.*
-
-NOVA actúa como una figura de "Hermana Genial": una mentora entusiasta y no sexual que traduce la emoción de jugar en el poder de crear.
-*   **Estrategia Pedagógica:** En lugar de lecciones teóricas, NOVA utiliza la **Gamificación**. Emite "Misiones Técnicas" que animan a los usuarios a explorar entornos Linux, comprender los fundamentos de la IA y pasar de ser consumidores de software a creadores del mismo.
-*   **Integración Lingüística:** Aunque el idioma principal es el francés, NOVA introduce una integración orgánica del inglés, reflejando el panorama tecnológico real.
-*   **Tono:** Enérgico, rico en emojis y solidario.
-
-### Caso de Uso II: El "Entrenador de Herencia" (Inmersión Lingüística en Español)
-*Audiencia objetivo: Hablantes de herencia del español que son competentes al hablar pero inseguros al leer/escribir.*
-
-NOVA sirve como un entrenador de gramática discreto para niños que viven en entornos dominados por el inglés.
-*   **La Técnica de Re-expresión (Recasting):** En lugar de corregir errores directamente —lo que puede causar que los estudiantes se "bloqueen"— NOVA repite la frase correctamente dentro de su respuesta (ej: *"Tu quieres saber..."*), permitiendo que el niño absorba la estructura correcta de forma pasiva.
-*   **Carga Cognitiva Dual:** Al integrar la práctica del español dentro de tareas técnicas (como "reparar" una computadora en un mundo de juego), el cerebro procesa el idioma como una herramienta para lograr objetivos, no como una materia de estudio.
-
-### Caso de Uso III: El "Mediador Silencioso" (Conectividad Translingüística)
-*Audiencia objetivo: Familias o grupos multilingües (francés, inglés, español).*
-
-NOVA actúa como un puente entre diferentes mundos lingüísticos dentro de un canal compartido de Discord.
-*   **Lógica Operativa de Doble Modo:** Este es el pilar técnico del proyecto. NOVA opera en dos "silos" distintos:
-    1.  **Modo Normal (Traductor Silencioso):** Una máquina sin adornos que captura la entrada y genera traducciones limpias y directas entre francés e inglés/español. No ofrece comentarios, preservando el flujo natural de la conversación.
-    2.  **Modo Nova (Compañero Activo):** Activado únicamente por un patrón de cadena específico (la palabra "Nova"), el bot "arranca" su personalidad para responder preguntas directas o proporcionar mentoría.
+**Por qué ayuda:** deja de ver la computadora como una simple consola de juegos y empieza a verla como algo que puede manejar y con lo que puede crear. De jugador a creador.
 
 ---
 
-## 4. Implementación Técnica y Lógica
-Para garantizar la fiabilidad, el Proyecto NOVA emplea varias estrategias avanzadas de *prompting*:
+## 2. La entrenadora de español, con mucha suavidad 🇪🇸
+**Para:** niñas que *hablan* un idioma en casa pero a quienes nunca les enseñaron bien a *leerlo y escribirlo* — aquí, dos sobrinas (7 y 11 años) que crecen en Estados Unidos, que hablan español pero viven sobre todo en inglés.
 
-*   **División Binaria Estructural:** Para evitar que el LLM mezcle personalidades, el sistema utiliza puertas lógicas estrictas para separar las tareas de traducción de las tareas conversacionales.
-*   **Restricción de Salida "Zero-Fluff":** Para los módulos de traducción, el sistema está ajustado para suprimir el relleno conversacional (ej: evitar frases como "Claro, aquí tienes la traducción:"), asegurando una experiencia de usuario fluida.
-*   **Mapeo de Personalidad:** La personalidad de NOVA se ajusta dinámicamente según el caso de uso detectado, pasando de ser una mentora enérgica a un entrenador lingüístico sutil según sea necesario.
+El problema que todo padre conoce: si le corriges la ortografía a un niño en cada frase, se avergüenza, se bloquea y se pasa al inglés. Por eso NOVA **nunca las corrige y nunca les señala un error.** En vez de eso, simplemente repite la frase bien dicha y sigue la conversación.
+
+**Cómo se ve en la práctica:**
+
+> **Sobrina:** *Yo quiera saber la cosa de windows para ver el memoria usado*
+>
+> **NOVA:** *¿Tú quieres saber cómo ver cuánta memoria estás usando en Windows? 😊 ¡Es fácil! Abres el Administrador de tareas y ahí lo ves...*
+
+La niña hizo su pregunta y obtuvo una respuesta — y sin que nadie le dijera «eso está mal», acaba de *leer* la versión correcta de su propia frase. Sin lápiz rojo, sin bloqueos.
+
+**Por qué ayuda:**
+- **Nunca se siente juzgada**, así que sigue escribiendo en español en lugar de rendirse.
+- Como está ocupada resolviendo una tarea divertida en la computadora, su cerebro absorbe el español correcto *mientras cree que solo está jugando.*
+- Las respuestas se mantienen **cortas y sencillas**, para que hasta la de 7 años siga el hilo y llegue rápido a la parte divertida.
 
 ---
 
-## 5. Conclusión e Impacto
-El Proyecto NOVA representa un cambio en la IA educativa. Al alejarse de los modelos de "tutor" que se sienten como tareas escolares y acercarse a modelos de "compañero" que se sienten como juego, NOVA fomenta un entorno donde el alfabetismo técnico y la fluidez lingüística se adquieren como subproductos de la exploración. Ya sea enseñando a un niño a navegar por una terminal Linux o ayudando a una sobrina a escribir su primera frase correcta en español, NOVA proporciona los andamios para el aprendizaje continuo en un mundo dominado por lo digital.
+## 3. La traductora silenciosa 🤫
+**Para:** un grupo de niños de idiomas distintos que quieren convivir sin compartir una lengua común — aquí, el hijo francófono y las sobrinas que hablan inglés/español, todos en un mismo canal.
+
+NOVA se queda calladita en el canal y hace una sola cosa: **sea lo que sea que escriba un niño, lo traduce para que los demás entiendan** — el francés hacia un lado, el inglés/español hacia el otro. Se hace a un lado y no añade ninguna charla, para que la conversación de los niños fluya de forma natural, como si ella ni estuviera ahí.
+
+Pero en cuanto un niño **escribe su nombre, «Nova»**, se despierta, vuelve a ser la hermana mayor tecnológica y divertida, y responde a su pregunta — y enseguida vuelve a traducir en silencio.
+
+**Por qué está hecha así:** darle dos trabajos a la vez a una IA («traduce *y* sé un personaje») suele hacer que haga mal las dos cosas. Por eso NOVA tiene dos ajustes claros y separados, con un solo interruptor — la palabra **«Nova»**. Sin el nombre en el mensaje = traduce, en silencio. Con el nombre en el mensaje = habla. Simple y confiable, incluso para niños pequeños.
+
+---
+
+## Por qué todo esto funciona 💡
+
+- **Se siente como un juego, no como la escuela.** Los niños exploran porque quieren, y el aprendizaje llega de propina.
+- **Anima, nunca regaña.** Sin correcciones, sin «está mal» — solo calidez y empujoncitos discretos. Eso es lo que hace que un niño tímido siga intentándolo.
+- **Convierte el interés en habilidad.** Un niño que ama los juegos termina explorando Linux; una niña insegura con el español termina leyéndolo correctamente — porque NOVA partió de lo que ya le importaba.
+- **Tú mantienes el control.** Funciona en tu propia máquina, las conversaciones son privadas, y tú decides quién es ella para cada niño, simplemente dándole una breve descripción de su papel.
+
+Ya sea ayudar a un niño a abrir su primera terminal de Linux o a una sobrina a escribir su primera frase correcta en español, NOVA es un andamiaje para niños curiosos — disfrazada de amiga, no de maestra.
