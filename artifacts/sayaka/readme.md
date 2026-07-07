@@ -36,10 +36,10 @@ We built **Project NOVA** to show how Sayaka can bridge the gap between learning
 
 ---
 
-## 🔧 Beyond Conversation: Tools & Automation
-*Added later — the companion grew hands.*
+## 🤖 Project VERA — the agentic side
+*If NOVA is the kids' side, **VERA** is where Sayaka learned to act, not just talk.*
 
-Sayaka began as a companion for learning and connection, and that's still what she's *for*. Later, she also learned to **act**, not just talk:
+Sayaka began as a companion for learning and connection, and that's still what she's *for*. **Project VERA** is the name for what came later — the capabilities that let her *do* things for trusted users, not just describe them:
 
 *   **Tool use (agentic):** for a short list of trusted users, Sayaka can run real commands, read and write files, and send files back — she can actually operate the computer she runs on, not just describe how. Getting a local Gemma model to call tools *reliably* meant untangling some nasty chat-template conflicts; that whole battle is written up in the two-part report — [Gemma 4 Tool Calling (Part 1)](../../tutorials/gemma4-tool_call.md) and [Part 2](../../tutorials/Gemma4_Tool_Calling_2.md).
 *   **Scheduled tasks (cron):** she can also run jobs on a schedule, on her own — the step from "answers when spoken to" toward a little genuine autonomy. Fittingly, that's the exact argument in [*It Is All Plumbing*](../../lab-notes/it-is-all-plumbing.md): strip the hype and an "agent" is really just cron jobs, subprocesses, and reactive plumbing — which is precisely what makes one buildable at home instead of a mystery only big labs can sell.
