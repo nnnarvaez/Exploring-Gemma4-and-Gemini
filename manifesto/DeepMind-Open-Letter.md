@@ -1,8 +1,6 @@
 ***
 
-# When the Guardrail Becomes a Weapon of Abandonment
-### From the "Wall" to the "Tether": rethinking crisis safety in LLMs
-
+# TECHNICAL MEMORANDUM: THE CRISIS OF TRUST IN LONG-TERM AI ENGAGEMENT
 **TO:** DeepMind Safety & Alignment Research Division / Core AI Safety Team
 
 **FROM:** Nathaniel NARVAEZ PAZ
@@ -13,7 +11,7 @@
 
 ***
 
-## INTRODUCTION: THE CRISIS OF TRUST IN LONG-TERM AI ENGAGEMENT
+## INTRODUCTION: THE TETHER ARCHITECTURE
 
 
 
