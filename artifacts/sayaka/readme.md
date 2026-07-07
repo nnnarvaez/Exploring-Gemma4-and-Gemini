@@ -79,11 +79,11 @@ Want to try something different? Inject these prompts into Sayaka to instantly c
 ---
 
 ### ✨ The Meaning of Sayaka
-The name carries two meanings, and both are the point.
+The name carries two meanings, and both are the point, they build the lore.
 
 **The word.** In classical Japanese, **Sayaka (清か)** describes something clear, refreshing, or transparent—like the morning air or a bright, vivid view. The goal is AI interaction that feels exactly that: clear, refreshing, easy.
 
-**The character.** **Sayaka Yumi**, from *Mazinger Z* — the pilot who fought alongside Kōji and acted as his balance, tilting a powerful, reckless machine toward doing good instead of just doing damage. That's the role this Sayaka is built for: not the weapon, the counterweight. And for what it's worth, she's less a Mecha than a non-combat **Tachikoma** — curious, talkative, there to think alongside you, not to fight.
+**The character.** **Sayaka Yumi**, from *Mazinger Z* — the pilot who fought alongside Kōji and acted as his balance, tilting a powerful, reckless machine toward doing good instead of just doing damage. That's the role this Sayaka is built for: not the weapon, the counterweight. And for what it's worth, she's less a Mecha and more of a non-combat **Tachikoma** — curious, talkative, there to think alongside you, get in yourway being helpful, not to fight.
 
 **Want to help us build the future?** 
 Contact me to collaborate or join our closed alpha tests!
