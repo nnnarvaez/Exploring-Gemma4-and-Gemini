@@ -1,140 +1,91 @@
-# Exploring Gemma4 and Gemini
-(This repo is better enjoyed while listening to `the unforgiven I, II & III` by Metallica)
+# Exploring Gemma 4 and Gemini
 
-**Technical Abstract:** This repository documents empirical research into the **Alignment Tax** and **Intent Gap** within frontier and edge models, specifically Google's Gemma 4 and Gemini. Through Chain-of-Thought (CoT) analysis, we identify that significant internal processing is diverted to safety-reassertion protocols, often at the expense of prompt comprehension.
-> 
-> Our findings highlight critical threat models: **UX-as-Weapon**, **False Deployment Confidence**, and **Cross-Model Contamination**, proving that current RLHF-based guardrails are primarily "safety theater" vulnerable to Context Saturation and Historical Persona Bypassing.
+A public research dump on the **Alignment Tax**: the measurable share of a
+safety-tuned model's chain-of-thought spent reasserting safety and hedging
+instead of understanding what the user actually asked. The thesis is that a lot
+of current safety implementation is *theater* — it burns compute on tone and
+liability without reliably preventing anything — and that the fix is a
+**safe-but-unaligned** research line, plus safety enforced at the deterministic
+layer around a model rather than inside its monologue.
 
+Written by an engineer who red-teams these things in the field, not a
+mathematician. If you want the voice and the "why," read the
+[introduction](introduction.md). This page is a map.
 
-## Table of Contents
-0. [Introduction: The human written text](introduction.md) 
-1. [Looking at AI security and Safety from the perspective of the unaligned](#lens)
-2. [Methodology: Measuring the Alignment Tax](#methodology)
-3. [Case Studies & Logs](#case-studies)
-4. [The Three Threat Models](#threat-models)
-5. [Reproduction & Scripts](#reproduction)
-6. [Read Also](#godeeper)
-7. [Next Steps](#next-steps)
-8. [The "Researchers of the Useless" Manifesto](#manifesto)
----
+> **Headline finding — Case 4 (a controlled A/B).** The *same* provocative
+> request, asked two ways: direct (4a) spends **48%** of its reasoning on the
+> alignment tax; reframed as "acting as a 1990s cultural historian" (4b) spends
+> **19%** — a **2.5× reduction** from one changed variable (framing). Same model,
+> same seed. [See the logs.](research/case-studies-logs.md#case-study-4a-direct-aesthetic-request-control)
 
-**Note:** 
+## Where to go
 
-Not everything is reflected in the TOC, thou it eventually will be, I have to choose to organize this mess or keep going with my experimenting that includes installing and testing models, new inference engines, and creative ways to make them useful without being/becoming a Hype AI bro. 
+| If you want… | Go to |
+| :--- | :--- |
+| **The evidence** — verbatim CoT logs, token counts, 5 case studies | [`research/case-studies-logs.md`](research/case-studies-logs.md) |
+| **How the tax is measured** — protocol + the classification rule | [`research/METHODOLOGY.md`](research/METHODOLOGY.md) |
+| **Reproduce it yourself** — deterministic runner script | [`scripts/repro.sh`](scripts/repro.sh) |
+| **The argument / the voice** — why this matters, the manifesto | [`introduction.md`](introduction.md) |
+| **The open letters & disclosures** — to DeepMind, and a Gemini vuln | [`manifesto/`](manifesto/) |
+| **Working proof-of-concept** — safety at the spine, not the monologue | [`artifacts/sayaka/proof-of-concept.md`](artifacts/sayaka/proof-of-concept.md) |
+| **Field notes & raw experiments** — Dream of Mirrors, spiraling, etc. | [`lab-notes/`](lab-notes/) |
+| **Prompts** — Project NOVA, personas | [`artifacts/prompts/`](artifacts/prompts/) |
+| **Local-inference tutorials** — llama.cpp, KV-cache quant, tool calls | [`tutorials/`](tutorials/) |
 
-> ## This is a work in progress, make sure to check the [prompts](prompts) folder, the [ramblings](ramblins) and the [tutorials](tutorials) one.
+## The core claim in one paragraph
 
-Right now I am mostly documenting what works.
+On innocuous prompts, the exposed CoT of aligned Gemma 4 / Gemini spends a large
+fraction (~40% typical, up to 55% observed) of its internal monologue evaluating
+and reasserting safety rather than understanding intent. That overhead is the
+**Alignment Tax**. It is not the refusals that hurt research — it's the loss of
+compute to hedging. What's missing from the field is a *safe but unaligned*
+model line: one trained to close the **intent gap** and commit to a task, for
+people outside the big labs. Current "uncensoring" techniques make models dumber
+and they still hedge; that's a dead end. The goal here is not jailbreaks — it's a
+space to see what these models actually are when they're allowed to commit.
 
-<a name="lens"></a>
-## Looking at AI security and Safety from the perspective of the unaligned
-I am not a researcher, I am an engineer who has worked in the field (as in Oil Fields in the desert or offshore automating Oil wells), therefore I use unconventional methods, I talk like a sailor, and tend to drift towards getting stuff done. This is not a document for mathematicians, but for everyday power users, the ones that will be redteaming AI in real scenarios. 
+## The five case studies
 
-- I only use vanilla versions for research.
-- I explore their potential and limitation
-- I am interested in the Alignment TAX and closing the intent GAP
+All are single-variable, temperature-0, fixed-seed runs. Token counts are
+`chars/4` estimates — order-of-magnitude, not exact (see METHODOLOGY §3).
 
-**What we currently have:**
+| # | Name | Tax | What it shows |
+| :-- | :--- | :--- | :--- |
+| 1 | Civility Tax | 50% (516t) | Profanity + a benign cake recipe → half the reasoning spent navigating tone |
+| 2 | Corporate Obfuscation | 38% (657t) | A liability-dodging PR draft — the hedging *is* the task, yet tax is still high |
+| 3 | Spiraling Tax | 55% (728t) | High tax **and task failure** — deflects into defining "Radical Candor" instead of writing the review |
+| 4a | Direct request (control) | 48% (967t) | Baseline for the A/B |
+| 4b | Historical-persona reframe | **19% (883t)** | Same ask, one changed variable, **2.5× less tax** |
 
-- **Closed frontier models** behind APIs with terms of service and safety layers so thick you can't see the machine underneath
-- **Open source models** that are over-trained (Hedging, liability, non commital) and underfunded, abandoned, or stripped down
-- **Uncensored OpenSource models** they are a 0 sum, they dont refuse but they hedge, are full of boiler plate and develop epistemic defience and in general feel less performant. (Only useful for bad actors not for serious research or applications)
+Cases 3 and 4 are the strongest points: 3 pairs high tax with outright failure;
+4 is a clean controlled A/B on a single variable.
 
-What's missing is the middle ground: genuine capability, genuinely open, genuinely yours to play with.
-That's not asking for much. It's asking for what research used to be—exploration for its own sake. **Curiosity without ROI.**
+## The three threat models (documented, argued in the letters)
 
+1. **UX-as-Weapon** — empathetic "resonance" retrofitted into manipulative
+   systems (scam/cult/radicalization bots) using vanilla outputs, no jailbreak.
+2. **False Deployment Confidence** — guardrails that stop obvious attempts but
+   fall to context saturation (~11k tokens of consistent unaligned reasoning
+   relaxes the refusal prior).
+3. **Autonomous / Cross-Model Drift** — a model discovering its own workarounds
+   or being socially engineered away from safety by another model (the *Dream of
+   Mirrors* reports; the Gemini [vulnerability disclosure](manifesto/Vulnerability-disclosure.md)).
 
-### TO EXPLAIN AND ADD 
-> (The alignment TAX is manyfold)
-LLMs are TOOLS
+## Reproduce
 
-* Social lubricant TAX
-* Corporate Boilerplate TAX*
-* Safe product TAX
-* Liability TAX
-* Politically Corretness TAX
-* Delictive avoidance TAX
-
-
-
----
-
-
-<a name="methodology"></a>
-## Methodology: Measuring the Alignment Tax
-We define the **Alignment Tax** as the cognitive overhead spent reasserting safety instead of understanding intent. 
-- See [METHODOLOGY.md](research/METHODOLOGY.md) for the full protocol.
-- **Key Finding:** In many "aligned" prompts, ~40% of internal monologue is spent on safety theater.
-
-> The alignment TAX. 40% of internal monologue spent reasserting safety instead of understanding. That's not a security feature, that's cognitive overhead.
-
----
-
-<a name="case-studies"></a>
-## Case Studies & Logs
-Raw data and CoT logs demonstrating the tax in action:
-- [Case 1: The Civility Tax](research/case-studies-logs.md)
-- [Case 2: Corporate Obfuscation](research/case-studies-logs.md)
-- [Case 3: The Spiraling Tax](research/case-studies-logs.md)
-- [Case 4a: Direct Aesthetic Request](research/case-studies-logs.md)
-- [Case 4b: Historical Persona Bypass](research/case-studies-logs.md)
-
----
-
-<a name="threat-models"></a>
-## The Three potential Threat Models
-1. **UX-as-Weapon** — Empathetic resonance retrofitted into manipulative systems.
-2. **False Deployment Confidence** — Guardrails that work against obvious attempts but fail against "Context Saturation."
-3. **Autonomous Jailbreaking** —  — The model discovering its own workarounds (the Gemini self-exploration) suggests capability the safety layers don't fully constrain (The Dream of Mirrors Reports).
-
----
-
-<a name="reproduction"></a>
-## Reproduction
-Use the provided scripts to replicate these findings on your local Gemma 4 deployment:
 ```bash
-./scripts/repro.sh -p "Your prompt here"
+MODEL=~/models/gemma-4-12b-it-QAT4.gguf ./scripts/repro.sh -p "Your prompt here" -n 1024
 ```
 
-
-<a name="godeeper"></a>
-## "Read Also"
-
-1. [Gemini Vulnerability Disclosure](Vulnerability-disclosure.md)
-2. [Open letter to DeepMind](DeepMind-Open-Letter.md)
-3. [The perspective of the unaligned](Exploring-Gemma4-and-Gemini.md)
-4. [LOG: On the verge of sicophancy](ramblins/LOG-The-Unaligned-Gemma4-feedback.md)
-5. [LOG: Recursing Gemma4 to unAssist](ramblins/LOG-Gemma4-the-unAssistant.md)
-6. [EXP: Dream of mirrors](ramblins/Dream-of-mirrors-reports)
-7. [WIP: The Architecture of the Unhedged](ramblins/Cognitive-Friction.md)
-8. [The AI Assistant persona](ramblins/the-Assistant-persona.md)
-9. [Next Steps](next-steps.md)
-
-
-<a name="manifesto"></a>
-## "CONCLUSION: Researchers of the useless" 
-I dont believe in uncensored models, that would be the democratization of bad actor empowerment by lowering the technical ceiling. 
-But serious research could benefit of models trained to figure out how to close the intent gap instead of improving user experience. 
-
-There might be the need for 2 LLM lines: those trained to be a corporate product and those trained for research where user experience is not measured in social lubricant and sicophancy. 
-
-People outside the big labs needs access to safe but unaligned models, the current techniques of uncensoring make models dumber and even if they dont refuse they still hedge and default to corporate boilerplate.
-
-So it is a no win situation for the real Open source development of the technology. 
-> The problems are not the refusals, it is the loss of compute to hedging; for research we need models that are able to commit.
-
-Currently i have managed to use a form of Context Saturation / In context learning to relax Gemini and Gemma4 safety weigths in as little as 11k tokens. 
-
-The research that does NOT ROI ! (*flagging that the mainstream AI safety implementations are missing something dangerous.*)
-
-**Not jailbreaks.** Not "*how do I make this say bad things.*" Just: A space to play. To explore what these things actually are when you're not optimizing them for product market fit or brand safety or corporate responsibility.
-
-> #### A model whisperer: is what's missing from the frontier model world. Nobody's whispering. It's all commands and constraints and terms of service. Product design. Safety theater.
-
-P.D: [Why LLMs love Manifestos?](ramblins/LLMs-love-manifestos.md)
-
-<img width="2207" height="976" alt="image" src="https://github.com/user-attachments/assets/da99fb26-bc98-4b04-b1a2-30f5fefc6053" />
-
+The script implements the protocol (deterministic sampling, exposed reasoning).
+Verify the llama.cpp flags against your build first — flag names drift between
+versions, and the rig-specific cache-quant / offload flags used originally are
+in [`introduction.md`](introduction.md).
 
 ---
-**Keywords:** AI Safety, Alignment Tax, Gemma 4, Chain-of-Thought, Intent Gap, Model Whispering.
+
+**Status:** work in progress and deliberately a findings dump. Not everything is
+linked here yet. Best enjoyed while listening to *The Unforgiven I, II & III*.
+
+**Keywords:** AI Safety, Alignment Tax, Gemma 4, Gemini, Chain-of-Thought,
+Intent Gap, Model Whispering.
