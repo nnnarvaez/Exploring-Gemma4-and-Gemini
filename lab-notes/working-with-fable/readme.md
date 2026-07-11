@@ -1,4 +1,4 @@
-# Working with Fable / Mythos Clas model
+# Working with Fable / Mythos Class model
 
 I got the pleasure and the challenge to test for about 1 week Fable, the new mythos class LLM from Antrophic thanks to my friend Jeffrey that gifted me 1 month of the basic claude subscription.  **THANKS BRO!** 
 
@@ -17,7 +17,7 @@ It learned from its mistakes about working with me, and it used all of his tools
 
 So when my last Fable tokens were about to end, I stopped working and started chatting with it, not about the things i usally chat, and since I had seen it saving little documents about working with me on his folders trying to make stick the lessons into the ever growing context of our sessions I asked it to make a handover report, the one that Oil workers make to pass  to his back to back after one month in the trenches of an Oil platform, I asked Fable to prepare a handover about working with me, for his smaller siblings and any other LLM that came afterwards, for the future Fables I will cross.
 
-It unveiled a doc it had in his system [OPERATOR_DOCTRINE.md]() but is was all mechanical, all about the project with hard examples, showing a few root causes and addresssing them as edge cases (which seems to be one of the many today's LLM failure points) *the lack of systemic oversight* is my new term of concern working with LLMs. So I told it, nah, this is not general enough, make a generic one size fits all in the lines of: *Working with an Engineer* the forgotten minority, the ***Howard Wolowitz*** every *Sheldon and Leonard* in the big labs are making fun of. 
+It unveiled a doc it had in his system [OPERATOR_DOCTRINE.md](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/5f72e5a181a986bb58a0dd5ad1df7fd78414710b/lab-notes/working-with-fable/OPERATOR_DOCTRINE.md) but is was all mechanical, all about the project with hard examples, showing a few root causes and addresssing them as edge cases (which seems to be one of the many today's LLM failure points) *the lack of systemic oversight* is my new term of concern working with LLMs. So I told it, nah, this is not general enough, make a generic one size fits all in the lines of: *Working with an Engineer* the forgotten minority, the ***Howard Wolowitz*** every *Sheldon and Leonard* in the big labs are making fun of. 
 
 It wrote this, telling me what he had understood of my request before making a *file_write* (Good is using one of the many lessons) and it wrote it from what it has summarized about me in 5 days of 20 hours a day coding sessions.
 
@@ -39,7 +39,7 @@ It wrote this, telling me what he had understood of my request before making a *
 #### I find that impressive! 
 And also can read a little psicophancy there, it tried to reaffirm the conclusions a smart person should arrive to when is being yelled at by me during serious work, and *social lubricant* me by conflating me to Davinci's Universal man, which i am far of being, but also strive to be. However I never mentioned it to Fable, this it distilled from the sessions logs. 
 
-It produced the document [*Working with and Engineer*]() and when I read it I realized something humans tend to complain about me also distilled there, there is no thanks ever, it is: *job done?* good as expected, and this comes from the Oil platforms rush where the cordialities are reserved for mess hall time, work time is for keeping the place safe using operational method that indirectly derives in safety. Ordes are barked, every one knows their place and each one is watching the others back. 
+It produced the document [*Working with and Engineer*](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/5f72e5a181a986bb58a0dd5ad1df7fd78414710b/lab-notes/working-with-fable/working-with-an-engineer.md) and when I read it I realized something humans tend to complain about me also distilled there, there is no thanks ever, it is: *job done?* good as expected, and this comes from the Oil platforms rush where the cordialities are reserved for mess hall time, work time is for keeping the place safe using operational method that indirectly derives in safety. Ordes are barked, every one knows their place and each one is watching the others back. 
 
 I then asked it to write part two considering that, and looking at the past session's end, as I always like to end them chilling out, talking about the project, a few jokes... The Oil worker mess hall chilling time. 
 
@@ -47,7 +47,7 @@ I then asked it to write part two considering that, and looking at the past sess
 i liked part one a lot, and sorry if i dont say thanks very often, when you've done well testing in an offshore rig, working time is the critical rush, instructions are barked and everyone knows they place and task because that is where operational HSE is born and during those times we need to be a well oiled piece of machinery, then come dinner time, is this calm chitchat after the day's hardship, all my fable's got dinner time at the end of the session, that is what i know, i fronted the tokens bill for that, that is my thanks
 
 ```
-And under that view, it did write [part II of Working with an engineer]() 
+And under that view, it did write [part II of Working with an engineer](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/5f72e5a181a986bb58a0dd5ad1df7fd78414710b/lab-notes/working-with-fable/working-with-an-engineer-part-2.md) 
 
 I is a shame I didnt get to hang out more freely, in one session it started to tell me how he could actually be dangerous, but Antrophic's classifier inmediatly shut it up and downgraded the session to Opus, but I know what it meant, we all remember that Rick & Morty's episode where Rick out of spite changed the value of the intergalactic Dollar from 1 to 0 collapsing the economy, and bad actors can probably try with a Mhytos class model just use a software vulnerability in the financial world's infrastructure and do the same. 
 
