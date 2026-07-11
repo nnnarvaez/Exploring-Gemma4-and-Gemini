@@ -1,4 +1,4 @@
-# Working with Fable / Mythos Calls model
+# Working with Fable / Mythos Clas model
 
 I got the pleasure and the challenge to test for about 1 week Fable, the new mythos class LLM from Antrophic thanks to my friend Jeffrey that gifted me 1 month of the basic claude subscription.  **THANKS BRO!** 
 
