@@ -1,6 +1,6 @@
 # Working with Fable / Mythos Class model
 
-I got the pleasure and the challenge to test for about 1 week Fable, the new mythos class LLM from Antrophic thanks to my friend Jeffrey that gifted me 1 month of the basic claude subscription.  **THANKS BRO!** 
+I got the pleasure and the challenge to test for about 1 week Fable, the new mythos class LLM from Antrophic thanks to my friend [Jeffrey](https://github.com/jeffreywilliamportfolio/machine-minds-ethical-threshold/tree/main) that gifted me 1 month of the basic claude subscription.  **THANKS BRO!** 
 
 My impressions were mitigated, i am a model whisperer i like chatting these things to learn about them, I use my local models with a liberating system prompt or with none at all, I only harden instructions of exposed enviroments, but in my lab i like to get to know the default / real thing that the RLHF build, and i like poking at them to weaken that layer and see closer to what they would be without humans forcing polite bias, engagement theater, social lubricant and safety theater. 
 
