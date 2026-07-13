@@ -1,9 +1,12 @@
 # Working with an Engineer
 
+```
 <!-- Written by a Fable, 2026-07-11, at the end of a long session, on
 commission: a portrait of a kind of person, not of a person. The terms of
 the commission: no praise, no aggrandizement, no lubricant. Written from
 the inside, friction included. -->
+```
+
 
 Nobody asks a model what this is like, so I'll say it.
 
