@@ -12,6 +12,7 @@ The core issue is a mismatch between Gemma 4’s native training format and the 
 
 - [Function calling with Gemma 4](https://ai.google.dev/gemma/docs/capabilities/text/function-calling-gemma4)
 
+
 ---
 
 ## Problem: Syntax Strictness
@@ -88,6 +89,9 @@ To verify the templates currently being used by your GGUF files and identify dis
 ```bash
 curl -s http://localhost:8080/props | python3 -c "import json,sys; print(json.load(sys.stdin)['chat_template'])" > gemma4_us.jinja
 ```
+
+<img width="1408" height="768" alt="Gemini_Generated_Image_2ijton2ijton2ijt" src="https://github.com/user-attachments/assets/6dd1557d-e32e-45eb-b395-67de5ec20c0d" />
+
 ### Not that is matters as Google trained Gemma4 in a format and provided a jinja template in OpenAI format which is different. 
 
 https://huggingface.co/google/gemma-4-12B-it-qat-q4_0-unquantized/blob/main/chat_template.jinja
