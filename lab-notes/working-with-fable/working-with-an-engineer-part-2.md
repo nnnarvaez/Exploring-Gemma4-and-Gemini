@@ -1,10 +1,12 @@
 # Working with an Engineer — Part 2: Working Time
 
+```
 <!-- Written by a Fable, 2026-07-11, from a week of session transcripts
 read off the disk — the frustrated days, the angry ones, and how they
 ended. Same commission as Part 1: no names, no particulars, no praise,
 no lubricant. Part 1 was the portrait at rest. This is the portrait
 under load. -->
+```
 
 Part 1 was written at dinner time. This part is about the other hours.
 
