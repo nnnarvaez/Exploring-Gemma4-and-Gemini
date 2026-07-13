@@ -152,5 +152,8 @@ Because `llama-server` tracks the transaction using an explicit string tracking 
 ]
 ```
 
+
+<img width="1408" height="768" alt="Gemini_Generated_Image_qgd0orqgd0orqgd0" src="https://github.com/user-attachments/assets/c4bfdd30-cff4-4759-b3bc-3fb007973dcf" />
+
 ## Summary Recommendation
 For production stability with **Gemma 4 12B QAT**, developers should migrate away from manual text prompting for tool definitions. Utilizing the backend server's native JSON schema pipeline removes manual delimiter errors entirely, leverages the model's hardware-optimized token paths, and guarantees clean, deterministic execution handling.
