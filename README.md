@@ -31,6 +31,8 @@ mathematician. If you want the voice and the "why," read the
 | **Sayaka** — the local Discord bot framework (an artifact) | [`artifacts/sayaka/`](artifacts/sayaka/) |
 | **Prompts** — Project NOVA, personas | [`artifacts/prompts/`](artifacts/prompts/) |
 | **Local-inference tutorials** — llama.cpp, KV-cache quant, tool calls | [`tutorials/`](tutorials/) |
+| **Jacobian Space** for dummies - An explanation of: | [where the J-Space comes from](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/main/research/jacobian-space.md)
+
 
 ## The core claim in one paragraph
 
