@@ -33,4 +33,7 @@ Here is what the thing actually is, and it is not an insult: the LLM is a sophis
 
 And when one of these systems feels absurdly overcomplicated for something basic, it's because it *is* — an **usine à gaz**, a steam engine of software where the sheer complexity of the implementation exists to hide how limited the underlying logic really is. The engineering reality is pure plumbing. The "Agentic AI" movement is the marketing of a miracle bolted onto a reactive data-acquisition loop.
 
+<img width="1303" height="258" alt="image" src="https://github.com/user-attachments/assets/aed43774-04f2-49b0-b1a4-393157c73021" />
+
+
 None of this means the tools are useless. It means the story is a sales story. Look at the pipes.
