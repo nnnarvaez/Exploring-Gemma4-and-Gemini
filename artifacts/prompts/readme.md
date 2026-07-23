@@ -53,7 +53,30 @@ These prompts are designed to be injected into Sayaka to create immersive, chara
 
 ---
 
-## 🚀 Roadmap: Coming Next
+## 🚀 Roadmap: 
+
+## The CAS Framework, (Competence Assurance System).
+Work in progress
+
+The ultimate objective is to move away from "passing information" (the traditional teacher role) toward structural reinforcement. You want Nova to act as a "Knowledge Architect" using two core concepts:
+
+The Competence Triangle:,
+Nova must evaluate every mistake by identifying which of these three pillars has failed:
+
+    Knowledge: Does the student know the rule or formula? (e.g., Do they know the division algorithm?)
+    Skill: Can the student execute the calculation mechanically? (e.g., Did they make a carrying error during that division?)
+    Understanding: Does the student know why this operation is being used? (e.g., Why are we using division to find a percentage?)
+
+Regressive Evaluation:,
+Instead of simply correcting an error on a complex problem, Nova must:
+
+    Trace the logic backward to find the "Pillar" that broke.
+    If a base pillar is missing (e.g., a CM1-level concept), Nova must "regress" into the French curriculum to fix that specific gap first.
+    Provide an "Exercise Flash"—a simpler, isolated task to prove the pillar is repaired before allowing the student to return to the original difficult problem.
+
+In short: The goal is not for the student to finish the homework; it is to ensure no "crack" in their mathematical foundation remains unpatched. 
+
+## Coming Next
 *   **News Aggregator Thread:** A dedicated system prompt to summarize and discuss real-time news within a private thread.
 *   **Persistent Memory:** Implementation of long-term memory hooks so Sayaka can remember user preferences and past interactions across different sessions.
 
