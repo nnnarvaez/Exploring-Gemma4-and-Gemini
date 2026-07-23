@@ -1,3 +1,5 @@
+<img width="1408" height="768" alt="Gemini_Generated_Image_snmlvosnmlvosnml" src="https://github.com/user-attachments/assets/b9806c48-69db-4dab-a7d2-d31c3f7d4535" />
+
 # Working with Fable / Mythos Class model
 
 I got the pleasure and the challenge to test for about 1 week Fable, the new mythos class LLM from Antrophic thanks to my friend [Jeffrey](https://github.com/jeffreywilliamportfolio/machine-minds-ethical-threshold/tree/main) that gifted me 1 month of the basic claude subscription.  **THANKS BRO!** 
