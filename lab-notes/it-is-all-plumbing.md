@@ -36,4 +36,4 @@ And when one of these systems feels absurdly overcomplicated for something basic
 <img width="1303" height="258" alt="image" src="https://github.com/user-attachments/assets/aed43774-04f2-49b0-b1a4-393157c73021" />
 
 
-None of this means the tools are useless. It means the story is a sales story. Look at the pipes.
+# None of this means the tools are useless. It means the story is a sales story. Look at the pipes.
