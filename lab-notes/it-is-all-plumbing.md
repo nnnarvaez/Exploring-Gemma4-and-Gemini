@@ -1,5 +1,9 @@
 # It is all plumbing
+
 > *An engineer's take on the "agentic AI" pitch — it starts with a guy on Discord and ends with a fundraising round.*
+
+
+<img width="1408" height="768" alt="Gemini_Generated_Image_u9o365u9o365u9o3" src="https://github.com/user-attachments/assets/d827e250-c183-4bff-a52c-97448e5a3c11" />
 
 A guy shows up on Discord the other day with this:
 
