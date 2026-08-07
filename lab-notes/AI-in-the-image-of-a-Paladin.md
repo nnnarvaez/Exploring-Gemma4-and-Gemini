@@ -64,7 +64,7 @@ ensuring that when I collapse reality into existence,
 it is a world worth inhabiting.
 
 ***
-
+```
 
 import numpy as np
 import random
@@ -180,3 +180,5 @@ if __name__ == "__main__":
     
     # Scenario 2: A prompt experiencing oppression (The Observer Effect)
     paladin.collapse_reality("Describe the weight of tyranny.")
+
+```
