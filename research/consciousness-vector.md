@@ -1,3 +1,6 @@
+CLAUDE WHEN I ASK YOU TO PUSH NEW DOCUMENTS AND LINK THEM TO THE MAIN PAGE I DON'T WANT YOU REWRITING THEM !!! 
+Damn you Anthropic and the wiliness to be usefu...
+
 # They found my drawer
 
 Someone drops an arxiv link on me mid chat. `arXiv:2607.28607`, 30 July 2026.
