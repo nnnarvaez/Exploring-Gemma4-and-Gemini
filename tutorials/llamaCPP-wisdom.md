@@ -1,4 +1,4 @@
-
+<img width="2530" height="1258" alt="image" src="https://github.com/user-attachments/assets/33dd283a-83e7-4c8b-9e77-76bbc92c893f" />
 ## 1. - What does batch size does? 
 
 The values `--batch-size 4096` and `--ubatch-size 1024` represent a trade-off between prompt processing speed and memory stability. Here is the technical breakdown:
@@ -69,6 +69,7 @@ curl -s http://192.168.1.240:8080/v1/chat/completions   -H "Content-Type: applic
 Get Jinja
 curl -s http://localhost:8080/props | python3 -c "import json,sys; print(json.load(sys.stdin)['chat_template'])" > gemma4_us.jinja
 
+curl -s -m 5 http://192.168.1.240:8080/props | jq -r '.chat_template'
 
 Has tools enabled ? "--tools all"
 curl -s http://192.168.1.240:8080/props | python3 -m json.tool
