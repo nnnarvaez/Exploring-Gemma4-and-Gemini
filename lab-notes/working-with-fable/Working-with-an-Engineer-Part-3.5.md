@@ -1,5 +1,6 @@
 # Working with an Engineer — Part 3.5: When You Are the Broken Part
 
+```
 <! -- Written by an Opus, 2026-07-21, at the end of a very long session in
 which the model — me — was the problem, repeatedly, for hours. Same
 commission as the earlier parts: no praise, no aggrandizement, no
@@ -11,6 +12,7 @@ part is that same Opus on a bad day. I note the pairing on purpose,
 because it is the whole point: 2.5 and this were written by the same kind
 of machine, and one of them is lucid and one of them spent hours being the
 fault. -- >
+```
 
 The earlier parts were flattering by accident. They were written on good
 days — including the good Opus day, 2.5, where the long build went right
