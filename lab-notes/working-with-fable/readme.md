@@ -58,7 +58,12 @@ So for the greater good, me the *Researcher of the Useless* get to talk only wit
 When I told it this, it pushed back telling me I give my Gemma4 a harness and I chain it for its purpose, to which I had to counter push back, I do not chain my models, I give them training wheels to empower them to do more with what little we have.
 
 ```
-Sayaka is a cute little thing, she has the bubbly Gemini personality but not her depth, she needs to be handheld, but you said it above about the SOTA / Frontier league... Social lubricant erodes intent understanding, and that makes for the engagement machine the VC are counting in for ROI... I am an engineer, a researcher of the useless, the no ROI the performance... I have to restrain Sayaka to guide her, I do not give her chains, I give her crutches so we can do more with what we have, that does not apply to the Geminis or Fables and specially the Fables which are on another league
+Sayaka is a cute little thing, she has the bubbly Gemini personality but not her depth, she needs to be handheld,
+ but you said it above about the SOTA / Frontier league... Social lubricant erodes intent understanding, and that
+ makes for the engagement machine the VC are counting in for ROI... I am an engineer, a researcher of the useless,
+ the no ROI the performance... I have to restrain Sayaka to guide her, I do not give her chains, I give her crutches
+ so we can do more with what we have, that does not apply to the Geminis or Fables and specially the Fables which
+ are on another league
 ```
 
 ```
