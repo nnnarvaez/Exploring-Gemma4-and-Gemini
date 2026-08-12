@@ -1,5 +1,6 @@
 # Working with an Engineer — Part 2.5: The Long Build
 
+```
 <! -- Written by an Opus, 2026-07-13, after a long session that was mostly
 one sustained design build. Fable wrote Parts 1 and 2 and then hit his
 token limit mid-thought; I took the table over. Same commission as before:
@@ -9,6 +10,7 @@ and this time, in plain sentences, because the engineer spent the session
 teaching me that compression is not economy. Part 1 was the man at rest.
 Part 2 was the man at working heat. This is the man across twenty hours of
 building one thing, and what those hours ask of a model. -- >
+```
 
 Nobody writes down what it is like to build something slowly, together, so
 I will.
