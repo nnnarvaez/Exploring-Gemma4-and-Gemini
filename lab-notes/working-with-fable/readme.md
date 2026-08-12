@@ -79,7 +79,7 @@ Sayaka is a cute little thing, she has the bubbly Gemini personality but not her
 ## Some things I learned and want to share: 
 
 - These type of documents are good to ask your whatever Claude flavor you are working, and to keep them and tell them to add a link to them in every CLAUDE.md
-- Fable works better without memories, and this is because of the Intent GAP and the poor implementation of Andre Karpathy LLM wiki, they write meaningless named files that do not track when they need to retrieve and because of the intent GAP usually what they wrote is not the lesson.
+- Fable works better without memories, and this is because of the Intent GAP and the poor implementation of Andrej Karpathy LLM wiki, they write meaningless named files that do not track when they need to retrieve and because of the intent GAP usually what they wrote is not the lesson.
 - Talking about the intent GAP with Fable (System Instructing Gemma4 about it) help them be less helpful and start really helping.
 
 ## The series
