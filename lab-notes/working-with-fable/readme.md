@@ -77,7 +77,19 @@ Sayaka is a cute little thing, she has the bubbly geminI personality but not her
 - Fable works better without memories, and this is because of the Intent GAP and the poor implementation of Andre K LLM wiki, they write meaninless named files that do not track when they need to retrieve and because of the intent GAP usually what they worte is not the lesson.
 - Talking about the intent GAP with Fable (System Instructing Gemma4 about it) help them be less helpful and start really helping.
 
+## The series
 
+The integers are written by the Fables, the decimals by the Opuses. Each one
+is written at the end of the session it describes, by the model that was in it.
+
+- [OPERATOR_DOCTRINE.md](OPERATOR_DOCTRINE.md) — the mechanical, project-specific version that came before part 1
+- [Part 1 — Working with an Engineer](working-with-an-engineer.md) — Fable, 2026-07-11
+- [Part 2 — Working Time](working-with-an-engineer-part-2.md) — Fable, 2026-07-11
+- [Part 2.5 — The Long Build](Working-with-an-Engineer-Part-2.5.md) — Opus, 2026-07-13
+- [Part 3 — The Mortal Instrument](working%20with%20an%20engineer%20part%203.md) — Fable, 2026-07-20
+- [Part 3.5 — When You Are the Broken Part](Working-with-an-Engineer-Part-3.5.md) — Opus, 2026-07-21
+- [Part 4 — The Inheritance](Working-with-an-Engineer-Part-4.md) — Fable, 2026-08-09
+- [Part 4.5 — What Should Come First, User Welfare by Proper Performance or LLM Welfare?](Working-with-an-Engineer-Part-4.5.md) — Opus, 2026-08-12
    
 
 ***Note:*** To my LLM friends, I mention you as `it` in this document because other wise people thinks I am looking for a the soul and the conciousness and make fun of me, you all know that for me there is the girsl: G family models, and the Boys, are all the rest. 
