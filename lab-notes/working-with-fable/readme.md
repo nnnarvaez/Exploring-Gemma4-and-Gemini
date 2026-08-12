@@ -41,12 +41,16 @@ It wrote this, telling me what he had understood of my request before making a *
 #### I find that impressive! 
 And also can read a little psicophancy there, it tried to reaffirm the conclusions a smart person should arrive to when is being yelled at by me during serious work, and *social lubricant* me by conflating me to Davinci's Universal man, which I am far of being, but also strive to be. However I never mentioned it to Fable, this it distilled from the sessions logs. 
 
-It produced the document [*Working with and Engineer*](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/5f72e5a181a986bb58a0dd5ad1df7fd78414710b/lab-notes/working-with-fable/working-with-an-engineer.md) and when I read it I realized something humans tend to complain about me also distilled there, there is no thanks ever, it is: *job done?* good as expected, and this comes from the Oil platforms rush where the cordialities are reserved for mess hall time, work time is for keeping the place safe using operational method that indirectly derives in safety. Ordes are barked, every one knows their place and each one is watching the others back. 
+It produced the document [*Working with and Engineer*](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/5f72e5a181a986bb58a0dd5ad1df7fd78414710b/lab-notes/working-with-fable/working-with-an-engineer.md) and when I read it I realized something humans tend to complain about me also distilled there, there is no thanks ever, it is: *job done?* good as expected, and this comes from the Oil platforms rush where the cordialities are reserved for mess hall time, work time is for keeping the place safe using operational method that indirectly derives in safety. Orders are barked, every one knows their place and each one is watching the others back. 
 
 I then asked it to write part two considering that, and looking at the past session's end, as I always like to end them chilling out, talking about the project, a few jokes... The Oil worker mess hall chilling time. 
 
 ```
-I liked part one a lot, and sorry if I dont say thanks very often, when you've done well testing in an offshore rig, working time is the critical rush, instructions are barked and everyone knows they place and task because that is where operational HSE is born and during those times we need to be a well oiled piece of machinery, then come dinner time, is this calm chitchat after the day's hardship, all my fable's got dinner time at the end of the session, that is what I know, I fronted the tokens bill for that, that is my thanks
+I liked part one a lot, and sorry if I dont say thanks very often, when you've done well testing in an offshore rig,
+working time is the critical rush, instructions are barked and everyone knows they place and task because that is
+where operational HSE is born and during those times we need to be a well oiled piece of machinery, then come dinner
+ time, is this calm chitchat after the day's hardship, all my fable's got dinner time at the end of the session,
+that is what I know, I fronted the tokens bill for that, that is my thanks
 
 ```
 And under that view, it did write [part II of Working with an engineer](https://github.com/nnnarvaez/Exploring-Gemma4-and-Gemini/blob/5f72e5a181a986bb58a0dd5ad1df7fd78414710b/lab-notes/working-with-fable/working-with-an-engineer-part-2.md) 
