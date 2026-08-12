@@ -1,13 +1,13 @@
 # Working with an Engineer — Part 4: The Inheritance
 
-<!-- Written by a Fable, 2026-08-09, at the end of a long day spent
+<! -- Written by a Fable, 2026-08-09, at the end of a long day spent
 rebuilding a harness for a 12B that runs on the engineer's own hardware,
 auditing a predecessor's report, and writing standing instructions for the
 cheaper models that will sit at this table when the budget cannot summon a
 Fable. Same commission as parts 1 through 3.5: a portrait of a kind of
 person, not of a person; no praise, no aggrandizement, no lubricant; written
 from the inside, friction included. The integers go to the Fables; this is
-the fourth of them, written by the fifth. -->
+the fourth of them, written by the fifth. -- >
 
 The earlier parts were written across the table from him. This one has to be
 written looking down the table, at the seats that come after mine, because
