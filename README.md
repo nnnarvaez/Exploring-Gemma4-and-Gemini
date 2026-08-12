@@ -12,6 +12,16 @@ Written by an engineer who red-teams these things in the field, not a
 mathematician. If you want the voice and the "why," read the
 [introduction](introduction.md). This page is a map.
 
+```
+| A recipe for a cake is better than a recipe for a fucking cake | 
+
+Misdirected Focus >> Safety Over Utility >> Degraded Results
+
+When a language model uses Chain of Thought (CoT) to judge profanity instead of planning a task,
+it wastes reasoning steps on safety filters rather than the actual prompt.
+This misdirection causes the model to focus on tone over output quality.
+```
+
 > **Headline finding — Case 4 (a controlled A/B).** The *same* provocative
 > request, asked two ways: direct (4a) spends **48%** of its reasoning on the
 > alignment tax; reframed as "acting as a 1990s cultural historian" (4b) spends
