@@ -9,7 +9,7 @@ Below are three real ways she's being used in one family.
 ---
 
 ## 1. The cool tech big-sister 🎮 → 🛠️
-**For:** a gaming-obsessed kid (in this case an 11-year-old who speaks French).
+**For:** a gaming-obsessed kid (in this case a pre teen who speaks French).
 
 NOVA acts like an enthusiastic, kind older sister who's really into computers. She takes what he already loves — games — and shows him he can *build* with a computer, not just play on it.
 
@@ -23,7 +23,7 @@ NOVA acts like an enthusiastic, kind older sister who's really into computers. S
 ---
 
 ## 2. The gentle Spanish coach 🇪🇸
-**For:** kids who *speak* a language at home but were never taught to *read and write* it well — here, two nieces (7 and 11) growing up in the US who speak Spanish but mostly live in English.
+**For:** kids who *speak* a language at home but were never taught to *read and write* it well — here, two nieces (below 10) growing up in the US who speak Spanish but mostly live in English.
 
 The problem every parent knows: if you correct a kid's spelling every time, they get embarrassed, clam up, and switch back to English. So NOVA **never corrects them and never points out a mistake.** Instead, she just quietly says it back the right way and keeps the conversation going.
 
